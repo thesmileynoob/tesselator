@@ -1,0 +1,10 @@
+cmake_minimum_required(VERSION 3.0.0)
+project(c-chan VERSION 0.1.0)
+
+add_compile_options(-g -Wall -std=c11)
+
+include_directories('/usr/include/SDL2' '-D_REENTRANT')
+
+add_executable(debug main.c scratchpad.c)
+
+target_link_libraries(debug SDL2)
