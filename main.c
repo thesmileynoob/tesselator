@@ -18,10 +18,20 @@ static int visual_debug = 1;
 SDL_Window* window     = NULL;
 SDL_Renderer* renderer = NULL;
 
+
+tile Tiles[] = {
+    // X, Y, W, H, r,g,b
+    {0, GroundLevel, ScreenWidth, 10, /*rgb*/ 0, 0, 200},
+    {500, GroundLevel - 200, 100, 200, /*rgb*/ 150, 50, 0},
+    {300, GroundLevel - 100, 100, 100, /*rgb*/ 150, 50, 0},
+};
+
 static int init_sdl();
 static int deinit_sdl();
 static void handle_input(const Uint8* keys, object* player, unsigned int dt);
 static unsigned int get_dt();
+
+inline static int tile_count() { return sizeof(Tiles) / sizeof(tile); }
 
 
 int main(int argc, char const* argv[])
@@ -66,10 +76,18 @@ int main(int argc, char const* argv[])
                 SDL_RenderClear(renderer);
 
                 // level
-                SDL_Rect GroundRect = {0, GroundLevel, ScreenWidth, 10};
-                SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
-                SDL_RenderFillRect(renderer, &GroundRect);
-                SDL_RenderDrawRect(renderer, &GroundRect);
+                {
+                        const int tc = tile_count();
+                        for (int i = 0; i < tc; ++i) {
+                                tile* Tile        = &Tiles[i];
+                                SDL_Rect TileRect = {Tile->Xpos, Tile->Ypos, Tile->Width,
+                                                     Tile->Height};
+                                SDL_SetRenderDrawColor(renderer, Tile->r, Tile->g,
+                                                       Tile->b, 255);
+                                SDL_RenderFillRect(renderer, &TileRect);
+                                SDL_RenderDrawRect(renderer, &TileRect);
+                        }
+                }
 
 
                 // objects

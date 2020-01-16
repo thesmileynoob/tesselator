@@ -23,3 +23,11 @@ typedef struct object {
 
         char r, g, b;
 } object;
+
+
+typedef struct tile {
+        int Xpos, Ypos;
+        int Width, Height;
+
+        char r, g, b;
+} tile;
