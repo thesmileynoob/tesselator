@@ -12,8 +12,9 @@
 const int ScreenWidth  = 1280;
 const int ScreenHeight = 720;
 
-const int GroundLevel   = (int) ScreenHeight * 3 / 4;
-static int visual_debug = 1;
+const int GroundLevel        = (int) ScreenHeight * 3.5 / 4;
+static int visual_debug      = 1;
+static int highlight_tile_id = -1;    // -1 == no highlight
 
 SDL_Window* window     = NULL;
 SDL_Renderer* renderer = NULL;
@@ -21,7 +22,7 @@ SDL_Renderer* renderer = NULL;
 
 tile Tiles[] = {
     // X, Y, W, H, r,g,b
-    {0, GroundLevel, ScreenWidth, 10, /*rgb*/ 0, 0, 200},
+    {200, GroundLevel, ScreenWidth - 400, 10, /*rgb*/ 0, 0, 200},
     {500, GroundLevel - 200, 100, 200, /*rgb*/ 150, 50, 0},
     {300, GroundLevel - 100, 100, 100, /*rgb*/ 150, 50, 0},
 };
@@ -32,6 +33,10 @@ static void handle_input(const Uint8* keys, object* player, unsigned int dt);
 static unsigned int get_dt();
 
 inline static int tile_count() { return sizeof(Tiles) / sizeof(tile); }
+inline static SDL_Rect tile_rect(const tile* Tile)
+{
+        return (SDL_Rect){Tile->Xpos, Tile->Ypos, Tile->Width, Tile->Height};
+}
 
 
 int main(int argc, char const* argv[])
@@ -43,7 +48,7 @@ int main(int argc, char const* argv[])
         object Player = {};
         Player.Width  = 25;
         Player.Height = 50;
-        Player.Xpos   = 0;
+        Player.Xpos   = 200;
         Player.Ypos   = GroundLevel - Player.Height;
         Player.State  = STANDING;
 
@@ -79,11 +84,17 @@ int main(int argc, char const* argv[])
                 {
                         const int tc = tile_count();
                         for (int i = 0; i < tc; ++i) {
-                                tile* Tile        = &Tiles[i];
-                                SDL_Rect TileRect = {Tile->Xpos, Tile->Ypos, Tile->Width,
-                                                     Tile->Height};
+                                tile* Tile = &Tiles[i];
+                                // SDL_Rect TileRect = {Tile->Xpos, Tile->Ypos,
+                                // Tile->Width,
+                                //                      Tile->Height};
+                                SDL_Rect TileRect = tile_rect(Tile);
                                 SDL_SetRenderDrawColor(renderer, Tile->r, Tile->g,
                                                        Tile->b, 255);
+                                if (highlight_tile_id == i) {
+                                        // paint it black
+                                        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+                                }
                                 SDL_RenderFillRect(renderer, &TileRect);
                                 SDL_RenderDrawRect(renderer, &TileRect);
                         }
@@ -140,7 +151,8 @@ void step(object* Obj, unsigned int dt)
 
         // GRAVITY
         const int gravity = 4;
-        Obj->Yspeed += gravity;
+        Obj->Yspeed += gravity;    // always push downward
+
         // OTHER FORCES
         if (Obj->State == JUMPING) {
                 // printf("JUMPING: ");
@@ -162,12 +174,41 @@ void step(object* Obj, unsigned int dt)
 
         // COLLISION HANDLING
         // if touching the ground
-        if ((Obj->Ypos >= GroundLevel - Obj->Height)) {
-                // puts("STANDING");
+        const tile* Tile     = &Tiles[0];
+        const int obj_bottom = Obj->Ypos + Obj->Height;
+        const int obj_left   = Obj->Xpos;
+        const int obj_right  = Obj->Xpos + Obj->Width;
+
+        const int tile_top   = Tile->Ypos;
+        const int tile_left  = Tile->Xpos;
+        const int tile_right = Tile->Xpos + Tile->Width;
+
+        // obj is within tile bound ie [tile.x, tile.x + width] bounds
+        const int in_xrange = (obj_left >= tile_left && obj_left <= tile_right) ||
+                              (obj_right >= tile_left && obj_right <= tile_right);
+        const int above_tile_top = (obj_bottom <= tile_top);
+
+        // print the nearest tile below player
+        {
+                if (in_xrange && above_tile_top) {
+                        highlight_tile_id = 0;
+                } else {
+                        highlight_tile_id = -1;
+                }
+                printf("on tile: %d\n", highlight_tile_id);
+        }
+
+        // const int touching_tile = (Obj->Ypos >= tile_top - Obj->Height) ;
+        const int touching_tile = (obj_bottom == tile_top) && in_xrange;
+        if (touching_tile) {
+                puts("STANDING");
                 // jump ends. now stand
                 Obj->State  = STANDING;
-                Obj->Ypos   = GroundLevel - Obj->Height;
+                Obj->Ypos   = tile_top - Obj->Height;
                 Obj->Yspeed = 0;
+        } else {
+                // continue falling
+                Obj->Ypos += Obj->Yspeed;
         }
 }
 
@@ -175,16 +216,16 @@ static void handle_input(const Uint8* Keys, object* Player, unsigned int dt)
 {
 
         // if (Keys[SDL_SCANCODE_W])
-        //         Player->Ypos -= speedy;
+        //         Player->Ypos += Player->Yspeed;
         // else if (Keys[SDL_SCANCODE_S])
-        //         Player->Ypos += speedy;
+        //         Player->Ypos -= Player->Yspeed;
 
         // movement
         if (Keys[SDL_SCANCODE_A]) {
-                if (Player->Xspeed > 0) Player->Xspeed *= -1;    // face left
+                if (Player->Xspeed > 0) Player->Xspeed = -Player->Xspeed;    // face left
                 Player->Xpos += Player->Xspeed;
         } else if (Keys[SDL_SCANCODE_D]) {
-                if (Player->Xspeed < 0) Player->Xspeed *= -1;    // face right
+                if (Player->Xspeed < 0) Player->Xspeed = -Player->Xspeed;    // face right
                 Player->Xpos += Player->Xspeed;
         }
 
