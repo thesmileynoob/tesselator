@@ -7,9 +7,10 @@ TODO
 */
 
 enum obj_state {
-        STANDING,
+        IDLE,
         JUMPING,
         RUNNING,
+        FALLING,
 };
 
 typedef struct object {

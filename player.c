@@ -7,11 +7,11 @@ void reset_player(object* Player, int xpos, int ypos)
         result.Height = 50;
         result.Xpos   = xpos;
         result.Ypos   = ypos - result.Height;
-        result.State  = STANDING;
+        result.State  = IDLE;
 
         result.Xspeed    = 15;
         result.Yspeed    = 0;
-        result.JumpSpeed = 1.2 * result.Height;
+        result.JumpSpeed = .5 * result.Height;
         result.r         = 255;
 
         *Player = result;
