@@ -31,6 +31,22 @@ static int init_sdl();
 static int deinit_sdl();
 static void handle_input(const Uint8* keys, object* player, unsigned int dt);
 static unsigned int get_dt();
+static void reset_player(object* Player)
+{
+        object result = {0};
+        result.Width  = 25;
+        result.Height = 50;
+        result.Xpos   = 200;
+        result.Ypos   = GroundLevel - result.Height;
+        result.State  = STANDING;
+
+        result.Xspeed    = 15;
+        result.Yspeed    = 0;
+        result.JumpSpeed = 1.2 * result.Height;
+        result.r         = 255;
+
+        *Player = result;
+}
 
 inline static int tile_count() { return sizeof(Tiles) / sizeof(tile); }
 inline static SDL_Rect tile_rect(const tile* Tile)
@@ -45,17 +61,8 @@ int main(int argc, char const* argv[])
         assert(window && renderer);
 
         // player init
-        object Player = {};
-        Player.Width  = 25;
-        Player.Height = 50;
-        Player.Xpos   = 200;
-        Player.Ypos   = GroundLevel - Player.Height;
-        Player.State  = STANDING;
-
-        Player.Xspeed    = 15;
-        Player.Yspeed    = 0;
-        Player.JumpSpeed = 1.2 * Player.Height;
-        Player.r         = 255;
+        object Player;
+        reset_player(&Player);
 
 
         int running = 1;
@@ -66,8 +73,15 @@ int main(int argc, char const* argv[])
                         if (sym == SDLK_q || ev.type == SDL_QUIT) { running = 0; }
 
                         if (ev.type == SDL_KEYUP) {
+                                // on key release
                                 if (sym == SDLK_v) { visual_debug = !visual_debug; }
                         } else if (ev.type == SDL_KEYDOWN) {
+                                // on key press
+                                // RESET
+                                if (sym == SDLK_r) {
+                                        puts("MANUAL RESET");
+                                        reset_player(&Player);
+                                }
                         }
                 }
 
@@ -195,20 +209,26 @@ void step(object* Obj, unsigned int dt)
                 } else {
                         highlight_tile_id = -1;
                 }
-                printf("on tile: %d\n", highlight_tile_id);
+                // printf("on tile: %d\n", highlight_tile_id);
         }
 
         // const int touching_tile = (Obj->Ypos >= tile_top - Obj->Height) ;
         const int touching_tile = (obj_bottom == tile_top) && in_xrange;
         if (touching_tile) {
-                puts("STANDING");
+                // puts("STANDING");
                 // jump ends. now stand
                 Obj->State  = STANDING;
                 Obj->Ypos   = tile_top - Obj->Height;
                 Obj->Yspeed = 0;
         } else {
-                // continue falling
-                Obj->Ypos += Obj->Yspeed;
+                printf("%d IN AIR\n", dt);
+                // // continue falling
+                // Obj->Ypos += Obj->Yspeed;
+        }
+
+        if (obj_bottom >= ScreenHeight) {
+                puts("RESET");
+                reset_player(Obj);
         }
 }
 
