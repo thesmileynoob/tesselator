@@ -31,3 +31,9 @@ typedef struct tile {
 
         char r, g, b;
 } tile;
+
+
+
+void reset_player(object* Player, int xpos, int ypos);
+
+int tile_below_object(const object*, const tile*, int TileCount);

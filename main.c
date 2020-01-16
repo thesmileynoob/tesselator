@@ -31,22 +31,6 @@ static int init_sdl();
 static int deinit_sdl();
 static void handle_input(const Uint8* keys, object* player, unsigned int dt);
 static unsigned int get_dt();
-static void reset_player(object* Player)
-{
-        object result = {0};
-        result.Width  = 25;
-        result.Height = 50;
-        result.Xpos   = 200;
-        result.Ypos   = GroundLevel - result.Height;
-        result.State  = STANDING;
-
-        result.Xspeed    = 15;
-        result.Yspeed    = 0;
-        result.JumpSpeed = 1.2 * result.Height;
-        result.r         = 255;
-
-        *Player = result;
-}
 
 inline static int tile_count() { return sizeof(Tiles) / sizeof(tile); }
 inline static SDL_Rect tile_rect(const tile* Tile)
@@ -62,7 +46,7 @@ int main(int argc, char const* argv[])
 
         // player init
         object Player;
-        reset_player(&Player);
+        reset_player(&Player, 200, GroundLevel);
 
 
         int running = 1;
@@ -80,7 +64,7 @@ int main(int argc, char const* argv[])
                                 // RESET
                                 if (sym == SDLK_r) {
                                         puts("MANUAL RESET");
-                                        reset_player(&Player);
+                                        reset_player(&Player, 200, GroundLevel);
                                 }
                         }
                 }
@@ -163,7 +147,10 @@ void step(object* Obj, unsigned int dt)
 {
         // printf("dt: %d\n", dt);
 
-        // GRAVITY
+        // UPDATE Xpos
+        Obj->Xpos += Obj->Xspeed;
+
+        // GRAVITY Ypos
         const int gravity = 4;
         Obj->Yspeed += gravity;    // always push downward
 
@@ -185,7 +172,6 @@ void step(object* Obj, unsigned int dt)
                         Obj->Ypos += amt;
                 }
         }
-
         // COLLISION HANDLING
         // if touching the ground
         const tile* Tile     = &Tiles[0];
@@ -204,11 +190,8 @@ void step(object* Obj, unsigned int dt)
 
         // print the nearest tile below player
         {
-                if (in_xrange && above_tile_top) {
-                        highlight_tile_id = 0;
-                } else {
-                        highlight_tile_id = -1;
-                }
+                highlight_tile_id = tile_below_object(Obj, Tiles, tile_count());
+                printf("id: %d\n", highlight_tile_id);
                 // printf("on tile: %d\n", highlight_tile_id);
         }
 
@@ -227,28 +210,27 @@ void step(object* Obj, unsigned int dt)
         }
 
         if (obj_bottom >= ScreenHeight) {
-                puts("RESET");
-                reset_player(Obj);
+                puts("AUTO-RESET");
+                reset_player(Obj, 200, GroundLevel);
         }
 }
 
 static void handle_input(const Uint8* Keys, object* Player, unsigned int dt)
 {
+        // NOTE:
+        //      DO *NOT* UPDATE POSITIONS (*pos) IN THIS FUNCITON!
+        //      *ONLY* UPDATE STATES and SPEEDS!
 
-        // if (Keys[SDL_SCANCODE_W])
-        //         Player->Ypos += Player->Yspeed;
-        // else if (Keys[SDL_SCANCODE_S])
-        //         Player->Ypos -= Player->Yspeed;
-
-        // movement
+        // lateral movement
         if (Keys[SDL_SCANCODE_A]) {
-                if (Player->Xspeed > 0) Player->Xspeed = -Player->Xspeed;    // face left
-                Player->Xpos += Player->Xspeed;
+                Player->Xspeed = -15;    // go left
         } else if (Keys[SDL_SCANCODE_D]) {
-                if (Player->Xspeed < 0) Player->Xspeed = -Player->Xspeed;    // face right
-                Player->Xpos += Player->Xspeed;
+                Player->Xspeed = +15;    // go right
+        } else {
+                Player->Xspeed = 0;
         }
 
+        // vertical movement
         if (Keys[SDL_SCANCODE_SPACE] && Player->State == STANDING) {
                 Player->State  = JUMPING;
                 Player->Yspeed = -Player->JumpSpeed;
