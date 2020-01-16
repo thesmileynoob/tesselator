@@ -22,7 +22,8 @@ SDL_Renderer* renderer = NULL;
 
 tile Tiles[] = {
     // X, Y, W, H, r,g,b
-    {100, GroundLevel, 200, 10, .Xspeed = 10, .Type = TILE, .r = 0, .g = 0, .b = 200},
+    {100, GroundLevel, 200, 10, .Xspeed = 5, .Yspeed = .5, .Type = TILE, .r = 0, .g = 0,
+     .b = 200},
     {300, GroundLevel + 200, 200, 10, .Type = TILE, .r = 0, .g = 0, .b = 200},
     {200, GroundLevel + 300, 500, 10, .Type = TILE, .r = 0, .g = 0, .b = 200},
     //     {500, GroundLevel - 200, 100, 200, /*rgb*/ 150, 50, 0},
@@ -33,6 +34,8 @@ tile Tiles[] = {
 static int init_sdl();
 static int deinit_sdl();
 static void handle_input(const Uint8* keys, object* player, unsigned int dt);
+static void step_player(object* Obj, unsigned int dt);
+static void step_tile(tile* Obj, unsigned int dt);
 static unsigned int get_dt();
 
 inline static int tile_count() { return sizeof(Tiles) / sizeof(tile); }
@@ -76,8 +79,8 @@ int main(int argc, char const* argv[])
 
                 // input
                 handle_input(SDL_GetKeyboardState(NULL), &Player, dt);
-                step(&Player, dt);
-                step(&Tiles[0], dt);
+                step_player(&Player, dt);
+                step_tile(&Tiles[0], dt);
 
                 // START DRAWING
                 SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
@@ -161,14 +164,22 @@ tile* get_tile_below_object(const object* Obj)
                 return &Tiles[id];
 }
 
-void step(object* Obj, unsigned int dt)
+void step_tile(tile* Obj, unsigned int dt)
+{
+        const int new_Xpos = Obj->Xpos + Obj->Xspeed;
+        const int new_Ypos = Obj->Ypos + Obj->Yspeed;
+        Obj->Xpos          = new_Xpos;
+        Obj->Ypos          = new_Ypos;
+}
+
+
+void step_player(object* Obj, unsigned int dt)
 {
         // check if there's a tile below object
         highlight_tile_id = tile_below_object(Obj, Tiles, tile_count());
-        printf("id: %d\n", highlight_tile_id);
 
         // TODO: get_tile_{left, right, top}
-        // Collect data required for the step
+        // Collect data required for the step_player
         const tile* TileBelow = get_tile_below_object(Obj);    // NULLABLE
         const int gravity     = 2;
 
@@ -214,11 +225,11 @@ void step(object* Obj, unsigned int dt)
                                 Obj->State  = IDLE;
                         }
                 }
-
-                // update x postion freely
-                Obj->Xpos = new_Xpos;
-                Obj->Ypos = new_Ypos;
         }
+
+        // NOTE: *SET* Obj->values here
+        Obj->Xpos = new_Xpos;
+        Obj->Ypos = new_Ypos;
 
 
         // win/lose condition
