@@ -8,8 +8,9 @@
 
 #include "object.h"
 
-const int ScreenWidth   = 1280;
-const int ScreenHeight  = 720;
+
+const int ScreenWidth  = 1280;
+const int ScreenHeight = 720;
 
 const int GroundLevel   = (int) ScreenHeight * 3 / 4;
 static int visual_debug = 1;
@@ -20,18 +21,7 @@ SDL_Renderer* renderer = NULL;
 static int init_sdl();
 static int deinit_sdl();
 static void handle_input(const Uint8* keys, object* player, unsigned int dt);
-
-/**
- * returns: dt in millisecs
- */
-static unsigned int get_dt()
-{
-        static unsigned int oldtime = 0;
-        const unsigned int newtime  = SDL_GetTicks();
-        const unsigned int dt       = newtime - oldtime;
-        oldtime                     = newtime;
-        return dt;
-}
+static unsigned int get_dt();
 
 
 int main(int argc, char const* argv[])
@@ -47,9 +37,9 @@ int main(int argc, char const* argv[])
         Player.Ypos   = GroundLevel - Player.Height;
         Player.State  = STANDING;
 
-        Player.Xspeed    = 20;
+        Player.Xspeed    = 15;
         Player.Yspeed    = 0;
-        Player.JumpSpeed = 1.2 *Player.Height;
+        Player.JumpSpeed = 1.2 * Player.Height;
         Player.r         = 255;
 
 
@@ -131,7 +121,7 @@ void step(object* Obj, unsigned int dt)
         // printf("dt: %d\n", dt);
 
         // GRAVITY
-        const int gravity = 5;
+        const int gravity = 4;
         Obj->Yspeed += gravity;
         // OTHER FORCES
         if (Obj->State == JUMPING) {
@@ -176,7 +166,7 @@ static void handle_input(const Uint8* Keys, object* Player, unsigned int dt)
                 if (Player->Xspeed > 0) Player->Xspeed *= -1;    // face left
                 Player->Xpos += Player->Xspeed;
         } else if (Keys[SDL_SCANCODE_D]) {
-                if (Player->Xspeed < 0) Player->Xspeed *= -1;// face right
+                if (Player->Xspeed < 0) Player->Xspeed *= -1;    // face right
                 Player->Xpos += Player->Xspeed;
         }
 
@@ -196,8 +186,8 @@ int init_sdl()
                 printf("SDL2 Error\n");
                 exit(1);
         }
-        err = SDL_CreateWindowAndRenderer(ScreenWidth, ScreenHeight, 0, &window,
-                                          &renderer);
+        err =
+            SDL_CreateWindowAndRenderer(ScreenWidth, ScreenHeight, 0, &window, &renderer);
         if (err) {
                 printf("SDL2 Window Error\n");
                 deinit_sdl();
@@ -210,4 +200,16 @@ int deinit_sdl()
 {
         SDL_Quit();
         return 0;
+}
+
+/**
+ * returns: dt in millisecs
+ */
+unsigned int get_dt()
+{
+        static unsigned int oldtime = 0;
+        const unsigned int newtime  = SDL_GetTicks();
+        const unsigned int dt       = newtime - oldtime;
+        oldtime                     = newtime;
+        return dt;
 }

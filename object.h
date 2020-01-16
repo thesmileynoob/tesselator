@@ -1,6 +1,9 @@
 #pragma once
 /*
-Object -> {rec}
+TODO
+- add obstacles in the level
+- collision detection
+- slow motion
 */
 
 enum obj_state {
