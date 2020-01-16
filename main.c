@@ -22,9 +22,9 @@ SDL_Renderer* renderer = NULL;
 
 tile Tiles[] = {
     // X, Y, W, H, r,g,b
-    {100, GroundLevel, 200, 10, /*rgb*/ 0, 0, 200},
-    {300, GroundLevel + 200, 200, 10, /*rgb*/ 0, 0, 200},
-    {200, GroundLevel + 300, 500, 10, /*rgb*/ 0, 0, 200},
+    {100, GroundLevel, 200, 10, .Xspeed = 10, .Type = TILE, .r = 0, .g = 0, .b = 200},
+    {300, GroundLevel + 200, 200, 10, .Type = TILE, .r = 0, .g = 0, .b = 200},
+    {200, GroundLevel + 300, 500, 10, .Type = TILE, .r = 0, .g = 0, .b = 200},
     //     {500, GroundLevel - 200, 100, 200, /*rgb*/ 150, 50, 0},
     //     {300, GroundLevel - 100, 100, 100, /*rgb*/ 150, 50, 0},
 };
@@ -76,6 +76,8 @@ int main(int argc, char const* argv[])
 
                 // input
                 handle_input(SDL_GetKeyboardState(NULL), &Player, dt);
+                step(&Player, dt);
+                step(&Tiles[0], dt);
 
                 // START DRAWING
                 SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
@@ -224,7 +226,7 @@ void step(object* Obj, unsigned int dt)
                 const int obj_bottom = Obj->Ypos + Obj->Height;
                 if (obj_bottom >= ScreenHeight) {
                         puts("AUTO-RESET");
-                        reset_player(Obj, 200, GroundLevel);
+                        if (Obj->Type == PLAYER) reset_player(Obj, 200, GroundLevel);
                 }
         }
 }
@@ -249,8 +251,6 @@ static void handle_input(const Uint8* Keys, object* Player, unsigned int dt)
                 Player->State  = JUMPING;
                 Player->Yspeed = -Player->JumpSpeed;
         }
-
-        step(Player, dt);
 }
 
 int init_sdl()

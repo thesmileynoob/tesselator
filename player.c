@@ -8,6 +8,7 @@ void reset_player(object* Player, int xpos, int ypos)
         result.Xpos   = xpos;
         result.Ypos   = ypos - result.Height;
         result.State  = IDLE;
+        result.Type   = PLAYER;
 
         result.Xspeed    = 15;
         result.Yspeed    = 0;

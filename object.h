@@ -13,6 +13,11 @@ enum obj_state {
         FALLING,
 };
 
+enum obj_type {
+        PLAYER,
+        TILE,
+};
+
 typedef struct object {
         int Xpos, Ypos;
         int Width, Height;
@@ -21,18 +26,11 @@ typedef struct object {
         int JumpSpeed;
 
         enum obj_state State;
+        enum obj_type Type;
 
         char r, g, b;
-} object;
 
-
-typedef struct tile {
-        int Xpos, Ypos;
-        int Width, Height;
-
-        char r, g, b;
-} tile;
-
+} object, tile;
 
 
 void reset_player(object* Player, int xpos, int ypos);
