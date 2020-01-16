@@ -117,9 +117,9 @@ int main(int argc, char const* argv[])
 
                 // visual debug
                 if (visual_debug) {
+                        // redraw player in different color
                         // printf("VDB: %d\n", visual_debug);
-                        SDL_SetRenderDrawColor(renderer, Player.r, Player.g, Player.b,
-                                               255);
+                        SDL_SetRenderDrawColor(renderer, 0, 200, 0, 255);
                         SDL_Rect PlayerRect = {Player.Xpos, Player.Ypos, Player.Width,
                                                Player.Height};
                         SDL_RenderFillRect(renderer, &PlayerRect);
@@ -165,21 +165,41 @@ void step(object* Obj, unsigned int dt)
         highlight_tile_id = tile_below_object(Obj, Tiles, tile_count());
         printf("id: %d\n", highlight_tile_id);
 
-        // NOTE: check if we have a tile below BEFORE updating the object
-        const tile* TileBelow = get_tile_below_object(Obj);
-        const int gravity     = 4;
-
         // TODO: get_tile_{left, right, top}
-        // update x postion freely
-        Obj->Xpos += Obj->Xspeed;
+        // Collect data required for the step
+        const tile* TileBelow = get_tile_below_object(Obj);    // NULLABLE
+        const int gravity     = 2;
+
+        // new values to be assigned to the boject
+        int new_Xpos, new_Ypos;
+        new_Xpos = Obj->Xpos + Obj->Xspeed;
+
         // apply gravity
         Obj->Yspeed += gravity;
+        new_Ypos = Obj->Ypos + Obj->Yspeed;
 
         if (Obj->State == IDLE) {
                 // printf("%d IDLE\n", dt);
-                // calculate new Ypos
-                int new_Ypos = Obj->Ypos + Obj->Yspeed;
+        }
 
+        if (Obj->State == JUMPING) {
+                if (Obj->Yspeed < 0) {
+                        // rising up
+                        // puts("JUMPING: rising up");
+                        int amt = abs(Obj->Yspeed);
+                        new_Ypos -= amt;
+                } else {
+                        // falling down
+                        // puts("JUMPING: falling down");
+                        int amt = abs(Obj->Yspeed);
+                        new_Ypos += amt;
+                }
+        }
+
+
+        // COLLISION HANDLING
+        // NOTE: Update positions *HERE* only
+        {
                 if (TileBelow) {
                         const int new_obj_bottom            = new_Ypos + Obj->Height;
                         const int tile_top                  = TileBelow->Ypos;
@@ -193,27 +213,10 @@ void step(object* Obj, unsigned int dt)
                         }
                 }
 
-                // update y position
+                // update x postion freely
+                Obj->Xpos = new_Xpos;
                 Obj->Ypos = new_Ypos;
         }
-
-        if (Obj->State == JUMPING) {
-                printf("JUMPING: ");
-                if (Obj->Yspeed < 0) {
-                        // going up
-                        // puts("going up");
-                        int amt = abs(Obj->Yspeed);
-                        Obj->Ypos -= amt;
-                } else {
-                        // going down
-                        // puts("going down");
-                        int amt = abs(Obj->Yspeed);
-                        Obj->Ypos += amt;
-                }
-        }
-
-        // COLLISION HANDLING
-        {}
 
 
         // win/lose condition
