@@ -27,6 +27,8 @@ typedef struct object {
         int Xspeed, Yspeed;
         int JumpSpeed;
 
+        int FaceRight;
+
         enum obj_state State;
         enum obj_type Type;
 

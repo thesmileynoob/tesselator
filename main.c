@@ -110,7 +110,9 @@ int main(int argc, char const* argv[])
                         // player
                         SDL_Rect PlayerRect = RECT((&Player));
                         SDL_Rect TexRect    = {0, 0, 512 / 8, 576 / 9};
-                        SDL_RenderCopy(renderer, Player.Texture, &TexRect, &PlayerRect);
+                        // SDL_RenderCopy(renderer, Player.Texture, &TexRect, &PlayerRect);
+                        SDL_RenderCopyEx(renderer, Player.Texture, &TexRect, &PlayerRect,
+                                         0, NULL, !Player.FaceRight);
                 }
 
                 // visual debug
@@ -137,7 +139,7 @@ int main(int argc, char const* argv[])
                 SDL_RenderPresent(renderer);
                 // END DRAWING
 
-                SDL_Delay(1000 / 60);// fps
+                SDL_Delay(1000 / 60);    // fps
         }
 
 
@@ -241,8 +243,10 @@ static void handle_input(const Uint8* Keys, object* Player, unsigned int dt)
         // lateral movement
         if (Keys[SDL_SCANCODE_A]) {
                 Player->Xspeed = -15;    // go left
+                Player->FaceRight = 0;    // face left
         } else if (Keys[SDL_SCANCODE_D]) {
                 Player->Xspeed = +15;    // go right
+                Player->FaceRight = 1;    // face rigth
         } else {
                 Player->Xspeed = 0;
         }
@@ -273,7 +277,7 @@ int init_sdl()
         // init sdl image
         const int flags   = IMG_INIT_JPG | IMG_INIT_PNG;
         const int initted = IMG_Init(flags);
-        if (initted & flags != flags) {
+        if ((initted & flags) != flags) {
                 puts("Failed to init SDL_Image");
                 deinit_sdl();
         }
