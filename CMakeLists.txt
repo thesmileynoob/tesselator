@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.0)
-project(c-chan VERSION 0.1.0)
+project(platformer VERSION 0.1.0)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_compile_options(-g -Wall -std=c11)

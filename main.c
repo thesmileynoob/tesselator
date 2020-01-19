@@ -39,10 +39,6 @@ static void step_tile(tile* Obj, unsigned int dt);
 static unsigned int get_dt();
 
 inline static int tile_count() { return sizeof(Tiles) / sizeof(tile); }
-inline static SDL_Rect tile_rect(const tile* Tile)
-{
-        return (SDL_Rect){Tile->Xpos, Tile->Ypos, Tile->Width, Tile->Height};
-}
 
 
 int main(int argc, char const* argv[])
@@ -91,10 +87,6 @@ int main(int argc, char const* argv[])
                         const int tc = tile_count();
                         for (int i = 0; i < tc; ++i) {
                                 tile* Tile = &Tiles[i];
-                                // SDL_Rect TileRect = {Tile->Xpos, Tile->Ypos,
-                                // Tile->Width,
-                                //                      Tile->Height};
-                                SDL_Rect TileRect = tile_rect(Tile);
                                 SDL_SetRenderDrawColor(renderer, Tile->r, Tile->g,
                                                        Tile->b, 255);
 
@@ -103,6 +95,7 @@ int main(int argc, char const* argv[])
                                         SDL_SetRenderDrawColor(renderer, Player.r,
                                                                Player.g, Player.b, 255);
                                 }
+                                const SDL_Rect TileRect = RECT(Tile);
                                 SDL_RenderFillRect(renderer, &TileRect);
                                 SDL_RenderDrawRect(renderer, &TileRect);
                         }
@@ -114,8 +107,7 @@ int main(int argc, char const* argv[])
                         // player
                         SDL_SetRenderDrawColor(renderer, Player.r, Player.g, Player.b,
                                                255);
-                        SDL_Rect PlayerRect = {Player.Xpos, Player.Ypos, Player.Width,
-                                               Player.Height};
+                        SDL_Rect PlayerRect = RECT((&Player));
                         SDL_RenderFillRect(renderer, &PlayerRect);
                         SDL_RenderDrawRect(renderer, &PlayerRect);
                 }
@@ -125,8 +117,7 @@ int main(int argc, char const* argv[])
                         // redraw player in different color
                         // printf("VDB: %d\n", visual_debug);
                         SDL_SetRenderDrawColor(renderer, 0, 200, 0, 255);
-                        SDL_Rect PlayerRect = {Player.Xpos, Player.Ypos, Player.Width,
-                                               Player.Height};
+                        SDL_Rect PlayerRect = RECT((&Player));
                         SDL_RenderFillRect(renderer, &PlayerRect);
                         SDL_RenderDrawRect(renderer, &PlayerRect);
 
@@ -214,13 +205,13 @@ void step_player(object* Obj, unsigned int dt)
         // NOTE: Update positions *HERE* only
         {
                 if (TileBelow) {
-                        const int new_obj_bottom            = new_Ypos + Obj->Height;
-                        const int tile_top                  = TileBelow->Ypos;
-                        const int will_intersect_tile_below = (new_obj_bottom > tile_top);
+                        const int new_obj_bottom = new_Ypos + Obj->Height;
+                        const int will_intersect_tile_below =
+                            (new_obj_bottom > TOP(TileBelow));
                         if (will_intersect_tile_below) {
                                 // stand on the tile.
                                 // set proper new_Ypos
-                                new_Ypos    = tile_top - Obj->Height;
+                                new_Ypos    = TOP(TileBelow) - Obj->Height;
                                 Obj->Yspeed = 0;
                                 Obj->State  = IDLE;
                         }
