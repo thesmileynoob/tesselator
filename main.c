@@ -13,9 +13,9 @@
 const int ScreenWidth  = 1280;
 const int ScreenHeight = 720;
 
-const int GroundLevel        = (int) ScreenHeight * 2 / 4;
-static int visual_debug      = 1;
-static int highlight_tile_id = -1;    // -1 == no highlight
+const int GroundLevel         = (int) ScreenHeight * 2 / 4;
+static int visual_debug       = 1;
+static tile* highlighted_tile = NULL;
 
 SDL_Window* window     = NULL;
 SDL_Renderer* renderer = NULL;
@@ -50,7 +50,7 @@ int main(int argc, char const* argv[])
 
         // player init
         object Player;
-        reset_player(&Player, 200, GroundLevel);
+        player_reset(&Player, 200, GroundLevel);
         Player.Texture = load_texture("../assets/dude.png");
 
 
@@ -69,7 +69,7 @@ int main(int argc, char const* argv[])
                                 // RESET
                                 if (sym == SDLK_r) {
                                         puts("MANUAL RESET");
-                                        reset_player(&Player, 200, GroundLevel);
+                                        player_reset(&Player, 200, GroundLevel);
                                 }
                         }
                 }
@@ -93,7 +93,7 @@ int main(int argc, char const* argv[])
                                 SDL_SetRenderDrawColor(renderer, Tile->r, Tile->g,
                                                        Tile->b, 255);
 
-                                if (highlight_tile_id == i) {
+                                if (highlighted_tile == Tile) {
                                         // paint it with player color
                                         SDL_SetRenderDrawColor(renderer, Player.r,
                                                                Player.g, Player.b, 255);
@@ -110,7 +110,8 @@ int main(int argc, char const* argv[])
                         // player
                         SDL_Rect PlayerRect = RECT((&Player));
                         SDL_Rect TexRect    = {0, 0, 512 / 8, 576 / 9};
-                        // SDL_RenderCopy(renderer, Player.Texture, &TexRect, &PlayerRect);
+                        // SDL_RenderCopy(renderer, Player.Texture, &TexRect,
+                        // &PlayerRect);
                         SDL_RenderCopyEx(renderer, Player.Texture, &TexRect, &PlayerRect,
                                          0, NULL, !Player.FaceRight);
                 }
@@ -147,15 +148,6 @@ int main(int argc, char const* argv[])
 }
 
 
-tile* get_tile_below_object(const object* Obj)
-{
-        int id = tile_below_object(Obj, Tiles, tile_count());
-        if (id == -1)
-                return NULL;
-        else
-                return &Tiles[id];
-}
-
 void step_tile(tile* Obj, unsigned int dt)
 {
         const int new_Xpos = Obj->Xpos + Obj->Xspeed;
@@ -168,11 +160,11 @@ void step_tile(tile* Obj, unsigned int dt)
 void step_player(object* Obj, unsigned int dt)
 {
         // check if there's a tile below object
-        highlight_tile_id = tile_below_object(Obj, Tiles, tile_count());
+        highlighted_tile = tile_below_object(Obj, Tiles, tile_count()); // NULLABLE
 
         // TODO: get_tile_{left, right, top}
         // Collect data required for the step_player
-        const tile* TileBelow = get_tile_below_object(Obj);    // NULLABLE
+        const tile* TileBelow = highlighted_tile;    // NULLABLE
         const int gravity     = 2;
 
         // new values to be assigned to the boject
@@ -229,7 +221,7 @@ void step_player(object* Obj, unsigned int dt)
                 const int obj_bottom = Obj->Ypos + Obj->Height;
                 if (obj_bottom >= ScreenHeight) {
                         puts("AUTO-RESET");
-                        if (Obj->Type == PLAYER) reset_player(Obj, 200, GroundLevel);
+                        if (Obj->Type == PLAYER) player_reset(Obj, 200, GroundLevel);
                 }
         }
 }
@@ -242,11 +234,11 @@ static void handle_input(const Uint8* Keys, object* Player, unsigned int dt)
 
         // lateral movement
         if (Keys[SDL_SCANCODE_A]) {
-                Player->Xspeed = -15;    // go left
-                Player->FaceRight = 0;    // face left
+                Player->Xspeed    = -15;    // go left
+                Player->FaceRight = 0;      // face left
         } else if (Keys[SDL_SCANCODE_D]) {
-                Player->Xspeed = +15;    // go right
-                Player->FaceRight = 1;    // face rigth
+                Player->Xspeed    = +15;    // go right
+                Player->FaceRight = 1;      // face rigth
         } else {
                 Player->Xspeed = 0;
         }

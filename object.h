@@ -38,12 +38,16 @@ typedef struct object {
 } object, tile;
 
 
+// Helpful macros
 #define TOP(Obj) Obj->Ypos
 #define BOTTOM(Obj) Obj->Ypos + Obj->Height
 #define LEFT(Obj) Obj->Xpos
 #define RIGHT(Obj) Obj->Xpos + Obj->Width
-#define RECT(Obj) (SDL_Rect){Obj->Xpos, Obj->Ypos, Obj->Width, Obj->Height}
+#define RECT(Obj) \
+        (SDL_Rect) { Obj->Xpos, Obj->Ypos, Obj->Width, Obj->Height }
 
-void reset_player(object* Player, int xpos, int ypos);
 
-int tile_below_object(const object*, const tile*, int TileCount);
+void player_reset(object* Player, int xpos, int ypos);
+
+// return NULL if a tile isn't present below
+tile* tile_below_object(const object* Obj, const tile* Tiles, int TileCount);
