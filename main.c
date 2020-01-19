@@ -10,10 +10,6 @@
 #include "object.h"
 
 
-const int ScreenWidth  = 1280;
-const int ScreenHeight = 720;
-
-const int GroundLevel         = (int) ScreenHeight * 2 / 4;
 static int visual_debug       = 1;
 static tile* highlighted_tile = NULL;
 

@@ -41,6 +41,10 @@ typedef struct object {
 
 } object, tile;
 
+// Globals
+#define ScreenWidth 1280
+#define ScreenHeight 720
+#define GroundLevel (int) ScreenHeight * 2 / 4
 
 // Helpful macros
 #define TOP(Obj) Obj->Ypos
