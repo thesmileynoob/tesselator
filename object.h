@@ -45,6 +45,7 @@ typedef struct object {
 #define ScreenWidth 1280
 #define ScreenHeight 720
 #define GroundLevel (int) ScreenHeight * 2 / 4
+#define gravity 2
 
 // Helpful macros
 #define TOP(Obj) Obj->Ypos

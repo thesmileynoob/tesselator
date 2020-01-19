@@ -41,6 +41,20 @@ static SDL_Texture* load_texture(const char* path);
 
 inline static int tile_count() { return sizeof(Tiles) / sizeof(tile); }
 
+// use this to change velocities
+inline static void apply_force(object* Obj, int fx, int fy)
+{
+        Obj->Xspeed += fx;
+        Obj->Yspeed += fy;
+}
+
+// use this to set positions
+inline static void set_pos(object* Obj, int x, int y)
+{
+        Obj->Xpos = x;
+        Obj->Ypos = y;
+}
+
 
 int main(int argc, char const* argv[])
 {
@@ -185,10 +199,8 @@ void step_tile(tile* Tile, unsigned int dt)
                 new_Ypos     = ScreenHeight - 30 - Tile->Height;
         }
 
-        // set new values
-        Tile->Xpos = new_Xpos;
-        Tile->Ypos = new_Ypos;
-        // printf("pos: %3d, %3d\n", Tile->Xpos, Tile->Ypos);
+        // update position
+        set_pos(Tile, new_Xpos, new_Ypos);
 }
 
 
@@ -197,17 +209,15 @@ void step_player(object* Obj, unsigned int dt)
         // check if there's a tile below object
         highlighted_tile = tile_below_object(Obj, Tiles, tile_count());    // NULLABLE
 
-        // TODO: get_tile_{left, right, top}
         // Collect data required for the step_player
         const tile* TileBelow = highlighted_tile;    // NULLABLE
-        const int gravity     = 2;
 
         // new values to be assigned to the boject
         int new_Xpos, new_Ypos;
         new_Xpos = Obj->Xpos + Obj->Xspeed;
 
         // apply gravity
-        Obj->Yspeed += gravity;
+        apply_force(Obj, 0, gravity);
         new_Ypos = Obj->Ypos + Obj->Yspeed;
 
         if (Obj->State == IDLE) {
@@ -246,10 +256,8 @@ void step_player(object* Obj, unsigned int dt)
                 }
         }
 
-        // NOTE: *SET* Obj->values here
-        Obj->Xpos = new_Xpos;
-        Obj->Ypos = new_Ypos;
-
+        // update positons
+        set_pos(Obj, new_Xpos, new_Ypos);
 
         // win/lose condition
         {
