@@ -1,4 +1,6 @@
 #pragma once
+#include <SDL2/SDL.h>
+
 /*
 TODO
 - add obstacles in the level
@@ -29,6 +31,7 @@ typedef struct object {
         enum obj_type Type;
 
         char r, g, b;
+        SDL_Texture* Texture;
 
 } object, tile;
 

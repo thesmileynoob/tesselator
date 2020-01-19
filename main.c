@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 #include "object.h"
 
@@ -37,6 +38,7 @@ static void handle_input(const Uint8* keys, object* player, unsigned int dt);
 static void step_player(object* Obj, unsigned int dt);
 static void step_tile(tile* Obj, unsigned int dt);
 static unsigned int get_dt();
+static SDL_Texture* load_texture(const char* path);
 
 inline static int tile_count() { return sizeof(Tiles) / sizeof(tile); }
 
@@ -49,6 +51,7 @@ int main(int argc, char const* argv[])
         // player init
         object Player;
         reset_player(&Player, 200, GroundLevel);
+        Player.Texture = load_texture("../assets/dude.png");
 
 
         int running = 1;
@@ -105,20 +108,16 @@ int main(int argc, char const* argv[])
                 // objects
                 {
                         // player
-                        SDL_SetRenderDrawColor(renderer, Player.r, Player.g, Player.b,
-                                               255);
                         SDL_Rect PlayerRect = RECT((&Player));
-                        SDL_RenderFillRect(renderer, &PlayerRect);
-                        SDL_RenderDrawRect(renderer, &PlayerRect);
+                        SDL_Rect TexRect    = {0, 0, 512 / 8, 576 / 9};
+                        SDL_RenderCopy(renderer, Player.Texture, &TexRect, &PlayerRect);
                 }
 
                 // visual debug
                 if (visual_debug) {
-                        // redraw player in different color
-                        // printf("VDB: %d\n", visual_debug);
+                        // draw green border around player
                         SDL_SetRenderDrawColor(renderer, 0, 200, 0, 255);
                         SDL_Rect PlayerRect = RECT((&Player));
-                        SDL_RenderFillRect(renderer, &PlayerRect);
                         SDL_RenderDrawRect(renderer, &PlayerRect);
 
                         // draw velocity vector
@@ -138,7 +137,7 @@ int main(int argc, char const* argv[])
                 SDL_RenderPresent(renderer);
                 // END DRAWING
 
-                SDL_Delay(1000 / 60);
+                SDL_Delay(1000 / 60);// fps
         }
 
 
@@ -257,6 +256,7 @@ static void handle_input(const Uint8* Keys, object* Player, unsigned int dt)
 
 int init_sdl()
 {
+        // init SDL proper
         int err = 0;
         err     = SDL_Init(SDL_INIT_EVERYTHING);
         if (err) {
@@ -270,11 +270,21 @@ int init_sdl()
                 deinit_sdl();
         }
 
+        // init sdl image
+        const int flags   = IMG_INIT_JPG | IMG_INIT_PNG;
+        const int initted = IMG_Init(flags);
+        if (initted & flags != flags) {
+                puts("Failed to init SDL_Image");
+                deinit_sdl();
+        }
+
+
         return 0;
 }
 
 int deinit_sdl()
 {
+        IMG_Quit();
         SDL_Quit();
         return 0;
 }
@@ -289,4 +299,24 @@ unsigned int get_dt()
         const unsigned int dt       = newtime - oldtime;
         oldtime                     = newtime;
         return dt;
+}
+
+static SDL_Texture* load_texture(const char* path)
+{
+        SDL_Surface* surf = IMG_Load(path);
+        if (surf == NULL) {
+                printf("Failed to load image: %s\n", path);
+                deinit_sdl();
+                exit(1);
+        }
+        SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surf);
+        if (texture == NULL) {
+                printf("Failed to convert SDL_Surface to SDL_Texture: %s\n", path);
+                printf("ERROR: %s\n", SDL_GetError());
+                SDL_FreeSurface(surf);
+                deinit_sdl();
+                exit(1);
+        }
+        SDL_FreeSurface(surf);
+        return texture;
 }
