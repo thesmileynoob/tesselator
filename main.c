@@ -20,16 +20,19 @@ static tile* highlighted_tile = NULL;
 SDL_Window* window     = NULL;
 SDL_Renderer* renderer = NULL;
 
+// temp helper macro
+#define TILE(x, y, w, xs, ys)                               \
+        {                                                   \
+                x, y, w, 15, xs, ys, .Type = TILE, .b = 200 \
+        }
 
 tile Tiles[] = {
     // X, Y, W, H, r,g,b
-    {100, GroundLevel, 200, 10, .Xspeed = 5, .Yspeed = .5, .Type = TILE, .r = 0, .g = 0,
-     .b = 200},
-    {300, GroundLevel + 200, 200, 10, .Type = TILE, .r = 0, .g = 0, .b = 200},
-    {200, GroundLevel + 300, 500, 10, .Type = TILE, .r = 0, .g = 0, .b = 200},
-    //     {500, GroundLevel - 200, 100, 200, /*rgb*/ 150, 50, 0},
-    //     {300, GroundLevel - 100, 100, 100, /*rgb*/ 150, 50, 0},
+    TILE(100, GroundLevel - 200, 500, 4, 2),  TILE(300, GroundLevel - 100, 300, 1, -1),
+    TILE(200, GroundLevel, 600, -2, 0),       TILE(200, GroundLevel + 130, 200, -2, 0),
+    TILE(200, GroundLevel + 210, 100, -2, 0),
 };
+#undef TILE    // Cannot be used after this
 
 
 static int init_sdl();
@@ -78,8 +81,16 @@ int main(int argc, char const* argv[])
 
                 // input
                 handle_input(SDL_GetKeyboardState(NULL), &Player, dt);
-                step_player(&Player, dt);
-                step_tile(&Tiles[0], dt);
+
+                // step
+                {
+                        step_player(&Player, dt);
+                        const int tilecount = tile_count();
+                        for (int i = 0; i < tilecount; i++) {
+                                step_tile(&Tiles[i], dt);
+                        }
+                }
+
 
                 // START DRAWING
                 SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
@@ -148,19 +159,47 @@ int main(int argc, char const* argv[])
 }
 
 
-void step_tile(tile* Obj, unsigned int dt)
+void step_tile(tile* Tile, unsigned int dt)
 {
-        const int new_Xpos = Obj->Xpos + Obj->Xspeed;
-        const int new_Ypos = Obj->Ypos + Obj->Yspeed;
-        Obj->Xpos          = new_Xpos;
-        Obj->Ypos          = new_Ypos;
+        int new_Xpos = Tile->Xpos + Tile->Xspeed;
+        int new_Ypos = Tile->Ypos + Tile->Yspeed;
+
+        const int new_right_edge  = new_Xpos + Tile->Width;
+        const int new_left_edge   = new_Xpos;
+        const int new_top_edge    = new_Ypos;
+        const int new_bottom_edge = new_Ypos + Tile->Height;
+
+        // collision
+        if (new_right_edge >= ScreenWidth) {
+                Tile->Xspeed = -Tile->Xspeed;
+                new_Xpos     = new_right_edge - Tile->Width;
+        }
+        if (new_left_edge < 0) {
+                Tile->Xspeed = -Tile->Xspeed;
+                new_Xpos     = 0;
+        }
+
+        // TODO: define magic numbers(30 etc.) SOMEWHERE!
+        if (new_top_edge < 30) {
+                Tile->Yspeed = -Tile->Yspeed;
+                new_Ypos     = 30;
+        }
+        if (new_bottom_edge >= ScreenHeight - 30) {
+                Tile->Yspeed = -Tile->Yspeed;
+                new_Ypos     = ScreenHeight - 30 - Tile->Height;
+        }
+
+        // set new values
+        Tile->Xpos = new_Xpos;
+        Tile->Ypos = new_Ypos;
+        // printf("pos: %3d, %3d\n", Tile->Xpos, Tile->Ypos);
 }
 
 
 void step_player(object* Obj, unsigned int dt)
 {
         // check if there's a tile below object
-        highlighted_tile = tile_below_object(Obj, Tiles, tile_count()); // NULLABLE
+        highlighted_tile = tile_below_object(Obj, Tiles, tile_count());    // NULLABLE
 
         // TODO: get_tile_{left, right, top}
         // Collect data required for the step_player
@@ -218,8 +257,7 @@ void step_player(object* Obj, unsigned int dt)
 
         // win/lose condition
         {
-                const int obj_bottom = Obj->Ypos + Obj->Height;
-                if (obj_bottom >= ScreenHeight) {
+                if (BOTTOM(Obj) >= ScreenHeight) {
                         puts("AUTO-RESET");
                         if (Obj->Type == PLAYER) player_reset(Obj, 200, GroundLevel);
                 }

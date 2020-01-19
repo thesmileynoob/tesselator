@@ -1,11 +1,15 @@
 #pragma once
 #include <SDL2/SDL.h>
 
-/*
-TODO
+/**
+TODO:
 - add obstacles in the level
 - collision detection
 - slow motion
+
+BUGS:
+- player falls through when standing on a tile
+  that is moving up.
 */
 
 enum obj_state {
