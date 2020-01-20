@@ -41,11 +41,25 @@ typedef struct object {
 
 } object, tile;
 
-// Globals
-#define ScreenWidth 1280
-#define ScreenHeight 720
-#define GroundLevel (int) ScreenHeight * 2 / 4
-#define gravity 2
+
+typedef struct gamestate {
+        // env
+        int ScreenWidth;
+        int ScreenHeight;
+        int GroundLevel;
+        int Gravity;
+        int Running;
+
+        // objects
+        object* Player;
+        tile* Tiles;
+        int TileCount;
+
+        // dev/debug
+        int visual_debug;
+        tile* highlighted_tile;
+} gamestate;
+
 
 // Helpful macros
 #define TOP(Obj) Obj->Ypos
