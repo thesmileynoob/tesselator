@@ -6,6 +6,7 @@ TODO:
 - add obstacles in the level
 - collision detection
 - slow motion
+- load and save gamestate
 
 BUGS:
 - player falls through when standing on a tile
@@ -79,8 +80,13 @@ typedef struct gamestate {
 
 void player_reset(object* Player, int xpos, int ypos);
 
+unsigned int get_dt();
+void step_player(gamestate* gs, unsigned int dt);
+void step_tiles(gamestate* gs, unsigned int dt);
+
 // return NULL if a tile isn't present below
 tile* tile_below_object(const object* Obj, const tile* Tiles, int TileCount);
+static SDL_Texture* load_texture(const char* path);
 
 // physics.c
 void apply_force(object* Obj, int fx, int fy);

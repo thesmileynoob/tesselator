@@ -10,27 +10,26 @@
 #include "object.h"
 
 
-SDL_Window* window     = NULL;
-SDL_Renderer* renderer = NULL;
-
+static SDL_Window* _window     = NULL;
+static SDL_Renderer* _renderer = NULL;
 static gamestate gs;
 
 
-int init_sdl(int Width, int Height, SDL_Window** outWin, SDL_Renderer** outRenderer);
-static int deinit_sdl();
+/** the FIRST function to be called */
+static int _init_sdl(int Width, int Height, SDL_Window** outWin,
+                     SDL_Renderer** outRenderer);
+static int _deinit_sdl();
 static void handle_input(const Uint8* keys, object* player, unsigned int dt);
-void step_player(gamestate* gs, unsigned int dt);
-void step_tiles(gamestate* gs, unsigned int dt);
-static unsigned int get_dt();
-static SDL_Texture* load_texture(const char* path);
+static int save_game_state();
 
 
+/** here we go! */
 int main(int argc, char const* argv[])
 {
-        init_sdl(1280, 720, &window, &renderer);
-        assert(window && renderer);
+        _init_sdl(1280, 720, &_window, &_renderer);
+        assert(_window && _renderer);
 
-        // gamestate
+        // gamestate init
         gs.ScreenWidth  = 1280;
         gs.ScreenHeight = 720;
         gs.GroundLevel  = (int) gs.ScreenHeight * 2 / 4;
@@ -57,7 +56,7 @@ int main(int argc, char const* argv[])
 #undef TILE    // Cannot be used after this
 
         gs.Tiles            = _Tiles;
-        gs.TileCount        = 5;
+        gs.TileCount        = 5;    // TODO: magic number
         gs.visual_debug     = 1;
         gs.highlighted_tile = NULL;
 
@@ -71,6 +70,8 @@ int main(int argc, char const* argv[])
                         if (ev.type == SDL_KEYUP) {
                                 // on key release
                                 if (sym == SDLK_v) { gs.visual_debug = !gs.visual_debug; }
+                                if (sym == SDLK_k) { save_game_state(); }
+                                if (sym == SDLK_l) { load_game_state(); }
                         } else if (ev.type == SDL_KEYDOWN) {
                                 // on key press
                                 // RESET
@@ -94,24 +95,24 @@ int main(int argc, char const* argv[])
 
 
                 // START DRAWING
-                SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-                SDL_RenderClear(renderer);
+                SDL_SetRenderDrawColor(_renderer, 255, 255, 255, 255);
+                SDL_RenderClear(_renderer);
 
                 // level
                 {
                         for (int i = 0; i < gs.TileCount; ++i) {
                                 tile* Tile = &gs.Tiles[i];
-                                SDL_SetRenderDrawColor(renderer, Tile->r, Tile->g,
+                                SDL_SetRenderDrawColor(_renderer, Tile->r, Tile->g,
                                                        Tile->b, 255);
 
                                 if (gs.highlighted_tile == Tile) {
                                         // paint it with player color
-                                        SDL_SetRenderDrawColor(renderer, Player->r,
+                                        SDL_SetRenderDrawColor(_renderer, Player->r,
                                                                Player->g, Player->b, 255);
                                 }
                                 const SDL_Rect TileRect = RECT(Tile);
-                                SDL_RenderFillRect(renderer, &TileRect);
-                                SDL_RenderDrawRect(renderer, &TileRect);
+                                SDL_RenderFillRect(_renderer, &TileRect);
+                                SDL_RenderDrawRect(_renderer, &TileRect);
                         }
                 }
 
@@ -121,16 +122,16 @@ int main(int argc, char const* argv[])
                         // player
                         SDL_Rect PlayerRect = RECT(Player);
                         SDL_Rect TexRect    = {0, 0, 512 / 8, 576 / 9};
-                        SDL_RenderCopyEx(renderer, Player->Texture, &TexRect, &PlayerRect,
-                                         0, NULL, !Player->FaceRight);
+                        SDL_RenderCopyEx(_renderer, Player->Texture, &TexRect,
+                                         &PlayerRect, 0, NULL, !Player->FaceRight);
                 }
 
                 // visual debug
                 if (gs.visual_debug) {
                         // draw green border around player
-                        SDL_SetRenderDrawColor(renderer, 0, 200, 0, 255);
+                        SDL_SetRenderDrawColor(_renderer, 0, 200, 0, 255);
                         SDL_Rect PlayerRect = RECT(Player);
-                        SDL_RenderDrawRect(renderer, &PlayerRect);
+                        SDL_RenderDrawRect(_renderer, &PlayerRect);
 
                         // draw velocity vector
                         const int scale = 2;
@@ -141,12 +142,12 @@ int main(int argc, char const* argv[])
                         const int y2 = y1 + Player->Yspeed * scale;
 
 
-                        SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
-                        SDL_RenderDrawLine(renderer, x1, y1, x2, y2);
+                        SDL_SetRenderDrawColor(_renderer, 255, 0, 255, 255);
+                        SDL_RenderDrawLine(_renderer, x1, y1, x2, y2);
                 }
 
 
-                SDL_RenderPresent(renderer);
+                SDL_RenderPresent(_renderer);
                 // END DRAWING
 
                 SDL_Delay(1000 / 60);    // fps
@@ -181,7 +182,7 @@ static void handle_input(const Uint8* Keys, object* Player, unsigned int dt)
         }
 }
 
-int init_sdl(int Width, int Height, SDL_Window** outWin, SDL_Renderer** outRenderer)
+int _init_sdl(int Width, int Height, SDL_Window** outWin, SDL_Renderer** outRenderer)
 {
         // init SDL proper
         int err = 0;
@@ -193,7 +194,7 @@ int init_sdl(int Width, int Height, SDL_Window** outWin, SDL_Renderer** outRende
         err = SDL_CreateWindowAndRenderer(Width, Height, 0, outWin, outRenderer);
         if (err) {
                 printf("SDL2 Window Error\n");
-                deinit_sdl();
+                _deinit_sdl();
         }
 
         // init sdl image
@@ -201,13 +202,13 @@ int init_sdl(int Width, int Height, SDL_Window** outWin, SDL_Renderer** outRende
         const int initted = IMG_Init(flags);
         if ((initted & flags) != flags) {
                 puts("Failed to init SDL_Image");
-                deinit_sdl();
+                _deinit_sdl();
         }
 
         return 0;
 }
 
-int deinit_sdl()
+int _deinit_sdl()
 {
         IMG_Quit();
         SDL_Quit();
@@ -231,17 +232,69 @@ static SDL_Texture* load_texture(const char* path)
         SDL_Surface* surf = IMG_Load(path);
         if (surf == NULL) {
                 printf("Failed to load image: %s\n", path);
-                deinit_sdl();
+                _deinit_sdl();
                 exit(1);
         }
-        SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surf);
+        SDL_Texture* texture = SDL_CreateTextureFromSurface(_renderer, surf);
         if (texture == NULL) {
                 printf("Failed to convert SDL_Surface to SDL_Texture: %s\n", path);
                 printf("ERROR: %s\n", SDL_GetError());
                 SDL_FreeSurface(surf);
-                deinit_sdl();
+                _deinit_sdl();
                 exit(1);
         }
         SDL_FreeSurface(surf);
         return texture;
+}
+
+
+#define SAVEFILENAME "gamestate.bin"
+// savefile format: [gamestate, object Player, object[TileCount] Tiles]
+int save_game_state()
+{
+        remove(SAVEFILENAME);
+        FILE* f = fopen(SAVEFILENAME, "wb");
+
+        // write gs
+        size_t size = fwrite(&gs, sizeof(gamestate), 1, f);
+        if (size != 1) { printf("save error1\n"); }
+
+        // write Player
+        size = fwrite(gs.Player, sizeof(*gs.Player), 1, f);
+        if (size != 1) { printf("save error2\n"); }
+
+        // write Tiles
+        size = fwrite(gs.Tiles, sizeof(tile), gs.TileCount, f);
+        if (size != gs.TileCount) { printf("save error3\n"); }
+
+        fclose(f);
+        puts("GAME SAVED!");
+
+        return 0;
+}
+
+
+int load_game_state()
+{
+        FILE* f = fopen(SAVEFILENAME, "rb");
+        if (f == NULL) {
+                // no save file
+                return 1;
+        }
+
+        // read gamestate
+        size_t size = fread(&gs, sizeof(gamestate), 1, f);
+        if (size != 1) { printf("load error1\n"); }
+
+        // read Player
+        size = fread(gs.Player, sizeof(*gs.Player), 1, f);
+        if (size != 1) { printf("load error2\n"); }
+
+        // read Tiles
+        size = fread(gs.Tiles, sizeof(tile), gs.TileCount, f);
+        if (size != gs.TileCount) { printf("load error3\n"); }
+
+        fclose(f);
+        puts("GAME LOADED!");
+        return 0;
 }
