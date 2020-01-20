@@ -10,6 +10,8 @@ add_executable(debug
         main.c
         player.c
         tile.c
+        step.c
+        physics.c
 
         scratchpad.c
 )

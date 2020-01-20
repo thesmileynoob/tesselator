@@ -19,6 +19,13 @@ enum obj_state {
         FALLING,
 };
 
+static const char* obj_state_str[] = {
+    "IDLE",
+    "JUMPING",
+    "RUNNING",
+    "FALLING",
+};
+
 enum obj_type {
         PLAYER,
         TILE,
@@ -74,3 +81,10 @@ void player_reset(object* Player, int xpos, int ypos);
 
 // return NULL if a tile isn't present below
 tile* tile_below_object(const object* Obj, const tile* Tiles, int TileCount);
+
+// physics.c
+void apply_force(object* Obj, int fx, int fy);
+void set_pos(object* Obj, int x, int y);
+void set_state(object* Obj, enum obj_state State);
+void jump(object* Obj, gamestate* gs);
+void idle(object* Obj, const tile* TileBelow);
