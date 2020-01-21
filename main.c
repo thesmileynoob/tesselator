@@ -23,13 +23,14 @@ static void handle_input(const Uint8* keys, object* player, unsigned int dt);
 static int save_game_state();
 static int load_game_state();
 
+
 // return SDL_Rect of sprite at (col, row)
 static SDL_Rect texture_rect(unsigned int col, unsigned int row)
 {
-        const int texwidth   = 512;
-        const int texheight  = 576;
-        const int rowcount   = 9;
-        const int colcount   = 8;
+        const int texwidth   = 80;
+        const int texheight  = 40;
+        const int rowcount   = 5;
+        const int colcount   = 5;
         const int rectwidth  = texwidth / colcount;
         const int rectheight = texheight / rowcount;
 
@@ -54,16 +55,24 @@ int main(int argc, char const* argv[])
         // gamestate init
         gs.ScreenWidth  = SW;
         gs.ScreenHeight = SH;
-        gs.GroundLevel  = (int) gs.ScreenHeight * 3.3 / 4;
         gs.Running      = 1;
+
+        // level
+        gs.GroundLevel = (int) gs.ScreenHeight * 3.3 / 4;
+        // TODO remove magic numbers
+        // (16,8) is (width,height) of a tile texture
+        gs.TileWidth  = 10 * 16;
+        gs.TileHeight = 10 * 8;
+        gs.TileXgap   = 1 * 16;
+        gs.TileYgap   = 1 * 8;
 #undef SW
 #undef SH
 
         // player init
         gs.Player       = calloc(1, sizeof(*gs.Player));
         object* Player  = gs.Player;    // alias
-        Player->Width   = 150;
-        Player->Height  = 30;
+        Player->Width   = 155;
+        Player->Height  = 35;
         Player->Xpos    = gs.ScreenWidth / 2;
         Player->Ypos    = gs.GroundLevel;
         Player->Texture = load_texture("../assets/tiles.png");
@@ -72,12 +81,15 @@ int main(int argc, char const* argv[])
 #define TILE(x, y) {x, y, 100, 30, .Type = TILE, .State = IDLE, .Texture = NULL}
         tile _Tiles[] = {
             // X, Y, W, H, r,g,b
-            TILE(0, 0), TILE(0, 120), TILE(0, 220), TILE(0, 320), TILE(0, 420),
+            TILE(0, 0),   TILE(110, 0),   TILE(220, 0),   TILE(330, 0),   TILE(440, 0),
+            TILE(0, 40),  TILE(110, 40),  TILE(220, 40),  TILE(330, 40),  TILE(440, 40),
+            TILE(0, 80),  TILE(110, 80),  TILE(220, 80),  TILE(330, 80),  TILE(440, 80),
+            TILE(0, 120), TILE(110, 120), TILE(220, 120), TILE(330, 120), TILE(440, 120),
         };
 #undef TILE    // Cannot be used after this
 
         gs.Tiles            = _Tiles;
-        gs.TileCount        = 5;    // TODO: magic number
+        gs.TileCount        = 5 * 4;    // TODO: magic number
         gs.visual_debug     = 1;
         gs.highlighted_tile = NULL;
 
@@ -116,7 +128,7 @@ int main(int argc, char const* argv[])
 
 
                 // START DRAWING
-                SDL_SetRenderDrawColor(_renderer, 255, 255, 255, 255);
+                SDL_SetRenderDrawColor(_renderer, 50, 50, 50, 255);
                 SDL_RenderClear(_renderer);
 
                 // level
@@ -124,7 +136,6 @@ int main(int argc, char const* argv[])
                         for (int i = 0; i < gs.TileCount; ++i) {
                                 tile* Tile = &gs.Tiles[i];
                                 SDL_SetRenderDrawColor(_renderer, 255, 0, 0, 255);
-
                                 // if (gs.highlighted_tile == Tile) {
                                 //         // paint it with player color
                                 //         SDL_SetRenderDrawColor(_renderer, Player->r,
@@ -132,8 +143,9 @@ int main(int argc, char const* argv[])
                                 //                                255);
                                 // }
                                 const SDL_Rect TileRect = RECT(Tile);
-                                SDL_RenderFillRect(_renderer, &TileRect);
-                                SDL_RenderDrawRect(_renderer, &TileRect);
+                                SDL_Rect TexRect        = texture_rect(0, 0);
+                                SDL_RenderCopy(_renderer, Player->Texture, &TexRect,
+                                               &TileRect);
                         }
                 }
 
@@ -142,29 +154,8 @@ int main(int argc, char const* argv[])
                 {
                         // player
                         SDL_Rect PlayerRect = RECT(Player);
-                        // SDL_Rect TexRect    = {0, 0, texwidth / cols, texheight /
-                        // rows};
-                        // static int time = 0;
-                        // static int col  = 4;
-                        // static int row  = 0;
-                        // time += dt;
-                        // if (time > 100) {
-                        //         time = 0;
-                        //         ++col;
-                        //         if (col > 7 && row == 0) {
-                        //                 col = 0;
-                        //                 row = 1;
-                        //         }
-                        //         if (col > 4 && row == 1) {
-                        //                 col = 4;
-                        //                 row = 0;
-                        //         }
-                        // }
-                        // SDL_Rect TexRect = texture_rect(col, row);
-                        // SDL_RenderCopyEx(_renderer, Player->Texture, &TexRect,
-                        //                  &PlayerRect, 0, NULL, !Player->FaceRight);
-                        SDL_RenderFillRect(_renderer, &PlayerRect);
-                        SDL_RenderDrawRect(_renderer, &PlayerRect);
+                        SDL_Rect TexRect    = texture_rect(0, 1);
+                        SDL_RenderCopy(_renderer, Player->Texture, &TexRect, &PlayerRect);
                 }
 
                 // visual debug
@@ -201,10 +192,6 @@ int main(int argc, char const* argv[])
 
 static void handle_input(const Uint8* Keys, object* Player, unsigned int dt)
 {
-        // NOTE:
-        //      DO *NOT* UPDATE POSITIONS (*pos) IN THIS FUNCITON!
-        //      *ONLY* UPDATE STATES and SPEEDS!
-
         // lateral movement
         const int playerspeed = 15;
         if (Keys[SDL_SCANCODE_A]) {
@@ -213,7 +200,7 @@ static void handle_input(const Uint8* Keys, object* Player, unsigned int dt)
                 Player->Xpos += playerspeed;    // move right
         }
 
-        // vertical movement
+        // actions
         if (Keys[SDL_SCANCODE_SPACE] && Player->State == IDLE) { puts("launch ball!"); }
 
         // collision detection

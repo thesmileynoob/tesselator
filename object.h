@@ -3,8 +3,6 @@
 
 /**
 TODO:
-- convert player to a breakout tile
-- use breakout tiles
 - fix level dimension and other minor details
 - add ball and its physics
 - collision detection
@@ -49,7 +47,13 @@ typedef struct gamestate {
         int ScreenWidth;
         int ScreenHeight;
         int Running;    // game running flag
-        int GroundLevel; // separate player from the rest of tile area
+
+        // level
+        int GroundLevel;    // separate player from the rest of tile area
+        int TileWidth;
+        int TileHeight;
+        int TileXgap;
+        int TileYgap;
 
         // objects
         object* Player;
