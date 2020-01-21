@@ -19,7 +19,7 @@ static gamestate gs;
 static int _init_sdl(int Width, int Height, SDL_Window** outWin,
                      SDL_Renderer** outRenderer);
 static int _deinit_sdl();
-static void handle_input(const Uint8* keys, object* player, unsigned int dt);
+static void update_state(unsigned int dt);
 static int save_game_state();
 static int load_game_state();
 
@@ -69,7 +69,8 @@ int main(int argc, char const* argv[])
 #undef SH
 
         // player init
-        gs.Player       = calloc(1, sizeof(*gs.Player));
+        gs.Player = calloc(1, sizeof(*gs.Player));
+        assert(gs.Player);
         object* Player  = gs.Player;    // alias
         Player->Width   = 155;
         Player->Height  = 35;
@@ -92,6 +93,13 @@ int main(int argc, char const* argv[])
         gs.TileCount        = 5 * 4;    // TODO: magic number
         gs.visual_debug     = 1;
         gs.highlighted_tile = NULL;
+
+        // ball init
+        object* Ball = calloc(1, sizeof(object));
+        Ball->Width  = 25;
+        Ball->Height = 25;
+        Ball->Type   = BALL;
+        Ball->State  = MOVING;
 
 
         while (gs.Running) {
@@ -117,14 +125,8 @@ int main(int argc, char const* argv[])
 
                 unsigned int dt = get_dt();
 
-                // input
-                handle_input(SDL_GetKeyboardState(NULL), Player, dt);
-
-                // step
-                {
-                        // step_player(&gs, dt);
-                        // step_tiles(&gs, dt);
-                }
+                // handle input and update state
+                update_state(dt);
 
 
                 // START DRAWING
@@ -134,7 +136,7 @@ int main(int argc, char const* argv[])
                 // level
                 {
                         for (int i = 0; i < gs.TileCount; ++i) {
-                                tile* Tile = &gs.Tiles[i];
+                                const tile* Tile = &gs.Tiles[i];
                                 SDL_SetRenderDrawColor(_renderer, 255, 0, 0, 255);
                                 // if (gs.highlighted_tile == Tile) {
                                 //         // paint it with player color
@@ -142,8 +144,8 @@ int main(int argc, char const* argv[])
                                 //                                Player->g, Player->b,
                                 //                                255);
                                 // }
-                                const SDL_Rect TileRect = RECT(Tile);
-                                SDL_Rect TexRect        = texture_rect(0, 0);
+                                SDL_Rect TileRect = RECT(Tile);
+                                SDL_Rect TexRect  = texture_rect(0, 0);
                                 SDL_RenderCopy(_renderer, Player->Texture, &TexRect,
                                                &TileRect);
                         }
@@ -156,6 +158,11 @@ int main(int argc, char const* argv[])
                         SDL_Rect PlayerRect = RECT(Player);
                         SDL_Rect TexRect    = texture_rect(0, 1);
                         SDL_RenderCopy(_renderer, Player->Texture, &TexRect, &PlayerRect);
+
+                        // ball
+                        SDL_Rect BallRect = RECT(Ball);
+                        SDL_SetRenderDrawColor(_renderer, 255, 255, 255, 255);
+                        SDL_RenderFillRect(_renderer, &BallRect);
                 }
 
                 // visual debug
@@ -190,23 +197,59 @@ int main(int argc, char const* argv[])
 }
 
 
-static void handle_input(const Uint8* Keys, object* Player, unsigned int dt)
+static void update_state(unsigned int dt)
 {
+        const Uint8* Keys = SDL_GetKeyboardState(NULL);
+        // START HANDLE INPUT
         // lateral movement
+        object* Player = gs.Player;
         const int playerspeed = 15;
         if (Keys[SDL_SCANCODE_A]) {
                 Player->Xpos -= playerspeed;    // move left
-        } else if (Keys[SDL_SCANCODE_D]) {
+        }
+        if (Keys[SDL_SCANCODE_D]) {
                 Player->Xpos += playerspeed;    // move right
         }
+
 
         // actions
         if (Keys[SDL_SCANCODE_SPACE] && Player->State == IDLE) { puts("launch ball!"); }
 
         // collision detection
-        if (LEFT(Player) < 0) Player->Xpos = 0;
+        if (LEFT(Player) < 0) { Player->Xpos = 0; }
 
-        if (RIGHT(Player) > gs.ScreenWidth) Player->Xpos = gs.ScreenWidth - Player->Width;
+        if (RIGHT(Player) > gs.ScreenWidth) {
+                Player->Xpos = gs.ScreenWidth - Player->Width;
+        }
+
+        // END HANDLE INPUT
+
+        // START STEP
+        {
+                object* Ball = &gs.Ball;
+                // step ball
+                static int xspeed = 10;
+                static int yspeed = 9;
+                Ball->Xpos += xspeed;
+                Ball->Ypos += yspeed;
+                if (LEFT(Ball) < 0) {
+                        Ball->Xpos = 0;
+                        xspeed     = -xspeed;
+                }
+                if (RIGHT(Ball) > gs.ScreenWidth) {
+                        Ball->Xpos = gs.ScreenWidth - Ball->Width;
+                        xspeed     = -xspeed;
+                }
+                if (TOP(Ball) < 0) {
+                        Ball->Ypos = 0;
+                        yspeed     = -yspeed;
+                }
+                if (BOTTOM(Ball) > gs.ScreenHeight) {
+                        Ball->Ypos = gs.ScreenHeight - Ball->Height;
+                        yspeed     = -yspeed;
+                }
+        }
+        // END STEP
 }
 
 int _init_sdl(int Width, int Height, SDL_Window** outWin, SDL_Renderer** outRenderer)

@@ -31,6 +31,8 @@ enum obj_type {
         BALL,
 };
 
+
+
 typedef struct object {
         int Xpos, Ypos;
         int Width, Height;
