@@ -3,50 +3,44 @@
 
 /**
 TODO:
-- add obstacles in the level
+- convert player to a breakout tile
+- use breakout tiles
+- fix level dimension and other minor details
+- add ball and its physics
 - collision detection
-- slow motion
 - load and save gamestate
+- slow motion
 
 BUGS:
-- player falls through when standing on a tile
-  that is moving up.
+- you tell me!
 */
 
 enum obj_state {
         IDLE,
-        JUMPING,
-        RUNNING,
-        FALLING,
+        MOVING,
+        COLLIDING,
 };
 
 static const char* obj_state_str[] = {
     "IDLE",
-    "JUMPING",
-    "RUNNING",
-    "FALLING",
+    "MOVING",
+    "COLLIDING",
 };
 
 enum obj_type {
         PLAYER,
         TILE,
+        BALL,
 };
 
 typedef struct object {
         int Xpos, Ypos;
         int Width, Height;
 
-        int Xspeed, Yspeed;
-        int JumpSpeed;
-
-        int FaceRight;
-
-        enum obj_state State;
         enum obj_type Type;
+        enum obj_state State;
 
-        char r, g, b;
         SDL_Texture* Texture;
-
 } object, tile;
 
 
@@ -54,12 +48,12 @@ typedef struct gamestate {
         // env
         int ScreenWidth;
         int ScreenHeight;
-        int GroundLevel;
-        int Gravity;
-        int Running;
+        int Running;    // game running flag
+        int GroundLevel; // separate player from the rest of tile area
 
         // objects
         object* Player;
+        object* Ball;
         tile* Tiles;
         int TileCount;
 
@@ -86,7 +80,7 @@ void step_tiles(gamestate* gs, unsigned int dt);
 
 // return NULL if a tile isn't present below
 tile* tile_below_object(const object* Obj, const tile* Tiles, int TileCount);
-static SDL_Texture* load_texture(const char* path);
+SDL_Texture* load_texture(const char* path);
 
 // physics.c
 void apply_force(object* Obj, int fx, int fy);
