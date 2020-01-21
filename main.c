@@ -27,27 +27,8 @@ static int _deinit_sdl();
 static void update_state(unsigned int dt);
 static int save_game_state();
 static int load_game_state();
+static SDL_Rect texture_rect(unsigned int col, unsigned int row);
 
-
-// return SDL_Rect of sprite at (col, row)
-static SDL_Rect texture_rect(unsigned int col, unsigned int row)
-{
-        const int texwidth   = 80;
-        const int texheight  = 40;
-        const int rowcount   = 5;
-        const int colcount   = 5;
-        const int rectwidth  = texwidth / colcount;
-        const int rectheight = texheight / rowcount;
-
-        const int valid_index = (col < colcount) && (row < rowcount);
-        if (!valid_index) { col = row = 0; }    // default value
-
-        const int x = (col * rectwidth);
-        const int y = (row * rectheight);
-
-        SDL_Rect Result = {x, y, rectwidth, rectheight};
-        return Result;
-}
 
 /** here we go! */
 int main(int argc, char const* argv[])
@@ -232,31 +213,39 @@ static void update_state(unsigned int dt)
         // END HANDLE INPUT
 
         // START STEP
-        {
-                object* Ball = gs.Ball;
-                // step ball
-                static int xspeed = 10;
-                static int yspeed = 9;
-                Ball->Xpos += xspeed;
-                Ball->Ypos += yspeed;
-                if (LEFT(Ball) < 0) {
-                        Ball->Xpos = 0;
-                        xspeed     = -xspeed;
-                }
-                if (RIGHT(Ball) > gs.ScreenWidth) {
-                        Ball->Xpos = gs.ScreenWidth - Ball->Width;
-                        xspeed     = -xspeed;
-                }
-                if (TOP(Ball) < 0) {
-                        Ball->Ypos = 0;
-                        yspeed     = -yspeed;
-                }
-                if (BOTTOM(Ball) > gs.ScreenHeight) {
-                        Ball->Ypos = gs.ScreenHeight - Ball->Height;
-                        yspeed     = -yspeed;
-                }
+        object* Ball = gs.Ball;
+        // step ball
+        static int xspeed = 10;
+        static int yspeed = 9;
+        Ball->Xpos += xspeed;
+        Ball->Ypos += yspeed;
+
+
+        // Ball-boundary check
+        if (LEFT(Ball) < 0) {
+                Ball->Xpos = 0;
+                xspeed     = -xspeed;
+        } else if (RIGHT(Ball) > gs.ScreenWidth) {
+                Ball->Xpos = gs.ScreenWidth - Ball->Width;
+                xspeed     = -xspeed;
+        }
+        if (TOP(Ball) < 0) {
+                Ball->Ypos = 0;
+                yspeed     = -yspeed;
+        } else if (BOTTOM(Ball) > gs.ScreenHeight) {
+                Ball->Ypos = gs.ScreenHeight - Ball->Height;
+                yspeed     = -yspeed;
         }
         // END STEP
+
+        // Ball-Player check
+        {
+                SDL_Rect ballRect   = RECT(Ball);
+                SDL_Rect playerRect = RECT(Player);
+                if (SDL_HasIntersection(&ballRect, &playerRect) == SDL_TRUE) {
+                        yspeed = -yspeed;
+                }
+        }
 }
 
 int _init_sdl(int Width, int Height, SDL_Window** outWin, SDL_Renderer** outRenderer)
@@ -374,4 +363,24 @@ int load_game_state()
         // fclose(f);
         puts("GAME LOADED!");
         return 0;
+}
+
+// return SDL_Rect of sprite at (col, row)
+SDL_Rect texture_rect(unsigned int col, unsigned int row)
+{
+        const int texwidth   = 80;
+        const int texheight  = 40;
+        const int rowcount   = 5;
+        const int colcount   = 5;
+        const int rectwidth  = texwidth / colcount;
+        const int rectheight = texheight / rowcount;
+
+        const int valid_index = (col < colcount) && (row < rowcount);
+        if (!valid_index) { col = row = 0; }    // default value
+
+        const int x = (col * rectwidth);
+        const int y = (row * rectheight);
+
+        SDL_Rect Result = {x, y, rectwidth, rectheight};
+        return Result;
 }
