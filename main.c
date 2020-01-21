@@ -14,6 +14,11 @@ static SDL_Window* _window     = NULL;
 static SDL_Renderer* _renderer = NULL;
 static gamestate gs;
 
+const char* obj_state_str[] = {
+    "IDLE",
+    "MOVING",
+    "COLLIDING",
+};
 
 /** the FIRST function to be called */
 static int _init_sdl(int Width, int Height, SDL_Window** outWin,
@@ -95,11 +100,13 @@ int main(int argc, char const* argv[])
         gs.highlighted_tile = NULL;
 
         // ball init
-        object* Ball = calloc(1, sizeof(object));
+        gs.Ball      = calloc(1, sizeof(object));
+        object* Ball = gs.Ball;
         Ball->Width  = 25;
         Ball->Height = 25;
         Ball->Type   = BALL;
         Ball->State  = MOVING;
+        gs.Ball      = Ball;
 
 
         while (gs.Running) {
@@ -202,7 +209,7 @@ static void update_state(unsigned int dt)
         const Uint8* Keys = SDL_GetKeyboardState(NULL);
         // START HANDLE INPUT
         // lateral movement
-        object* Player = gs.Player;
+        object* Player        = gs.Player;
         const int playerspeed = 15;
         if (Keys[SDL_SCANCODE_A]) {
                 Player->Xpos -= playerspeed;    // move left
@@ -226,7 +233,7 @@ static void update_state(unsigned int dt)
 
         // START STEP
         {
-                object* Ball = &gs.Ball;
+                object* Ball = gs.Ball;
                 // step ball
                 static int xspeed = 10;
                 static int yspeed = 9;

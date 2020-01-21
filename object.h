@@ -19,18 +19,13 @@ enum obj_state {
         COLLIDING,
 };
 
-static const char* obj_state_str[] = {
-    "IDLE",
-    "MOVING",
-    "COLLIDING",
-};
+extern const char* obj_state_str[];
 
 enum obj_type {
         PLAYER,
         TILE,
         BALL,
 };
-
 
 
 typedef struct object {
@@ -85,7 +80,7 @@ void step_player(gamestate* gs, unsigned int dt);
 void step_tiles(gamestate* gs, unsigned int dt);
 
 // return NULL if a tile isn't present below
-tile* tile_below_object(const object* Obj, const tile* Tiles, int TileCount);
+tile* tile_below_object(const object* Obj, tile* Tiles, int TileCount);
 SDL_Texture* load_texture(const char* path);
 
 // physics.c

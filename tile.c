@@ -1,6 +1,6 @@
 #include "object.h"
 
-tile* tile_below_object(const object* Obj, const tile* Tiles, int TileCount)
+tile* tile_below_object(const object* Obj, tile* Tiles, int TileCount)
 {
         int Result = -1;    // index of the tile. -1 -> Tile not found
 
