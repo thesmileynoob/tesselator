@@ -10,12 +10,9 @@ include_directories('/usr/include/SDL2' '-D_REENTRANT')
 
 add_executable(debug
         main.c
-        player.c
-        tile.c
-        step.c
-        physics.c
+        level.c
 
-        scratchpad.c
+        #scratchpad.c
 )
 
 target_link_libraries(debug SDL2 SDL2_image)
