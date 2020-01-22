@@ -9,10 +9,41 @@
 
 #include "object.h"
 
+#define SCREENWIDTH 780
+#define SCREENHEIGHT 800
+#define TILEWIDTH 10 * 16
+#define TILEHEIGHT 10 * 8
 
 static SDL_Window* _window     = NULL;
 static SDL_Renderer* _renderer = NULL;
-static gamestate gs;
+// TODO: Move init to a LoadLevel() function
+static gamestate gs = {
+    .ScreenWidth  = SCREENWIDTH,
+    .ScreenHeight = SCREENHEIGHT,
+    .Running      = 1,
+
+    // level spec
+    .CurrentLevel = 0,
+    .GroundLevel  = (int) SCREENHEIGHT * 3.3 / 4,
+    // (16,8) is (width,height) of a single tile in the texture
+    .TileWidth  = TILEWIDTH,
+    .TileHeight = TILEHEIGHT,
+    .TileXgap   = 1 * 16,
+    .TileYgap   = 1 * 8,
+
+    // level objects (LOADED LATER)
+    .Player    = NULL,
+    .Ball      = NULL,
+    .Tiles     = NULL,
+    .TileCount = 0,
+
+
+    .visual_debug     = 1,
+    .highlighted_tile = NULL,
+};
+
+#undef SCREENWIDTH
+#undef SCREENHEIGHT
 
 const char* obj_state_str[] = {
     "IDLE",
@@ -24,70 +55,92 @@ const char* obj_state_str[] = {
 static int _init_sdl(int Width, int Height, SDL_Window** outWin,
                      SDL_Renderer** outRenderer);
 static int _deinit_sdl();
-static void update_state(unsigned int dt);
+static void update_state(const Uint8* Keys, unsigned int dt);
 static int save_game_state();
 static int load_game_state();
 static SDL_Rect texture_rect(unsigned int col, unsigned int row);
+
+void print_tile(const tile* T)
+{
+        printf("TILE {x: %d, y: %d, w: %d, h: %d}\n", T->Xpos, T->Ypos, T->Width,
+               T->Height);
+}
+
+tile* gen_tiles()
+{
+        const int colCount = 5;
+        const int rowCount = 4;
+        assert((rowCount * colCount) == gs.TileCount);    // TEMP
+
+        tile* Tiles = calloc(gs.TileCount, sizeof(tile));
+        assert(Tiles);
+        const int pad = 18;
+        for (int row = 0; row < rowCount; ++row) {
+                for (int col = 0; col < colCount; ++col) {
+                        const int idx = (row * colCount) + col;
+                        const int x   = col * gs.TileWidth + pad;
+                        const int y   = row * gs.TileHeight + pad;
+                        const int w   = gs.TileWidth - 2 * pad;
+                        const int h   = gs.TileHeight - 2 * pad;
+                        Tiles[idx]    = (tile){x, y, w, h, TILE, IDLE, NULL};
+                        printf("<%d, %d>\t", x, y);
+                        // printf("%d, %d -> %d\n", row, col, idx);
+                }
+                printf("\n");
+        }
+        for (int row = 0; row < rowCount; ++row) {
+                for (int col = 0; col < colCount; ++col) {
+                        const int idx = (row * colCount) + col;
+                        const tile* T = &Tiles[idx];
+                        printf("%d - ", idx);
+                        print_tile(T);
+                }
+                puts("");
+        }
+
+
+        return Tiles;
+}
 
 
 /** here we go! */
 int main(int argc, char const* argv[])
 {
-#define SW 780
-#define SH 800
-        _init_sdl(SW, SH, &_window, &_renderer);
+        _init_sdl(gs.ScreenWidth, gs.ScreenHeight, &_window, &_renderer);
         assert(_window && _renderer);
 
-        // gamestate init
-        gs.ScreenWidth  = SW;
-        gs.ScreenHeight = SH;
-        gs.Running      = 1;
-
-        // level
-        gs.GroundLevel = (int) gs.ScreenHeight * 3.3 / 4;
         // TODO remove magic numbers
-        // (16,8) is (width,height) of a tile texture
-        gs.TileWidth  = 10 * 16;
-        gs.TileHeight = 10 * 8;
-        gs.TileXgap   = 1 * 16;
-        gs.TileYgap   = 1 * 8;
-#undef SW
-#undef SH
-
         // player init
         gs.Player = calloc(1, sizeof(*gs.Player));
         assert(gs.Player);
-        object* Player  = gs.Player;    // alias
-        Player->Width   = 155;
-        Player->Height  = 35;
-        Player->Xpos    = gs.ScreenWidth / 2;
-        Player->Ypos    = gs.GroundLevel;
-        Player->Texture = load_texture("../assets/tiles.png");
-
-// temp helper macro
-#define TILE(x, y) {x, y, 100, 30, .Type = TILE, .State = IDLE, .Texture = NULL}
-        tile _Tiles[] = {
-            // X, Y, W, H, r,g,b
-            TILE(0, 0),   TILE(110, 0),   TILE(220, 0),   TILE(330, 0),   TILE(440, 0),
-            TILE(0, 40),  TILE(110, 40),  TILE(220, 40),  TILE(330, 40),  TILE(440, 40),
-            TILE(0, 80),  TILE(110, 80),  TILE(220, 80),  TILE(330, 80),  TILE(440, 80),
-            TILE(0, 120), TILE(110, 120), TILE(220, 120), TILE(330, 120), TILE(440, 120),
+        *gs.Player = (object){
+            .Xpos    = gs.ScreenWidth / 2,
+            .Ypos    = gs.GroundLevel,
+            .Width   = 155,
+            .Height  = 35,
+            .Type    = PLAYER,
+            .State   = IDLE,
+            .Texture = load_texture("../assets/tiles.png"),
         };
-#undef TILE    // Cannot be used after this
 
-        gs.Tiles            = _Tiles;
-        gs.TileCount        = 5 * 4;    // TODO: magic number
-        gs.visual_debug     = 1;
-        gs.highlighted_tile = NULL;
+        gs.TileCount = 5 * 4;    // TODO: magic number
+        gs.Tiles     = gen_tiles();
 
         // ball init
-        gs.Ball      = calloc(1, sizeof(object));
-        object* Ball = gs.Ball;
-        Ball->Width  = 25;
-        Ball->Height = 25;
-        Ball->Type   = BALL;
-        Ball->State  = MOVING;
-        gs.Ball      = Ball;
+        gs.Ball  = calloc(1, sizeof(object));
+        *gs.Ball = (object){
+            .Xpos    = 0,
+            .Ypos    = 0,
+            .Width   = 25,
+            .Height  = 25,
+            .Type    = BALL,
+            .State   = MOVING,
+            .Texture = load_texture("../assets/tiles.png"),
+        };
+
+        // aliases
+        object* Player = gs.Player;    // alias
+        object* Ball   = gs.Ball;      // alias
 
 
         while (gs.Running) {
@@ -114,26 +167,47 @@ int main(int argc, char const* argv[])
                 unsigned int dt = get_dt();
 
                 // handle input and update state
-                update_state(dt);
+                update_state(SDL_GetKeyboardState(NULL), dt);
 
 
                 // START DRAWING
                 SDL_SetRenderDrawColor(_renderer, 50, 50, 50, 255);
                 SDL_RenderClear(_renderer);
 
+                // grid
+                {
+                        SDL_SetRenderDrawColor(_renderer, 250, 250, 250, 255);
+                        const int rows = 8;
+                        const int cols = 5;
+                        // vertical lines
+                        for (int i = 0; i < cols; ++i) {
+                                // printf("");
+                                int x1 = i * gs.TileWidth;
+                                int y1 = 0;
+                                int x2 = x1;
+                                int y2 = y1 + gs.ScreenHeight;
+                                SDL_RenderDrawLine(_renderer, x1, y1, x2, y2);
+                        }
+                        // horizontal lines
+                        for (int i = 0; i < rows; ++i) {
+                                int x1 = 0;
+                                int y1 = i * gs.TileHeight;
+                                int x2 = x1 + gs.ScreenWidth;
+                                int y2 = y1;
+                                SDL_RenderDrawLine(_renderer, x1, y1, x2, y2);
+                                int y = i * gs.TileHeight;
+                        }
+                }
+
                 // level
                 {
+                        // tiles
+                        SDL_SetRenderDrawColor(_renderer, 255, 0, 0, 255);
+                        SDL_Rect TexRect = texture_rect(0, 0);
                         for (int i = 0; i < gs.TileCount; ++i) {
-                                const tile* Tile = &gs.Tiles[i];
-                                SDL_SetRenderDrawColor(_renderer, 255, 0, 0, 255);
-                                // if (gs.highlighted_tile == Tile) {
-                                //         // paint it with player color
-                                //         SDL_SetRenderDrawColor(_renderer, Player->r,
-                                //                                Player->g, Player->b,
-                                //                                255);
-                                // }
+                                const tile* Tile  = &gs.Tiles[i];
                                 SDL_Rect TileRect = RECT(Tile);
-                                SDL_Rect TexRect  = texture_rect(0, 0);
+                                // NOTE: tile and player share the same spritesheet
                                 SDL_RenderCopy(_renderer, Player->Texture, &TexRect,
                                                &TileRect);
                         }
@@ -153,26 +227,6 @@ int main(int argc, char const* argv[])
                         SDL_RenderFillRect(_renderer, &BallRect);
                 }
 
-                // visual debug
-                if (gs.visual_debug) {
-                        // draw green border around player
-                        // SDL_SetRenderDrawColor(_renderer, 0, 200, 0, 255);
-                        // SDL_Rect PlayerRect = RECT(Player);
-                        // SDL_RenderDrawRect(_renderer, &PlayerRect);
-
-                        // // draw velocity vector
-                        // const int scale = 2;
-
-                        // const int x1 = Player->Xpos + (Player->Width / 2);
-                        // const int y1 = Player->Ypos + (Player->Height / 2);
-                        // const int x2 = x1 + Player->Xspeed * scale;
-                        // const int y2 = y1 + Player->Yspeed * scale;
-
-
-                        // SDL_SetRenderDrawColor(_renderer, 255, 0, 255, 255);
-                        // SDL_RenderDrawLine(_renderer, x1, y1, x2, y2);
-                }
-
 
                 SDL_RenderPresent(_renderer);
                 // END DRAWING
@@ -185,13 +239,13 @@ int main(int argc, char const* argv[])
 }
 
 
-static void update_state(unsigned int dt)
+void update_state(const Uint8* Keys, unsigned int dt)
 {
-        const Uint8* Keys = SDL_GetKeyboardState(NULL);
-        // START HANDLE INPUT
-        // lateral movement
+        // update player
         object* Player        = gs.Player;
         const int playerspeed = 15;
+
+        // player movement
         if (Keys[SDL_SCANCODE_A]) {
                 Player->Xpos -= playerspeed;    // move left
         }
@@ -199,29 +253,26 @@ static void update_state(unsigned int dt)
                 Player->Xpos += playerspeed;    // move right
         }
 
-
-        // actions
+        // player actions
         if (Keys[SDL_SCANCODE_SPACE] && Player->State == IDLE) { puts("launch ball!"); }
 
-        // collision detection
+        // player-level collision detection
         if (LEFT(Player) < 0) { Player->Xpos = 0; }
 
         if (RIGHT(Player) > gs.ScreenWidth) {
                 Player->Xpos = gs.ScreenWidth - Player->Width;
         }
 
-        // END HANDLE INPUT
 
-        // START STEP
-        object* Ball = gs.Ball;
-        // step ball
-        static int xspeed = 10;
-        static int yspeed = 9;
+        // ball update
+        object* Ball      = gs.Ball;
+        static int xspeed = 2;
+        static int yspeed = 7;
         Ball->Xpos += xspeed;
         Ball->Ypos += yspeed;
 
 
-        // Ball-boundary check
+        // ball-level collision
         if (LEFT(Ball) < 0) {
                 Ball->Xpos = 0;
                 xspeed     = -xspeed;
@@ -236,14 +287,32 @@ static void update_state(unsigned int dt)
                 Ball->Ypos = gs.ScreenHeight - Ball->Height;
                 yspeed     = -yspeed;
         }
-        // END STEP
 
         // Ball-Player check
         {
                 SDL_Rect ballRect   = RECT(Ball);
                 SDL_Rect playerRect = RECT(Player);
                 if (SDL_HasIntersection(&ballRect, &playerRect) == SDL_TRUE) {
-                        yspeed = -yspeed;
+
+                        const int ball_center   = ballRect.x + (ballRect.w / 2);
+                        const int player_center = playerRect.x + (playerRect.w / 2);
+                        const int offset =
+                            ball_center - player_center;    // -ve means left
+                        float scale = 1.0;
+                        if (abs(offset) < (Player->Width / 3)) {
+                                scale = 1.0;
+                        } else {
+                                scale = 0.7;
+                        }
+                        int newXspeed       = scale * offset;
+                        const int maxxspeed = 7;
+                        if (newXspeed > maxxspeed) newXspeed = maxxspeed;      // clip max
+                        if (newXspeed < -maxxspeed) newXspeed = -maxxspeed;    // clip max
+
+                        xspeed = newXspeed;    // based on offset
+                        yspeed = -yspeed;      // just changes direction in Y
+
+                        printf("%d -> %d\n", offset, xspeed);
                 }
         }
 }

@@ -3,7 +3,8 @@ project(platformer VERSION 0.1.0)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_compile_options(-g -Wall -std=c11)
-add_compile_options(-Werror)
+#add_compile_options(-Werror)
+#add_compile_options(-Wextra)
 
 include_directories('/usr/include/SDL2' '-D_REENTRANT')
 

@@ -3,6 +3,9 @@
 
 /**
 TODO:
+- add level-grid
+- add ball-player collision
+- add ball-tile collision
 - fix level dimension and other minor details
 - add ball and its physics
 - collision detection
@@ -45,14 +48,15 @@ typedef struct gamestate {
         int ScreenHeight;
         int Running;    // game running flag
 
-        // level
-        int GroundLevel;    // separate player from the rest of tile area
-        int TileWidth;
-        int TileHeight;
+        // level spec
+        int CurrentLevel;
+        int GroundLevel;    /// separate player from the rest of tile area
+        int TileWidth;     /// game world tile width. multiple of 16 cuz of chosen texture
+        int TileHeight;    /// game world tile height.
         int TileXgap;
         int TileYgap;
 
-        // objects
+        // level objects
         object* Player;
         object* Ball;
         tile* Tiles;
@@ -73,6 +77,8 @@ typedef struct gamestate {
         (SDL_Rect) { Obj->Xpos, Obj->Ypos, Obj->Width, Obj->Height }
 
 
+SDL_Texture* load_texture(const char* path);
+
 void player_reset(object* Player, int xpos, int ypos);
 
 unsigned int get_dt();
@@ -81,11 +87,3 @@ void step_tiles(gamestate* gs, unsigned int dt);
 
 // return NULL if a tile isn't present below
 tile* tile_below_object(const object* Obj, tile* Tiles, int TileCount);
-SDL_Texture* load_texture(const char* path);
-
-// physics.c
-void apply_force(object* Obj, int fx, int fy);
-void set_pos(object* Obj, int x, int y);
-void set_state(object* Obj, enum obj_state State);
-void jump(object* Obj, gamestate* gs);
-void idle(object* Obj, const tile* TileBelow);
