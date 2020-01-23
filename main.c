@@ -31,6 +31,8 @@ typedef struct object {
 
     // texture
     int TexRow, TexCol;
+
+    int Hit;
 } object, tile;
 
 
@@ -168,7 +170,8 @@ int main(int argc, char const* argv[])
             const int pad = 12;
 
             for (int i = 0; i < TileCount; ++i) {
-                tile* t          = &Tiles[i];
+                tile* t = &Tiles[i];
+                if (t->Hit) continue;  // skip hit tiles
                 const int x      = pad + t->X;
                 const int y      = pad + t->Y;
                 const int w      = t->W;
@@ -256,7 +259,9 @@ void update_state(const Uint8* Keys)
 
         SDL_Rect tile_rect;
         for (int i = 0; i < TileCount; ++i) {
-            tile* t   = &Tiles[i];
+            tile* t = &Tiles[i];
+            if (t->Hit) continue;
+
             tile_rect = RECT(t);
             if (SDL_HasIntersection(&ball_rect, &tile_rect) == SDL_TRUE) {
                 const int ball_center = ball_rect.x + (ball_rect.w / 2);
@@ -274,6 +279,9 @@ void update_state(const Uint8* Keys)
                 // printf("%d -> %d\n", Xspeed, new_xspeed);
                 Xspeed = new_xspeed;  // based on offset
                 Yspeed = -Yspeed;     // just changes direction in Y
+                t->Hit++;
+                // printf("%d = %d\n", i, t->Hit);
+                break;
             }
         }
 
