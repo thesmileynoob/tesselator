@@ -1,3 +1,4 @@
+#include <SDL2/SDL_keycode.h>
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -5,46 +6,8 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
+#include "breakout.h"
 
-/** level
- *      ************
- *      * - - - - -*
- *      * - - - - -*    <- Tiles
- *      * - - - - -*
- *      * - -   - -*
- *      * -     - -*
- *      *          *
- *      *     o    *    <- ball
- *      *   ----   *    <- Playerline and player
- *      ************
- *
- * Steps:
- *  - init
- *  loop:
- *      - take user input and move player
- *      - move ball and tiles
- *      - check for collisions
- *      - update tiles and score
- *      - draw BG, TILES, BALL, PLAYER, SCORE
- */
-
-/** NOTES:
- * naming:
- *  - global vars are capitalized: Tiles, Player etc.
- *  - locals and params are snake_case
- *  - functions are snake_case
- */
-
-/** TODO:
-- add object collision
-- fix level dimension and other minor details
-- load and save gamestate
-- slow motion
-*/
-
-/** BUGS:
-- you tell me!
-*/
 
 // Constants
 #define SCR_WIDTH 780
@@ -73,36 +36,32 @@ typedef struct object {
 
 // globals
 int GameRunning;  // game running flag
+
 int TileCount;
 tile* Tiles;
+int Cols = 5;
+int Rows = 6;
+
 object* Player;
+
 object* Ball;
+int Xspeed = 2;
+int Yspeed = 10;
+
 SDL_Texture* Texture;
 Uint8 BgCol[3];  // r,g,b
-const int Cols = 5;
-const int Rows = 5;
+
 
 // env
 SDL_Window* _window     = NULL;
 SDL_Renderer* _renderer = NULL;
 
-// sdl
-int _init_sdl(int Width, int Height, SDL_Window** outWin, SDL_Renderer** outRenderer);
-int _deinit_sdl();
-
-// assets
-SDL_Texture* load_texture(const char* path);
-SDL_Rect texture_rect(unsigned int col, unsigned int row);
-
-// game
-unsigned int get_dt();
-void update_state(const Uint8* Keys);
-
 
 /** here we go! */
 int main(int argc, char const* argv[])
 {
-    {  // init
+    // INIT
+    {
         _init_sdl(SCR_WIDTH, SCR_HEIGHT, &_window, &_renderer);
         assert(_window && _renderer);
 
@@ -139,6 +98,7 @@ int main(int argc, char const* argv[])
             if (sym == SDLK_q || ev.type == SDL_QUIT) { GameRunning = 0; }
 
             if (ev.type == SDL_KEYUP) {
+                if (sym == SDLK_RETURN) { Rows++; }
             } else if (ev.type == SDL_KEYDOWN) {
             }
         }
@@ -147,58 +107,64 @@ int main(int argc, char const* argv[])
         update_state(SDL_GetKeyboardState(NULL));
 
         // START DRAWING
-        SDL_SetRenderDrawColor(_renderer, 50, 50, 50, 255);
+        SDL_SetRenderDrawColor(_renderer, BgCol[0], BgCol[1], BgCol[2], 255);
         SDL_RenderClear(_renderer);
 
-        // grid
+        // GRID
         {
-            SDL_SetRenderDrawColor(_renderer, 250, 250, 250, 255);
+            SDL_SetRenderDrawColor(_renderer, 250, 50, 50, 255);
+
+            int x1, y1, x2, y2;
+
             // vertical lines
             for (int i = 0; i < Cols; ++i) {
                 // printf("");
-                int x1 = i * TILE_WIDTH;
-                int y1 = 0;
-                int x2 = x1;
-                int y2 = y1 + SCR_HEIGHT;
+                x1 = i * TILE_WIDTH;
+                y1 = 0;
+                x2 = x1;
+                y2 = y1 + SCR_HEIGHT;
                 SDL_RenderDrawLine(_renderer, x1, y1, x2, y2);
             }
             // horizontal lines
-            for (int i = 0; i < Rows; ++i) {
-                int x1 = 0;
-                int y1 = i * TILE_HEIGHT;
-                int x2 = x1 + SCR_WIDTH;
-                int y2 = y1;
+            for (int i = 0; i < Rows + 1; ++i) {
+                x1 = 0;
+                y1 = i * TILE_HEIGHT;
+                x2 = x1 + SCR_WIDTH;
+                y2 = y1;
                 SDL_RenderDrawLine(_renderer, x1, y1, x2, y2);
             }
         }
 
-        // level
+        // LEVEL
         {
-            // tiles
+            // TILES
             SDL_SetRenderDrawColor(_renderer, 255, 0, 0, 255);
-            SDL_Rect TexRect = texture_rect(0, 0);  // TODO
+            SDL_Rect TexRect = texture_rect(1, 4);  // TODO
 
+            const int pad = 12;
             for (int row = 0; row < Rows; ++row) {
                 for (int col = 0; col < Cols; ++col) {
-                    const int x       = col * TILE_WIDTH;
-                    const int y       = row * TILE_HEIGHT;
-                    SDL_Rect TileRect = {x, y, TILE_WIDTH, TILE_HEIGHT};
+                    const int x       = pad + col * TILE_WIDTH;
+                    const int y       = pad + row * TILE_HEIGHT;
+                    SDL_Rect TileRect = {x, y, TILE_WIDTH - 2 * pad,
+                                         TILE_HEIGHT - 2 * pad};
                     SDL_RenderCopy(_renderer, Texture, &TexRect, &TileRect);
                 }
             }
         }
 
 
-        // objects
+        // PLAYER
         {
-            // player
             SDL_Rect PlayerRect = RECT(Player);
-            SDL_Rect TexRect    = texture_rect(0, 1);  // TODO
+            SDL_Rect TexRect    = texture_rect(1, 1);  // TODO
             SDL_RenderCopy(_renderer, Texture, &TexRect, &PlayerRect);
+        }
+        // BALL
+        {
 
-            // ball
             SDL_Rect BallRect = RECT(Ball);
-            SDL_SetRenderDrawColor(_renderer, 255, 255, 255, 255);
+            SDL_SetRenderDrawColor(_renderer, 25, 25, 255, 255);
             SDL_RenderFillRect(_renderer, &BallRect);
         }
 
@@ -236,49 +202,47 @@ void update_state(const Uint8* Keys)
 
 
     // ball update
-    static int xspeed = 2;
-    static int yspeed = 10;
-    Ball->X += xspeed;
-    Ball->Y += yspeed;
+    Ball->X += Xspeed;
+    Ball->Y += Yspeed;
 
 
     // ball-level collision
     if (LEFT(Ball) < 0) {
         Ball->X = 0;
-        xspeed  = -xspeed;
+        Xspeed  = -Xspeed;
     } else if (RIGHT(Ball) > SCR_WIDTH) {
         Ball->X = SCR_WIDTH - Ball->W;
-        xspeed  = -xspeed;
+        Xspeed  = -Xspeed;
     }
     if (TOP(Ball) < 0) {
         Ball->Y = 0;
-        yspeed  = -yspeed;
+        Yspeed  = -Yspeed;
     } else if (BOTTOM(Ball) > SCR_HEIGHT) {
         Ball->Y = SCR_HEIGHT - Ball->H;
-        yspeed  = -yspeed;
+        Yspeed  = -Yspeed;
     }
 
     // Ball-Player check
     {
-        SDL_Rect ballRect   = RECT(Ball);
-        SDL_Rect playerRect = RECT(Player);
-        if (SDL_HasIntersection(&ballRect, &playerRect) == SDL_TRUE) {
+        SDL_Rect ball_rect   = RECT(Ball);
+        SDL_Rect player_rect = RECT(Player);
+        if (SDL_HasIntersection(&ball_rect, &player_rect) == SDL_TRUE) {
 
-            const int ball_center   = ballRect.x + (ballRect.w / 2);
-            const int player_center = playerRect.x + (playerRect.w / 2);
+            const int ball_center   = ball_rect.x + (ball_rect.w / 2);
+            const int player_center = player_rect.x + (player_rect.w / 2);
+            const int max_xspeed    = 7;
 
-            const int offset =
-                (ball_center - player_center) / 2;  // -ve means ball to the left
+            // -ve means ball to the left
+            const int offset = (ball_center - player_center) / 2;
 
-            float scale         = 0.2;  // TODO: Better name
-            int newXspeed       = scale * offset;
-            const int maxxspeed = 7;
-            if (newXspeed > maxxspeed) newXspeed = maxxspeed;    // clip max
-            if (newXspeed < -maxxspeed) newXspeed = -maxxspeed;  // clip max
+            float scale    = 0.2;  // TODO: Better name
+            int new_xspeed = scale * offset;
+            if (new_xspeed > max_xspeed) new_xspeed = max_xspeed;    // clip max
+            if (new_xspeed < -max_xspeed) new_xspeed = -max_xspeed;  // clip max
 
-            printf("%d -> %d\n", xspeed, newXspeed);
-            xspeed = newXspeed;  // based on offset
-            yspeed = -yspeed;    // just changes direction in Y
+            // printf("%d -> %d\n", Xspeed, new_xspeed);
+            Xspeed = new_xspeed;  // based on offset
+            Yspeed = -Yspeed;     // just changes direction in Y
         }
     }
 }
@@ -371,3 +335,46 @@ SDL_Rect texture_rect(unsigned int col, unsigned int row)
     SDL_Rect Result = {x, y, rectwidth, rectheight};
     return Result;
 }
+
+
+/** level
+ *      ************
+ *      * - - - - -*
+ *      * - - - - -*    <- Tiles
+ *      * - - - - -*
+ *      * - -   - -*
+ *      * -     - -*
+ *      *          *
+ *      *     o    *    <- ball
+ *      *   ----   *    <- Playerline and player
+ *      ************
+ *
+ * Steps:
+ *  - init
+ *  loop:
+ *      - take user input and move player
+ *      - move ball and tiles
+ *      - check for collisions
+ *      - update tiles and score
+ *      - draw BG, TILES, BALL, PLAYER, SCORE
+ */
+
+/** NOTES:
+ * naming:
+ *  - global vars are capitalized: Tiles, Player etc.
+ *  - locals and params are snake_case
+ *  - functions are snake_case
+ */
+
+/** TODO:
+- add object collision
+- score
+- fix level dimension and other minor details
+- load and save gamestate
+- slow motion
+- effects
+*/
+
+/** BUGS:
+- you tell me!
+*/
