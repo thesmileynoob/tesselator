@@ -10,7 +10,6 @@ include_directories('/usr/include/SDL2' '-D_REENTRANT')
 
 add_executable(debug
         main.c
-        level.c
 
         #scratchpad.c
 )

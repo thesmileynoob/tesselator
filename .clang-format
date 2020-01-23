@@ -23,7 +23,7 @@
     "ConstructorInitializerAllOnOneLineOrOnePerLine" : "false",
     "FixNamespaceComments" : "true",
     "IndentCaseLabels" : "false",
-    "IndentWidth" : 8,
+    "IndentWidth" : 4,
     "IndentWrappedFunctionNames" : "false",
     "KeepEmptyLinesAtTheStartOfBlocks" : "true",
     "MaxEmptyLinesToKeep" : 2,
@@ -37,12 +37,12 @@
     "SpaceBeforeAssignmentOperators" : "true",
     "SpaceBeforeParens" : "ControlStatements",
     "SpaceInEmptyParentheses" : "false",
-    "SpacesBeforeTrailingComments" : 4,
+    "SpacesBeforeTrailingComments" : 2,
     "SpacesInCStyleCastParentheses" : "false",
     "SpacesInContainerLiterals" : "false",
     "SpacesInParentheses" : "false",
     "SpacesInSquareBrackets" : "false",
-    "TabWidth" : 8,
+    "TabWidth" : 4,
     "UseTab" : "Never"
 }
 
