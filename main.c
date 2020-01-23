@@ -120,7 +120,7 @@ int main(int argc, char const* argv[])
         // init gamestate
         // player
         Player->X = SCR_WIDTH / 2;
-        Player->Y = 4. / 5 * SCR_HEIGHT;
+        Player->Y = 4.2 / 5.0 * SCR_HEIGHT;
         Player->W = 155;
         Player->H = 35;
 
@@ -169,7 +169,6 @@ int main(int argc, char const* argv[])
                 int x2 = x1 + SCR_WIDTH;
                 int y2 = y1;
                 SDL_RenderDrawLine(_renderer, x1, y1, x2, y2);
-                int y = i * TILE_HEIGHT;
             }
         }
 
@@ -238,7 +237,7 @@ void update_state(const Uint8* Keys)
 
     // ball update
     static int xspeed = 2;
-    static int yspeed = 7;
+    static int yspeed = 10;
     Ball->X += xspeed;
     Ball->Y += yspeed;
 
@@ -267,22 +266,19 @@ void update_state(const Uint8* Keys)
 
             const int ball_center   = ballRect.x + (ballRect.w / 2);
             const int player_center = playerRect.x + (playerRect.w / 2);
-            const int offset        = ball_center - player_center;  // -ve means left
-            float scale             = 1.0;
-            if (abs(offset) < (Player->W / 3)) {
-                scale = 1.0;
-            } else {
-                scale = 0.7;
-            }
+
+            const int offset =
+                (ball_center - player_center) / 2;  // -ve means ball to the left
+
+            float scale         = 0.2;  // TODO: Better name
             int newXspeed       = scale * offset;
             const int maxxspeed = 7;
             if (newXspeed > maxxspeed) newXspeed = maxxspeed;    // clip max
             if (newXspeed < -maxxspeed) newXspeed = -maxxspeed;  // clip max
 
+            printf("%d -> %d\n", xspeed, newXspeed);
             xspeed = newXspeed;  // based on offset
             yspeed = -yspeed;    // just changes direction in Y
-
-            printf("%d -> %d\n", offset, xspeed);
         }
     }
 }
