@@ -14,4 +14,4 @@ add_executable(debug
         #scratchpad.c
 )
 
-target_link_libraries(debug SDL2 SDL2_image)
+target_link_libraries(debug m SDL2 SDL2_image)

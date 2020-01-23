@@ -37,10 +37,10 @@ typedef struct object {
 // globals
 int GameRunning;  // game running flag
 
-int TileCount;
-tile* Tiles;
-int Cols = 5;
-int Rows = 6;
+int Cols      = 5;
+int Rows      = 6;
+int TileCount = 5 * 6;
+tile* Tiles   = NULL;
 
 object* Player;
 
@@ -66,7 +66,6 @@ int main(int argc, char const* argv[])
         assert(_window && _renderer);
 
         GameRunning = 1;
-        TileCount   = 5 * 3;
         Texture     = load_texture("../assets/tiles.png");
         assert(Texture);
 
@@ -75,6 +74,25 @@ int main(int argc, char const* argv[])
         Ball   = calloc(1, sizeof(object));
         Tiles  = calloc(TileCount, sizeof(object));
         assert(Player && Ball && Tiles);
+
+        int xoff, yoff;
+        xoff = yoff = 0;
+        for (int i = 0; i < TileCount; ++i) {
+            tile* t   = &Tiles[i];
+            t->X      = xoff;
+            t->Y      = yoff;
+            t->W      = TILE_WIDTH;
+            t->H      = TILE_HEIGHT;
+            t->TexRow = i % 5;
+            t->TexCol = (i + 2) % 5;
+
+            xoff += TILE_WIDTH;
+            if (xoff > SCR_WIDTH) {
+                xoff = 0;
+                yoff += TILE_HEIGHT;
+            }
+        }
+
 
         // init gamestate
         // player
@@ -112,7 +130,14 @@ int main(int argc, char const* argv[])
 
         // GRID
         {
-            SDL_SetRenderDrawColor(_renderer, 250, 50, 50, 255);
+            int timeout;
+            if (timeout++ > 100) {
+                BgCol[0] = SDL_GetTicks() % 255;
+                BgCol[1] = 10;
+                BgCol[2] = 100;
+            }
+            if (timeout > 100) { timeout = 0; }
+            SDL_SetRenderDrawColor(_renderer, BgCol[0], BgCol[1], BgCol[2], 255);
 
             int x1, y1, x2, y2;
 
@@ -139,17 +164,19 @@ int main(int argc, char const* argv[])
         {
             // TILES
             SDL_SetRenderDrawColor(_renderer, 255, 0, 0, 255);
-            SDL_Rect TexRect = texture_rect(1, 4);  // TODO
 
             const int pad = 12;
-            for (int row = 0; row < Rows; ++row) {
-                for (int col = 0; col < Cols; ++col) {
-                    const int x       = pad + col * TILE_WIDTH;
-                    const int y       = pad + row * TILE_HEIGHT;
-                    SDL_Rect TileRect = {x, y, TILE_WIDTH - 2 * pad,
-                                         TILE_HEIGHT - 2 * pad};
-                    SDL_RenderCopy(_renderer, Texture, &TexRect, &TileRect);
-                }
+
+            for (int i = 0; i < TileCount; ++i) {
+                tile* t          = &Tiles[i];
+                const int x      = pad + t->X;
+                const int y      = pad + t->Y;
+                const int w      = t->W;
+                const int h      = t->H;
+                SDL_Rect TexRect = texture_rect(t->TexRow, t->TexCol);
+
+                SDL_Rect TileRect = {x, y, w - 2 * pad, h - 2 * pad};
+                SDL_RenderCopy(_renderer, Texture, &TexRect, &TileRect);
             }
         }
 
