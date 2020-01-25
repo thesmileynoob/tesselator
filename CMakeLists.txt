@@ -10,8 +10,8 @@ include_directories('/usr/include/SDL2' '-D_REENTRANT')
 
 add_executable(debug
         main.c
-
-        #scratchpad.c
+        animations.c
+        scratchpad.c
 )
 
 target_link_libraries(debug m SDL2 SDL2_image)

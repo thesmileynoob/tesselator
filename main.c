@@ -24,30 +24,18 @@
     (SDL_Rect) { Obj->X, Obj->Y, Obj->W, Obj->H }
 
 
-// ball, tile and player are objects
-typedef struct object {
-    int X, Y, W, H;
-    const char* Name;
-
-    // texture
-    int TexRow, TexCol;
-
-    int Hit;
-} object, tile;
-
-
 // globals
 int GameRunning;    // game running flag
 int Score;          // current level score. you win when Score == TileCount
 unsigned int Time;  // time taken to finish the level
 
-// int Cols      = 5;
-// int Rows      = 6;
-// int TileCount = 5 * 6;
-int Cols      = 2;
-int Rows      = 2;
-int TileCount = 2 * 2;
-tile* Tiles   = NULL;
+int Cols      = 5;
+int Rows      = 6;
+int TileCount = 5 * 6;
+// int Cols      = 2;
+// int Rows      = 2;
+// int TileCount = 2 * 2;
+tile* Tiles = NULL;
 
 object* Player;
 
@@ -62,7 +50,6 @@ Uint8 BgCol[3];  // r,g,b
 // env
 SDL_Window* _window     = NULL;
 SDL_Renderer* _renderer = NULL;
-
 
 /** here we go! */
 int main(int argc, char const* argv[])
@@ -88,6 +75,9 @@ int main(int argc, char const* argv[])
         Player->Y = 4.2 / 5.0 * SCR_HEIGHT;
         Player->W = 155;
         Player->H = 35;
+
+        Player->Anim.anim_func   = &tile_breakout_animation;
+        Player->Anim.frame_count = 5;
 
         // ball
         Ball->X = Player->X + 40;  // TODO: 40
@@ -127,6 +117,10 @@ int main(int argc, char const* argv[])
 
             if (ev.type == SDL_KEYUP) {
                 if (sym == SDLK_RETURN) { Rows++; }
+                if (sym == SDLK_b) {
+                    printf("fc: %d\n", Player->Anim.frame_count);
+                    Player->Anim.frame_count += 5;
+                }
             } else if (ev.type == SDL_KEYDOWN) {
             }
         }
@@ -137,25 +131,29 @@ int main(int argc, char const* argv[])
 
         Time += get_dt();
 
+        // ANIMATE
+        {
+            Player->IsAnimating = 1;
+            animation* anim = &Player->Anim;
+            if (Player->IsAnimating && anim->frame_count) {
+                anim->frame_count--;
+                Player->Anim.anim_func(Player);
+            }
+        }
+
         // START DRAWING
         SDL_SetRenderDrawColor(_renderer, BgCol[0], BgCol[1], BgCol[2], 255);
         SDL_RenderClear(_renderer);
 
         // GRID
         {
-            int timeout;
-            if (timeout++ > 100) {
-                BgCol[0] = SDL_GetTicks() % 255;
-                BgCol[1] = 10;
-                BgCol[2] = 100;
-            }
-            if (timeout > 100) { timeout = 0; }
-            SDL_SetRenderDrawColor(_renderer, BgCol[0], BgCol[1], BgCol[2], 255);
+            SDL_SetRenderDrawColor(_renderer, BgCol[0] + 150, BgCol[1] + 120,
+                                   BgCol[2] * 0, 255);
 
             int x1, y1, x2, y2;
 
             // vertical lines
-            for (int i = 0; i < Cols; ++i) {
+            for (int i = 0; i < Cols + 1; ++i) {
                 // printf("");
                 x1 = i * TILE_WIDTH;
                 y1 = 0;

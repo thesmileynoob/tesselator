@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if 0
 
 char* read_file(const char* path)
 {
@@ -36,3 +37,5 @@ for (int row = 0; row < Rows; ++row) {
         SDL_RenderCopy(_renderer, Texture, &TexRect, &TileRect);
     }
 }
+
+#endif
