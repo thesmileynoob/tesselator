@@ -37,11 +37,16 @@ typedef struct object {
 
 
 // globals
-int GameRunning;  // game running flag
+int GameRunning;    // game running flag
+int Score;          // current level score
+unsigned int Time;  // time taken to finish the level
 
-int Cols      = 5;
-int Rows      = 6;
-int TileCount = 5 * 6;
+// int Cols      = 5;
+// int Rows      = 6;
+// int TileCount = 5 * 6;
+int Cols      = 2;
+int Rows      = 2;
+int TileCount = 2 * 2;
 tile* Tiles   = NULL;
 
 object* Player;
@@ -67,8 +72,7 @@ int main(int argc, char const* argv[])
         _init_sdl(SCR_WIDTH, SCR_HEIGHT, &_window, &_renderer);
         assert(_window && _renderer);
 
-        GameRunning = 1;
-        Texture     = load_texture("../assets/tiles.png");
+        Texture = load_texture("../assets/tiles.png");
         assert(Texture);
 
         // alloc
@@ -77,26 +81,8 @@ int main(int argc, char const* argv[])
         Tiles  = calloc(TileCount, sizeof(object));
         assert(Player && Ball && Tiles);
 
-        int xoff, yoff;
-        xoff = yoff = 0;
-        for (int i = 0; i < TileCount; ++i) {
-            tile* t   = &Tiles[i];
-            t->X      = xoff;
-            t->Y      = yoff;
-            t->W      = TILE_WIDTH;
-            t->H      = TILE_HEIGHT;
-            t->TexRow = i % 5;
-            t->TexCol = (i + 2) % 5;
-
-            xoff += TILE_WIDTH;
-            if (xoff > SCR_WIDTH) {
-                xoff = 0;
-                yoff += TILE_HEIGHT;
-            }
-        }
-
-
         // init gamestate
+
         // player
         Player->X = SCR_WIDTH / 2;
         Player->Y = 4.2 / 5.0 * SCR_HEIGHT;
@@ -108,9 +94,31 @@ int main(int argc, char const* argv[])
         Ball->Y = Player->Y - 50;
         Ball->W = 25;
         Ball->H = 25;
+
+        // tiles
+        int xoff, yoff;  // keep track of row and column
+        xoff = yoff = 0;
+        for (int i = 0; i < TileCount; ++i) {
+            tile* t   = &Tiles[i];
+            t->X      = xoff;
+            t->Y      = yoff;
+            t->W      = TILE_WIDTH;
+            t->H      = TILE_HEIGHT;
+            t->TexRow = i % 5;
+            t->TexCol = (i + 2) % 5;
+
+
+            xoff += TILE_WIDTH;
+            if (RIGHT(t) > SCR_WIDTH) {
+                // wrap back to first column and the next row
+                xoff = 0;
+                yoff += TILE_HEIGHT;
+            }
+        }
     }
 
 
+    GameRunning = 1;
     while (GameRunning) {
         SDL_Event ev;
         while (SDL_PollEvent(&ev)) {
@@ -125,6 +133,9 @@ int main(int argc, char const* argv[])
 
         // handle input and update state
         update_state(SDL_GetKeyboardState(NULL));
+
+
+        Time += get_dt();
 
         // START DRAWING
         SDL_SetRenderDrawColor(_renderer, BgCol[0], BgCol[1], BgCol[2], 255);
@@ -202,11 +213,34 @@ int main(int argc, char const* argv[])
         SDL_RenderPresent(_renderer);
         // END DRAWING
 
+        // check win/lose condition
+        if (is_game_over()) {
+            puts("Game Over");
+            puts("You Win!");
+            printf("Score: %d\n", Score);
+            const int in_secs = Time / 1000;
+            const int mins = in_secs / 60;
+            const int secs = in_secs % 60;
+            printf("Time: %d:%d\n", mins, secs);
+            GameRunning = 0;
+            continue;
+        }
+
         SDL_Delay(1000 / 60);  // fps
     }
 
 
     return 0;
+}
+
+
+// return 1 if game over/player won
+int is_game_over()
+{
+    if (Score < TileCount)
+        return 0;  // not won
+    else
+        return 1;
 }
 
 
@@ -264,6 +298,7 @@ void update_state(const Uint8* Keys)
 
             tile_rect = RECT(t);
             if (SDL_HasIntersection(&ball_rect, &tile_rect) == SDL_TRUE) {
+                // ball has hit the tile
                 const int ball_center = ball_rect.x + (ball_rect.w / 2);
                 const int tile_center = tile_rect.x + (tile_rect.w / 2);
                 const int max_xspeed  = 7;
@@ -280,6 +315,7 @@ void update_state(const Uint8* Keys)
                 Xspeed = new_xspeed;  // based on offset
                 Yspeed = -Yspeed;     // just changes direction in Y
                 t->Hit++;
+                Score++;  // inc the score
                 // printf("%d = %d\n", i, t->Hit);
                 break;
             }
