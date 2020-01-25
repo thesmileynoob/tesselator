@@ -38,7 +38,7 @@ typedef struct object {
 
 // globals
 int GameRunning;    // game running flag
-int Score;          // current level score
+int Score;          // current level score. you win when Score == TileCount
 unsigned int Time;  // time taken to finish the level
 
 // int Cols      = 5;
@@ -219,8 +219,8 @@ int main(int argc, char const* argv[])
             puts("You Win!");
             printf("Score: %d\n", Score);
             const int in_secs = Time / 1000;
-            const int mins = in_secs / 60;
-            const int secs = in_secs % 60;
+            const int mins    = in_secs / 60;
+            const int secs    = in_secs % 60;
             printf("Time: %d:%d\n", mins, secs);
             GameRunning = 0;
             continue;

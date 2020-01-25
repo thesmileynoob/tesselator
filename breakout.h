@@ -13,4 +13,5 @@ SDL_Rect texture_rect(unsigned int col, unsigned int row);
 unsigned int get_dt();
 void update_state(const Uint8* Keys);
 int is_game_over();
+void reset_level();
 
