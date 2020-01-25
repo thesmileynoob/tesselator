@@ -1,3 +1,4 @@
+#include <SDL2/SDL_audio.h>
 #include <SDL2/SDL_keycode.h>
 #include <assert.h>
 #include <stdio.h>
@@ -7,6 +8,7 @@
 #include <SDL2/SDL_image.h>
 
 #include "breakout.h"
+#include "scratchpad.c" // for testing out new functions
 
 
 // Constants
@@ -72,10 +74,18 @@ int main(int argc, char const* argv[])
         _init_sdl(SCR_WIDTH, SCR_HEIGHT, &_window, &_renderer);
         assert(_window && _renderer);
 
+		play();
+
+        // load textures
         Texture = load_texture("../assets/tiles.png");
         assert(Texture);
 
-        // alloc
+        // load audio
+        {
+            SDL_AudioSpec wanted;
+        }
+
+        // alloc state
         Player = calloc(1, sizeof(object));
         Ball   = calloc(1, sizeof(object));
         Tiles  = calloc(TileCount, sizeof(object));
