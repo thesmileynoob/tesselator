@@ -51,6 +51,54 @@ Uint8 BgCol[3];  // r,g,b
 SDL_Window* _window     = NULL;
 SDL_Renderer* _renderer = NULL;
 
+
+// buggy af
+void effect_hl_nearest_tile()
+{
+    const int bx = LEFT(Ball);
+    const int by = TOP(Ball);
+
+    int nearest_id   = -1;    // calc this
+    int nearest_dist = 1000;  // and optionally this
+    for (int i = 0; i < TileCount; ++i) {
+        tile* t      = &Tiles[i];
+        const int tx = LEFT(t);
+        const int ty = TOP(t);
+
+        // see you _do_ use the stuff you learn in school!
+        const int xsqr = (bx - tx) * (bx - tx);
+        const int ysqr = (by - ty) * (by - ty);
+        const int dist = sqrt(xsqr + ysqr);
+        // printf("%d\n", dist);
+
+        const int not_below_ball = TOP(Ball) < BOTTOM(t);
+
+        if (1 && (dist < nearest_dist)) {
+            nearest_dist = dist;
+            nearest_id   = i;
+        }
+    }
+    if (nearest_id == -1) return;  // TODO: handle this differently?
+
+    // effect starts here
+
+    tile* t = &Tiles[nearest_id];
+    if (t->Hit) return;  // skip hit tiles
+    SDL_Rect rect = RECT(t);
+    const int pad = 5;
+    rect.x += pad;
+    rect.y += pad;
+    rect.w -= 2 * pad;
+    rect.h -= 2 * pad;
+    SDL_SetRenderDrawColor(_renderer, 255, 255, 255, 255);
+    SDL_RenderDrawRect(_renderer, &rect);
+    // SDL_Rect TexRect = texture_rect(t->TexRow, t->TexCol);
+
+    // SDL_Rect TileRect = {x, y, w - 2 * pad, h - 2 * pad};
+    // SDL_RenderCopy(_renderer, Texture, &TexRect, &TileRect);
+}
+
+
 /** here we go! */
 int main(int argc, char const* argv[])
 {
@@ -134,7 +182,7 @@ int main(int argc, char const* argv[])
 
         Time += get_dt();
 
-        // ANIMATE
+        // START ANIMATING
         {
             Player->IsAnimating = 1;
             animation* anim     = &Player->Anim;
@@ -152,6 +200,8 @@ int main(int argc, char const* argv[])
                 }
             }
         }
+        // END ANIMATING
+
 
         // START DRAWING
         SDL_SetRenderDrawColor(_renderer, BgCol[0], BgCol[1], BgCol[2], 255);
@@ -218,6 +268,12 @@ int main(int argc, char const* argv[])
             SDL_SetRenderDrawColor(_renderer, 25, 25, 255, 255);
             SDL_RenderFillRect(_renderer, &BallRect);
         }
+
+        // START "EFFECTS"
+        {
+            effect_hl_nearest_tile();
+        }
+        // END "EFFECTS"
 
 
         SDL_RenderPresent(_renderer);
