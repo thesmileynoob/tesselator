@@ -4,7 +4,7 @@
 struct object;
 
 typedef struct animation {
-    void (*anim_func)(struct object*);
+    int (*anim_func)(struct object*);
     int frame_count;
 } animation;
 
@@ -40,4 +40,5 @@ int is_game_over();
 void reset_level();
 
 // animations
-void tile_breakout_animation(tile* t);
+int anim_tile_breakout_animation(tile* t);
+int anim_player_expand(tile* t);

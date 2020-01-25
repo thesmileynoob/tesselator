@@ -76,7 +76,7 @@ int main(int argc, char const* argv[])
         Player->W = 155;
         Player->H = 35;
 
-        Player->Anim.anim_func   = &tile_breakout_animation;
+        Player->Anim.anim_func   = &anim_player_expand;  // press b to expand!
         Player->Anim.frame_count = 5;
 
         // ball
@@ -96,6 +96,9 @@ int main(int argc, char const* argv[])
             t->H      = TILE_HEIGHT;
             t->TexRow = i % 5;
             t->TexCol = (i + 2) % 5;
+
+            t->Anim.anim_func   = &anim_tile_breakout_animation;
+            t->Anim.frame_count = 5;
 
 
             xoff += TILE_WIDTH;
@@ -134,10 +137,19 @@ int main(int argc, char const* argv[])
         // ANIMATE
         {
             Player->IsAnimating = 1;
-            animation* anim = &Player->Anim;
+            animation* anim     = &Player->Anim;
             if (Player->IsAnimating && anim->frame_count) {
                 anim->frame_count--;
                 Player->Anim.anim_func(Player);
+            }
+
+
+            for (int i = 0; i < TileCount; ++i) {
+                tile* t = &Tiles[i];
+                if (t->Hit && t->IsAnimating) {
+                    t->Anim.frame_count--;
+                    t->Anim.anim_func(t);
+                }
             }
         }
 
@@ -180,7 +192,7 @@ int main(int argc, char const* argv[])
 
             for (int i = 0; i < TileCount; ++i) {
                 tile* t = &Tiles[i];
-                if (t->Hit) continue;  // skip hit tiles
+                if (!t->IsAnimating && t->Hit) continue;  // skip non-animating hit tiles
                 const int x      = pad + t->X;
                 const int y      = pad + t->Y;
                 const int w      = t->W;
@@ -241,6 +253,12 @@ int is_game_over()
         return 1;
 }
 
+void on_tile_got_hit(tile* t)
+{
+    t->Hit++;
+    t->IsAnimating = 1;  // start animating
+    Score++;             // inc the score
+}
 
 void update_state(const Uint8* Keys)
 {
@@ -295,6 +313,8 @@ void update_state(const Uint8* Keys)
             if (t->Hit) continue;
 
             tile_rect = RECT(t);
+
+            // most critical part of the whole codebase
             if (SDL_HasIntersection(&ball_rect, &tile_rect) == SDL_TRUE) {
                 // ball has hit the tile
                 const int ball_center = ball_rect.x + (ball_rect.w / 2);
@@ -309,12 +329,13 @@ void update_state(const Uint8* Keys)
                 if (new_xspeed > max_xspeed) new_xspeed = max_xspeed;    // clip max
                 if (new_xspeed < -max_xspeed) new_xspeed = -max_xspeed;  // clip max
 
+                // update Ball
                 // printf("%d -> %d\n", Xspeed, new_xspeed);
                 Xspeed = new_xspeed;  // based on offset
                 Yspeed = -Yspeed;     // just changes direction in Y
-                t->Hit++;
-                Score++;  // inc the score
-                // printf("%d = %d\n", i, t->Hit);
+
+                // perform the procedure
+                on_tile_got_hit(t);
                 break;
             }
         }
