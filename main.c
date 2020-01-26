@@ -281,10 +281,28 @@ int main(int argc, char const* argv[])
 
         // UI
         {
-            SDL_Texture* score_texture;
-            SDL_Rect score_texture_rect;
-            ui_score(Score, &score_texture, &score_texture_rect);
-            SDL_RenderCopy(_renderer, score_texture, NULL, &score_texture_rect);
+            // score
+            {
+
+                SDL_Texture* score_texture;
+                SDL_Rect score_texture_rect;
+                ui_score(Score, &score_texture, &score_texture_rect);
+                SDL_RenderCopy(_renderer, score_texture, NULL, &score_texture_rect);
+            }
+
+            // fps
+            {
+                static unsigned int old_time = 0; // ms
+                unsigned int new_time        = SDL_GetTicks(); // ms
+                unsigned int delta           = new_time - old_time; // ms
+                old_time                     = new_time;
+                const int fps = 1/ delta;
+
+                SDL_Texture* fps_texture;
+                SDL_Rect fps_texture_rect;
+                ui_fps(1000.0 / delta, &fps_texture, &fps_texture_rect);
+                SDL_RenderCopy(_renderer, fps_texture, NULL, &fps_texture_rect);
+            }
         }
 
 

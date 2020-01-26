@@ -65,3 +65,4 @@ int anim_player_expand(tile* t);
 
 // ui
 void ui_score(int score, SDL_Texture** outScoreTexture, SDL_Rect* outScoreRect);
+void ui_fps(float fps, SDL_Texture** outTexture, SDL_Rect* outRect);
