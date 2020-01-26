@@ -5,6 +5,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 
 #include "breakout.h"
 
@@ -30,6 +31,8 @@ int Yspeed = 8;
 
 SDL_Texture* Texture;
 Uint8 BgCol[3];  // r,g,b
+
+TTF_Font* UIFont;
 
 
 // env
@@ -108,6 +111,9 @@ int main(int argc, char const* argv[])
 
         Texture = load_texture("../assets/tiles.png");
         assert(Texture);
+
+        UIFont = TTF_OpenFont("../assets/font_04b.ttf", 25);
+        assert(UIFont);
 
         // alloc
         Player = calloc(1, sizeof(object));
@@ -268,11 +274,48 @@ int main(int argc, char const* argv[])
             SDL_RenderFillRect(_renderer, &BallRect);
         }
 
-        // START "EFFECTS"
+        // "EFFECTS"
         {
             effect_hl_nearest_tile();
         }
-        // END "EFFECTS"
+
+        // UI
+        {
+            static SDL_Texture* score_texture = NULL;
+            static int last_score             = -1;
+
+            int score_changed = last_score != Score;
+            // re-construct the score_texture
+            if (score_changed) {
+                // cleanup previous
+                if (score_texture) SDL_DestroyTexture(score_texture);
+
+                // construct the string to be displayed
+                const int max_len = 15;
+                char score_string[max_len];
+                snprintf(score_string, max_len, "Score: %d", Score);
+
+                // make a texture of the string
+                SDL_Surface* surface = TTF_RenderText_Solid(UIFont, score_string,
+                                                            (SDL_Color){255, 255, 255});
+                if (!surface) { printf("UIError: %s\n", TTF_GetError()); }
+
+                SDL_Texture* score_texture =
+                    SDL_CreateTextureFromSurface(_renderer, surface);
+                if (!score_texture) { printf("UIError: %s\n", SDL_GetError()); }
+
+                SDL_FreeSurface(surface);  // not needed now
+
+                // texture rect
+                SDL_Rect score_texture_rect;
+                score_texture_rect.x = score_texture_rect.y = 0;
+                TTF_SizeText(UIFont, score_string, &score_texture_rect.w,
+                             &score_texture_rect.h);
+
+                // render the texture
+                SDL_RenderCopy(_renderer, score_texture, NULL, &score_texture_rect);
+            }
+        }
 
 
         SDL_RenderPresent(_renderer);
@@ -286,7 +329,7 @@ int main(int argc, char const* argv[])
             const int in_secs = Time / 1000;
             const int mins    = in_secs / 60;
             const int secs    = in_secs % 60;
-            printf("Time: %d:%d\n", mins, secs);
+            printf("Time: %d mins and %d secs!\n", mins, secs);
             GameRunning = 0;
             continue;
         }
@@ -419,7 +462,7 @@ void update_state(const Uint8* Keys)
 // create SDL_Window and SDL_Renderer
 int _init_sdl(int Width, int Height, SDL_Window** outWin, SDL_Renderer** outRenderer)
 {
-    // init SDL proper
+    // SDL proper
     int err = 0;
     err     = SDL_Init(SDL_INIT_EVERYTHING);
     if (err) {
@@ -432,19 +475,31 @@ int _init_sdl(int Width, int Height, SDL_Window** outWin, SDL_Renderer** outRend
         _deinit_sdl();
     }
 
-    // init sdl image
+    // sdl image
     const int flags   = IMG_INIT_JPG | IMG_INIT_PNG;
     const int initted = IMG_Init(flags);
     if ((initted & flags) != flags) {
         puts("Failed to init SDL_Image");
         _deinit_sdl();
+        exit(1);
     }
+
+    // sdl ttf
+
+    err = TTF_Init();
+    if (err) {
+        puts("Failed to init SDL_ttf");
+        _deinit_sdl();
+        exit(1);
+    }
+
 
     return 0;
 }
 
 int _deinit_sdl()
 {
+    TTF_Quit();
     IMG_Quit();
     SDL_Quit();
     return 0;
