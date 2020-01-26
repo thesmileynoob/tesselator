@@ -36,9 +36,8 @@ Uint8 BgCol[3];  // r,g,b
 SDL_Window* _window     = NULL;
 SDL_Renderer* _renderer = NULL;
 
-
 // slightly buggy af
-int effect_hl_nearest_tile()
+tile* get_nearest_tile()
 {
     const int ballx = CENTER_X(Ball);
     const int bally = CENTER_Y(Ball);
@@ -56,9 +55,8 @@ int effect_hl_nearest_tile()
         // see you _do_ use the stuff you learn in school!
         const int xsqr = pow((ballx - tilex), 2);
         const int ysqr = pow((bally - tiley), 2);
-        assert(xsqr >= 0 && ysqr >= 0);
         const int dist = sqrt(xsqr + ysqr);
-        // printf("%d\n", dist);
+
         if (dist < nearest_tile_dist) {
             nearest_tile      = t;
             nearest_tile_id   = i;
@@ -66,27 +64,34 @@ int effect_hl_nearest_tile()
             // printf("nearest: id: %d, dist: %d\n", i, dist);
         }
     }
+
     if (nearest_tile == NULL) {
         printf("%s: no nearest tile found!\n", __func__);
-        return 0;
+        return NULL;
     }
     assert(nearest_tile_id != -1);
     assert(!nearest_tile->Hit);
+
     // printf("FINAL nearest: id: %d, dist: %d\n", nearest_tile_id, nearest_tile_dist);
+    return nearest_tile;
+}
 
-    // effect starts here
+int effect_hl_nearest_tile()
+{
 
+    tile* nearest_tile = get_nearest_tile();
+    if (nearest_tile == NULL) { return 0; }
 
     SDL_Rect rect = RECT(nearest_tile);
-    const int pad = 5;
+    const int pad = 8;
     rect.x += pad;
     rect.y += pad;
     rect.w -= 2 * pad;
     rect.h -= 2 * pad;
     if (SDL_SetRenderDrawBlendMode(_renderer, SDL_BLENDMODE_BLEND) == 1) {
-        puts("blendmode err");
+        puts("blendmode ERROR");
     }
-    SDL_SetRenderDrawColor(_renderer, 255, 255, 255, 120);
+    SDL_SetRenderDrawColor(_renderer, 255, 255, 255, 100);
     SDL_RenderFillRect(_renderer, &rect);
     SDL_SetRenderDrawBlendMode(_renderer, SDL_BLENDMODE_NONE);
     return 1;
