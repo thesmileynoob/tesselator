@@ -281,40 +281,10 @@ int main(int argc, char const* argv[])
 
         // UI
         {
-            static SDL_Texture* score_texture = NULL;
-            static int last_score             = -1;
-
-            int score_changed = last_score != Score;
-            // re-construct the score_texture
-            if (score_changed) {
-                // cleanup previous
-                if (score_texture) SDL_DestroyTexture(score_texture);
-
-                // construct the string to be displayed
-                const int max_len = 15;
-                char score_string[max_len];
-                snprintf(score_string, max_len, "Score: %d", Score);
-
-                // make a texture of the string
-                SDL_Surface* surface = TTF_RenderText_Solid(UIFont, score_string,
-                                                            (SDL_Color){255, 255, 255});
-                if (!surface) { printf("UIError: %s\n", TTF_GetError()); }
-
-                SDL_Texture* score_texture =
-                    SDL_CreateTextureFromSurface(_renderer, surface);
-                if (!score_texture) { printf("UIError: %s\n", SDL_GetError()); }
-
-                SDL_FreeSurface(surface);  // not needed now
-
-                // texture rect
-                SDL_Rect score_texture_rect;
-                score_texture_rect.x = score_texture_rect.y = 0;
-                TTF_SizeText(UIFont, score_string, &score_texture_rect.w,
-                             &score_texture_rect.h);
-
-                // render the texture
-                SDL_RenderCopy(_renderer, score_texture, NULL, &score_texture_rect);
-            }
+            SDL_Texture* score_texture;
+            SDL_Rect score_texture_rect;
+            ui_score(Score, &score_texture, &score_texture_rect);
+            SDL_RenderCopy(_renderer, score_texture, NULL, &score_texture_rect);
         }
 
 
@@ -580,7 +550,8 @@ SDL_Rect texture_rect(unsigned int col, unsigned int row)
  *      - move ball and tiles
  *      - check for collisions
  *      - update tiles and score
- *      - draw BG, TILES, BALL, PLAYER, SCORE
+ *      - apply effects
+ *      - draw BG, TILES, BALL, PLAYER, UI(SCORE)
  */
 
 /** NOTES:

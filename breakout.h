@@ -1,5 +1,6 @@
 #pragma once
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 
 struct object;
 
@@ -37,8 +38,8 @@ typedef struct object {
 #define LEFT(Obj) Obj->X
 #define RIGHT(Obj) Obj->X + Obj->W
 
-#define CENTER_X(Obj) LEFT(Obj) + (Obj->W/2);
-#define CENTER_Y(Obj) TOP(Obj) + (Obj->H/2);
+#define CENTER_X(Obj) LEFT(Obj) + (Obj->W / 2);
+#define CENTER_Y(Obj) TOP(Obj) + (Obj->H / 2);
 
 #define RECT(Obj) \
     (SDL_Rect) { Obj->X, Obj->Y, Obj->W, Obj->H }
@@ -61,3 +62,6 @@ void reset_level();
 // animations
 int anim_tile_breakout_animation(tile* t);
 int anim_player_expand(tile* t);
+
+// ui
+void ui_score(int score, SDL_Texture** outScoreTexture, SDL_Rect* outScoreRect);
