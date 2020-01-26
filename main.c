@@ -9,21 +9,6 @@
 #include "breakout.h"
 
 
-// Constants
-#define SCR_WIDTH 780
-#define SCR_HEIGHT 900
-#define TILE_WIDTH 10 * 16
-#define TILE_HEIGHT 10 * 8
-
-// Helpful macros
-#define TOP(Obj) Obj->Y
-#define BOTTOM(Obj) Obj->Y + Obj->H
-#define LEFT(Obj) Obj->X
-#define RIGHT(Obj) Obj->X + Obj->W
-#define RECT(Obj) \
-    (SDL_Rect) { Obj->X, Obj->Y, Obj->W, Obj->H }
-
-
 // globals
 int GameRunning;    // game running flag
 int Score;          // current level score. you win when Score == TileCount
@@ -52,50 +37,59 @@ SDL_Window* _window     = NULL;
 SDL_Renderer* _renderer = NULL;
 
 
-// buggy af
-void effect_hl_nearest_tile()
+// slightly buggy af
+int effect_hl_nearest_tile()
 {
-    const int bx = LEFT(Ball);
-    const int by = TOP(Ball);
+    const int ballx = CENTER_X(Ball);
+    const int bally = CENTER_Y(Ball);
 
-    int nearest_id   = -1;    // calc this
-    int nearest_dist = 1000;  // and optionally this
+    tile* nearest_tile    = NULL;
+    int nearest_tile_id   = -1;
+    int nearest_tile_dist = 10000;
     for (int i = 0; i < TileCount; ++i) {
-        tile* t      = &Tiles[i];
-        const int tx = LEFT(t);
-        const int ty = TOP(t);
+        tile* t = &Tiles[i];
+        if (t->Hit) continue;  // skip hit tiles
+
+        const int tilex = CENTER_X(t);
+        const int tiley = CENTER_Y(t);
 
         // see you _do_ use the stuff you learn in school!
-        const int xsqr = (bx - tx) * (bx - tx);
-        const int ysqr = (by - ty) * (by - ty);
+        const int xsqr = pow((ballx - tilex), 2);
+        const int ysqr = pow((bally - tiley), 2);
+        assert(xsqr >= 0 && ysqr >= 0);
         const int dist = sqrt(xsqr + ysqr);
         // printf("%d\n", dist);
-
-        const int not_below_ball = TOP(Ball) < BOTTOM(t);
-
-        if (1 && (dist < nearest_dist)) {
-            nearest_dist = dist;
-            nearest_id   = i;
+        if (dist < nearest_tile_dist) {
+            nearest_tile      = t;
+            nearest_tile_id   = i;
+            nearest_tile_dist = dist;
+            // printf("nearest: id: %d, dist: %d\n", i, dist);
         }
     }
-    if (nearest_id == -1) return;  // TODO: handle this differently?
+    if (nearest_tile == NULL) {
+        printf("%s: no nearest tile found!\n", __func__);
+        return 0;
+    }
+    assert(nearest_tile_id != -1);
+    assert(!nearest_tile->Hit);
+    // printf("FINAL nearest: id: %d, dist: %d\n", nearest_tile_id, nearest_tile_dist);
 
     // effect starts here
 
-    tile* t = &Tiles[nearest_id];
-    if (t->Hit) return;  // skip hit tiles
-    SDL_Rect rect = RECT(t);
+
+    SDL_Rect rect = RECT(nearest_tile);
     const int pad = 5;
     rect.x += pad;
     rect.y += pad;
     rect.w -= 2 * pad;
     rect.h -= 2 * pad;
-    SDL_SetRenderDrawColor(_renderer, 255, 255, 255, 255);
-    SDL_RenderDrawRect(_renderer, &rect);
-    // SDL_Rect TexRect = texture_rect(t->TexRow, t->TexCol);
-
-    // SDL_Rect TileRect = {x, y, w - 2 * pad, h - 2 * pad};
-    // SDL_RenderCopy(_renderer, Texture, &TexRect, &TileRect);
+    if (SDL_SetRenderDrawBlendMode(_renderer, SDL_BLENDMODE_BLEND) == 1) {
+        puts("blendmode err");
+    }
+    SDL_SetRenderDrawColor(_renderer, 255, 255, 255, 120);
+    SDL_RenderFillRect(_renderer, &rect);
+    SDL_SetRenderDrawBlendMode(_renderer, SDL_BLENDMODE_NONE);
+    return 1;
 }
 
 

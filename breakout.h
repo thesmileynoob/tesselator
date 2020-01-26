@@ -25,6 +25,25 @@ typedef struct object {
 } object, tile;
 
 
+// Constants
+#define SCR_WIDTH 780
+#define SCR_HEIGHT 900
+#define TILE_WIDTH 10 * 16
+#define TILE_HEIGHT 10 * 8
+
+// Helpful macros
+#define TOP(Obj) Obj->Y
+#define BOTTOM(Obj) Obj->Y + Obj->H
+#define LEFT(Obj) Obj->X
+#define RIGHT(Obj) Obj->X + Obj->W
+
+#define CENTER_X(Obj) LEFT(Obj) + (Obj->W/2);
+#define CENTER_Y(Obj) TOP(Obj) + (Obj->H/2);
+
+#define RECT(Obj) \
+    (SDL_Rect) { Obj->X, Obj->Y, Obj->W, Obj->H }
+
+
 // sdl
 int _init_sdl(int Width, int Height, SDL_Window** outWin, SDL_Renderer** outRenderer);
 int _deinit_sdl();
