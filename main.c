@@ -10,6 +10,10 @@
 #include "breakout.h"
 
 
+const int ParticleCount = 8;
+object* Particles;
+
+
 // globals
 int GameRunning;    // game running flag
 int Score;          // current level score. you win when Score == TileCount
@@ -110,6 +114,28 @@ int effect_slowdown_player(const Uint8* Keys)
     return 1;
 }
 
+void reset_particle(object* p)
+{
+    const int PX = SCR_WIDTH / 2;
+    const int PY = SCR_HEIGHT / 2;
+
+    const int max_vx = 1;
+    const int max_vy = 6;
+
+    p->X = PX;
+    p->Y = PY;
+    p->W = 20;
+    p->H = 20;
+
+
+    p->Vel = (vec2){rand() % 2 ? -1 : 1, rand() % max_vy};
+
+    if (p->Vel.Y <= 1) { p->Vel.Y += 1; }
+
+    p->TexRow = rand() % 5;
+    p->TexCol = rand() % 5;
+}
+
 
 /** here we go! */
 int main(int argc, char const* argv[])
@@ -126,54 +152,71 @@ int main(int argc, char const* argv[])
         assert(UIFont);
 
         // alloc
-        Player = calloc(1, sizeof(object));
-        Ball   = calloc(1, sizeof(object));
-        Tiles  = calloc(TileCount, sizeof(object));
-        assert(Player && Ball && Tiles);
+        Player    = calloc(1, sizeof(object));
+        Ball      = calloc(1, sizeof(object));
+        Tiles     = calloc(TileCount, sizeof(object));
+        Particles = calloc(ParticleCount, sizeof(object));
+        assert(Player && Ball && Tiles && Particles);
 
         // init gamestate
 
         // player
-        Player->X = SCR_WIDTH / 2;
-        Player->Y = 4.2 / 5.0 * SCR_HEIGHT;
-        Player->W = 155;
-        Player->H = 35;
+        {
 
-        Player->Vel = vec2_create(15, 0);
+            Player->X = SCR_WIDTH / 2;
+            Player->Y = 4.2 / 5.0 * SCR_HEIGHT;
+            Player->W = 155;
+            Player->H = 35;
 
-        Player->Anim.anim_func   = &anim_player_expand;  // press b to expand!
-        Player->Anim.frame_count = 5;
+            Player->Vel = vec2_create(15, 0);
+
+            Player->Anim.anim_func   = &anim_player_expand;  // press b to expand!
+            Player->Anim.frame_count = 5;
+        }
 
         // ball
-        Ball->X              = Player->X + 40;  // TODO: 40
-        Ball->Y              = Player->Y - 50;
-        Ball->W              = 25;
-        Ball->H              = 25;
-        const int BallXspeed = 2;
-        const int BallYspeed = 8;
-        Ball->Vel            = vec2_create(BallXspeed, BallYspeed);
+        {
+            Ball->X              = Player->X + 40;  // TODO: 40
+            Ball->Y              = Player->Y - 50;
+            Ball->W              = 25;
+            Ball->H              = 25;
+            const int BallXspeed = 2;
+            const int BallYspeed = 8;
+            Ball->Vel            = vec2_create(BallXspeed, BallYspeed);
+        }
 
         // tiles
-        int xoff, yoff;  // keep track of row and column
-        xoff = yoff = 0;
-        for (int i = 0; i < TileCount; ++i) {
-            tile* t   = &Tiles[i];
-            t->X      = xoff;
-            t->Y      = yoff;
-            t->W      = TILE_WIDTH;
-            t->H      = TILE_HEIGHT;
-            t->TexRow = i % 5;
-            t->TexCol = (i + 2) % 5;
+        {
+            int xoff, yoff;  // keep track of row and column
+            xoff = yoff = 0;
+            for (int i = 0; i < TileCount; ++i) {
+                tile* t   = &Tiles[i];
+                t->X      = xoff;
+                t->Y      = yoff;
+                t->W      = TILE_WIDTH;
+                t->H      = TILE_HEIGHT;
+                t->TexRow = i % 5;
+                t->TexCol = (i + 2) % 5;
 
-            t->Anim.anim_func   = &anim_tile_breakout_animation;
-            t->Anim.frame_count = 5;
+                t->Anim.anim_func   = &anim_tile_breakout_animation;
+                t->Anim.frame_count = 5;
 
 
-            xoff += TILE_WIDTH;
-            if (RIGHT(t) > SCR_WIDTH) {
-                // wrap back to first column and the next row
-                xoff = 0;
-                yoff += TILE_HEIGHT;
+                xoff += TILE_WIDTH;
+                if (RIGHT(t) > SCR_WIDTH) {
+                    // wrap back to first column and the next row
+                    xoff = 0;
+                    yoff += TILE_HEIGHT;
+                }
+            }
+        }
+
+        // particles
+        {
+
+            for (int i = 0; i < ParticleCount; ++i) {
+                object* p = &Particles[i];
+                reset_particle(p);
             }
         }
     }
@@ -292,6 +335,33 @@ int main(int argc, char const* argv[])
         // "EFFECTS"
         {
             effect_hl_nearest_tile();
+
+            // particles
+            {
+
+                const int xmin = 1. / 5 * SCR_WIDTH;
+                const int xmax = 4. / 5 * SCR_WIDTH;
+
+                const int ymin = 1. / 5 * SCR_HEIGHT;
+                const int ymax = 4. / 5 * SCR_HEIGHT;
+
+                for (int i = 0; i < ParticleCount; ++i) {
+                    object* p = &Particles[i];
+                    p->X += p->Vel.X;
+                    p->Y += p->Vel.Y;
+
+                    if (p->X > xmax || p->X < xmin || p->Y > ymax || p->Y < ymin) {
+                        // particle out of bounds
+                        // reset particle
+                        reset_particle(p);
+                    }
+
+
+                    SDL_Rect tex_rect      = texture_rect(p->TexRow, p->TexCol);
+                    SDL_Rect particle_rect = RECT(p);
+                    SDL_RenderCopy(_renderer, Texture, &tex_rect, &particle_rect);
+                }
+            }
         }
 
         // UI
