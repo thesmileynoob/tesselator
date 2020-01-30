@@ -2,6 +2,11 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
+typedef struct vec2 {
+    float X, Y;
+    float _X, _Y;  // original values
+} vec2;
+
 struct object;
 
 typedef struct animation {
@@ -11,16 +16,20 @@ typedef struct animation {
 
 // ball, tile and player are objects
 typedef struct object {
+    // general
     int X, Y, W, H;
     const char* Name;
 
-    // texture
-    int TexRow, TexCol;
-
+    // gameplay
     int Hit;
+    vec2 Velocity;
 
+    // animation
     int IsAnimating;
     animation Anim;
+
+    // graphics & texture
+    int TexRow, TexCol;
 
 
 } object, tile;
@@ -66,3 +75,6 @@ int anim_player_expand(tile* t);
 // ui
 void ui_score(int score, SDL_Texture** outScoreTexture, SDL_Rect* outScoreRect);
 void ui_fps(float fps, SDL_Texture** outTexture, SDL_Rect* outRect);
+
+// math
+void vec2_reset(vec2* v);

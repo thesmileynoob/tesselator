@@ -12,6 +12,7 @@ add_executable(debug
         main.c
         animations.c
         ui.c
+        math.c
         scratchpad.c
 )
 

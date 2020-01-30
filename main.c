@@ -129,6 +129,8 @@ int main(int argc, char const* argv[])
         Player->W = 155;
         Player->H = 35;
 
+        Player->Velocity = (vec2){15, 0};
+
         Player->Anim.anim_func   = &anim_player_expand;  // press b to expand!
         Player->Anim.frame_count = 5;
 
@@ -174,8 +176,9 @@ int main(int argc, char const* argv[])
             if (ev.type == SDL_KEYUP) {
                 if (sym == SDLK_RETURN) { Rows++; }
                 if (sym == SDLK_b) {
-                    printf("fc: %d\n", Player->Anim.frame_count);
-                    Player->Anim.frame_count += 5;
+                    Player->IsAnimating = 1;
+                    if (!Player->Anim.frame_count) Player->Anim.frame_count += 5;
+                    printf("frame_count: %d\n", Player->Anim.frame_count);
                 }
             } else if (ev.type == SDL_KEYDOWN) {
             }
@@ -189,8 +192,7 @@ int main(int argc, char const* argv[])
 
         // START ANIMATING
         {
-            Player->IsAnimating = 1;
-            animation* anim     = &Player->Anim;
+            animation* anim = &Player->Anim;
             if (Player->IsAnimating && anim->frame_count) {
                 anim->frame_count--;
                 Player->Anim.anim_func(Player);
@@ -349,7 +351,7 @@ void on_tile_got_hit(tile* t)
 void update_state(const Uint8* Keys)
 {
     // update player
-    const int playerspeed = 15;
+    const int playerspeed = Player->Velocity.X;
 
     // player movement
     if (Keys[SDL_SCANCODE_A]) {
