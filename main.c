@@ -184,8 +184,8 @@ int main(int argc, char const* argv[])
             Ball->Y              = Player->Y - 50;
             Ball->W              = 25;
             Ball->H              = 25;
-            const int BallXspeed = 3;
-            const int BallYspeed = 12;
+            const int BallXspeed = 5;
+            const int BallYspeed = 14;
             Ball->Vel            = vec2_create(BallXspeed, BallYspeed);
         }
 

@@ -1,5 +1,4 @@
 # TODO
-    - fix level dimensions (easy)
     - background graphics (easy)
     - multiple-hit tiles (easy)
     - load and save gamestate (easy)

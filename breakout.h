@@ -37,8 +37,8 @@ typedef struct object {
 
 
 // Constants
-#define SCR_WIDTH 780
-#define SCR_HEIGHT 900
+#define SCR_WIDTH 780 // NOTE: touching this causes bugs
+#define SCR_HEIGHT 1.3 * SCR_WIDTH
 #define TILE_WIDTH 10 * 16
 #define TILE_HEIGHT 10 * 8
 
