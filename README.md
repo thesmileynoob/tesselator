@@ -1,19 +1,60 @@
 # TODO
-- rename variables to match set conventions
-- add struct particle_src?
-- slow motion!
-- start screen
-- more level
-- add some powerups
-- sound (not for the faint of heart)
-- background graphics
+    - increase ball speed (easy)
+    - fix level dimensions (easy)
+    - background graphics (easy)
+    - multiple-hit tiles (easy)
+    - load and save gamestate (easy)
+    - rename variables to match set conventions (easy)
+
+    - dynamic combo, score, time-left text (med)
+    - add struct particle_src? (med)
+    - slow motion! (med?)
+    - more levels (med)
+    - add some powerups (med)
+
+    - start screen and pause menu (hard)
+    - sound (not for the faint of heart) (veteran)
+    - realistic breaking animation (veteran)
+
 
 
 # Ideas
-- slow motion break animation
-- some camera movement/screen shake on breaking a tile
+    - slow motion break animation
+    - some camera movement/screen shake on breaking a tile
+    - android support ( after steam release ;) )
 
 
+# High-level design
+## Level
+    ************
+    * - - - - -*
+    * - - - - -*    <- Tiles
+    * - - - - -*
+    * - -   - -*
+    * -     - -*
+    *          *
+    *     o    *    <- Ball
+    *   ----   *    <- Player
+    ************
+
+## Steps:
+    1. initialize external libs (SDL_*)
+    2. allocate memory for the gamestate
+    3. main loop:
+        - take user input and move player
+        - move ball and tiles
+        - check for collisions
+        - update tiles and score
+        - apply effects
+        - draw BG, TILES, BALL, PLAYER, UI(SCORE)
+
+## Style Conventions:
+    - global vars are capitalized: Tiles, Player etc.
+    - locals and params are snake_case
+    - functions are snake_case
+
+# BUGS:
+    What are those?
 
 
 # Setup
