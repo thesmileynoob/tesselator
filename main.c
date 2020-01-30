@@ -12,6 +12,8 @@
 
 const int ParticleCount = 8;
 object* Particles;
+int ParticleSrcX = SCR_WIDTH / 2;
+int ParticleSrcY = SCR_HEIGHT / 2;
 
 
 // globals
@@ -116,24 +118,26 @@ int effect_slowdown_player(const Uint8* Keys)
 
 void reset_particle(object* p)
 {
-    const int PX = SCR_WIDTH / 2;
-    const int PY = SCR_HEIGHT / 2;
+    const int max_vy = 3;
 
-    const int max_vx = 1;
-    const int max_vy = 6;
+    const int _rand_dir = rand() % 2 ? -1 : 1;  // random direction
 
-    p->X = PX;
-    p->Y = PY;
-    p->W = 20;
-    p->H = 20;
+    const int xoff = _rand_dir * (rand() % 13);
+    const int yoff = _rand_dir * (rand() % 25);
+
+    p->X = ParticleSrcX + xoff;
+    p->Y = ParticleSrcY + yoff;
+    p->W = (5) + rand() % 20;
+    p->H = (5) + rand() % 20;
 
 
-    p->Vel = (vec2){rand() % 2 ? -1 : 1, rand() % max_vy};
+    p->Vel = (vec2){rand() % 2 ? -1 : 1, -1 * rand() % max_vy};
 
-    if (p->Vel.Y <= 1) { p->Vel.Y += 1; }
 
     p->TexRow = rand() % 5;
     p->TexCol = rand() % 5;
+
+    p->Hidden = 0;
 }
 
 
@@ -217,6 +221,7 @@ int main(int argc, char const* argv[])
             for (int i = 0; i < ParticleCount; ++i) {
                 object* p = &Particles[i];
                 reset_particle(p);
+                p->Hidden = 1;  // initially hidden
             }
         }
     }
@@ -339,21 +344,22 @@ int main(int argc, char const* argv[])
             // particles
             {
 
-                const int xmin = 1. / 5 * SCR_WIDTH;
-                const int xmax = 4. / 5 * SCR_WIDTH;
+                const int xmin = ParticleSrcX - 100;
+                const int xmax = ParticleSrcX + 100;
 
-                const int ymin = 1. / 5 * SCR_HEIGHT;
-                const int ymax = 4. / 5 * SCR_HEIGHT;
+                const int ymin = ParticleSrcY - 100;
+                const int ymax = ParticleSrcY + 100;
 
                 for (int i = 0; i < ParticleCount; ++i) {
                     object* p = &Particles[i];
+                    if (p->Hidden) continue;
+
                     p->X += p->Vel.X;
                     p->Y += p->Vel.Y;
 
                     if (p->X > xmax || p->X < xmin || p->Y > ymax || p->Y < ymin) {
-                        // particle out of bounds
-                        // reset particle
-                        reset_particle(p);
+                        // particle out of bounds. Don't draw it.
+                        p->Hidden = 1;
                     }
 
 
@@ -424,11 +430,24 @@ int is_game_over()
         return 1;
 }
 
+// EVENT
+// do a bunch of stuff when a tile gets hit
 void on_tile_got_hit(tile* t)
 {
-    t->Hit++;
+    t->Hit++;            // mark it "Hit"
     t->IsAnimating = 1;  // start animating
     Score++;             // inc the score
+
+    // spawn particles
+    ParticleSrcX = CENTER_X(t);
+    ParticleSrcY = CENTER_Y(t);
+    for (int i = 0; i < ParticleCount; ++i) {
+        object* p = &Particles[i];
+        reset_particle(p);
+        // set particle texture matching the hit tile
+        p->TexRow = t->TexRow;
+        p->TexCol = t->TexCol;
+    }
 }
 
 void update_state(const Uint8* Keys)

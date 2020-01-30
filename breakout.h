@@ -31,6 +31,7 @@ typedef struct object {
     // graphics & texture
     int TexRow, TexCol;
 
+    int Hidden;
 
 } object, tile;
 
