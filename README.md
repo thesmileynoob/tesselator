@@ -1,3 +1,21 @@
+# TODO
+- rename variables to match set conventions
+- add struct particle_src?
+- slow motion!
+- start screen
+- more level
+- add some powerups
+- sound (not for the faint of heart)
+- background graphics
+
+
+# Ideas
+- slow motion break animation
+- some camera movement/screen shake on breaking a tile
+
+
+
+
 # Setup
 1. Install the following deps (Ubuntu 19.04)
 ```
