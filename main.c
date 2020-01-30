@@ -99,6 +99,18 @@ int effect_hl_nearest_tile()
 }
 
 
+// hold LSHIFT to slow down player. Useful for some "powerdown"
+int effect_slowdown_player(const Uint8* Keys)
+{
+    vec2_reset(&Player->Vel);
+
+    const int is_slowmotion = Keys[SDL_SCANCODE_LSHIFT];
+    const float factor      = is_slowmotion ? .5 : 1;
+    vec2_scale(&Player->Vel, factor);
+    return 1;
+}
+
+
 /** here we go! */
 int main(int argc, char const* argv[])
 {
@@ -139,7 +151,7 @@ int main(int argc, char const* argv[])
         Ball->H              = 25;
         const int BallXspeed = 2;
         const int BallYspeed = 8;
-        Ball->Vel       = vec2_create(BallXspeed, BallYspeed);
+        Ball->Vel            = vec2_create(BallXspeed, BallYspeed);
 
         // tiles
         int xoff, yoff;  // keep track of row and column
@@ -351,8 +363,10 @@ void on_tile_got_hit(tile* t)
 
 void update_state(const Uint8* Keys)
 {
-    // update player
+    // slow motion!
+    effect_slowdown_player(Keys);
     const int playerspeed = Player->Vel.X;
+
 
     // player movement
     if (Keys[SDL_SCANCODE_A]) {
@@ -377,17 +391,17 @@ void update_state(const Uint8* Keys)
 
     // ball-level collision
     if (LEFT(Ball) < 0) {
-        Ball->X          = 0;
+        Ball->X     = 0;
         Ball->Vel.X = -Ball->Vel.X;
     } else if (RIGHT(Ball) > SCR_WIDTH) {
-        Ball->X          = SCR_WIDTH - Ball->W;
+        Ball->X     = SCR_WIDTH - Ball->W;
         Ball->Vel.X = -Ball->Vel.X;
     }
     if (TOP(Ball) < 0) {
-        Ball->Y          = 0;
+        Ball->Y     = 0;
         Ball->Vel.Y = -Ball->Vel.Y;
     } else if (BOTTOM(Ball) > SCR_HEIGHT) {
-        Ball->Y          = SCR_HEIGHT - Ball->H;
+        Ball->Y     = SCR_HEIGHT - Ball->H;
         Ball->Vel.Y = -Ball->Vel.Y;
     }
 
@@ -420,7 +434,7 @@ void update_state(const Uint8* Keys)
 
                 // update Ball
                 // printf("%d -> %d\n", BallXspeed, new_xspeed);
-                Ball->Vel.X = new_xspeed;         // based on offset
+                Ball->Vel.X = new_xspeed;    // based on offset
                 Ball->Vel.Y = -Ball->Vel.Y;  // just changes direction in Y
 
                 // perform the procedure
@@ -444,7 +458,7 @@ void update_state(const Uint8* Keys)
             if (new_xspeed < -max_xspeed) new_xspeed = -max_xspeed;  // clip max
 
             // printf("%d -> %d\n", BallXspeed, new_xspeed);
-            Ball->Vel.X = new_xspeed;         // based on offset
+            Ball->Vel.X = new_xspeed;    // based on offset
             Ball->Vel.Y = -Ball->Vel.Y;  // just changes direction in Y
         }
     }
