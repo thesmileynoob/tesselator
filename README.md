@@ -1,5 +1,4 @@
 # TODO
-    - increase ball speed (easy)
     - fix level dimensions (easy)
     - background graphics (easy)
     - multiple-hit tiles (easy)

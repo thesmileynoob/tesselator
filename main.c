@@ -22,8 +22,8 @@ int Score;          // current level score. you win when Score == TileCount
 unsigned int Time;  // time taken to finish the level
 
 int Cols      = 5;
-int Rows      = 6;
-int TileCount = 5 * 6;
+int Rows      = 3;
+int TileCount = 5 * 3;
 // int Cols      = 2;
 // int Rows      = 2;
 // int TileCount = 2 * 2;
@@ -184,8 +184,8 @@ int main(int argc, char const* argv[])
             Ball->Y              = Player->Y - 50;
             Ball->W              = 25;
             Ball->H              = 25;
-            const int BallXspeed = 2;
-            const int BallYspeed = 8;
+            const int BallXspeed = 3;
+            const int BallYspeed = 12;
             Ball->Vel            = vec2_create(BallXspeed, BallYspeed);
         }
 
