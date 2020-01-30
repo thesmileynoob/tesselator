@@ -26,8 +26,6 @@ tile* Tiles = NULL;
 object* Player;
 
 object* Ball;
-int Xspeed = 2;
-int Yspeed = 8;
 
 SDL_Texture* Texture;
 Uint8 BgCol[3];  // r,g,b
@@ -129,16 +127,19 @@ int main(int argc, char const* argv[])
         Player->W = 155;
         Player->H = 35;
 
-        Player->Velocity = (vec2){15, 0};
+        Player->Vel = vec2_create(15, 0);
 
         Player->Anim.anim_func   = &anim_player_expand;  // press b to expand!
         Player->Anim.frame_count = 5;
 
         // ball
-        Ball->X = Player->X + 40;  // TODO: 40
-        Ball->Y = Player->Y - 50;
-        Ball->W = 25;
-        Ball->H = 25;
+        Ball->X              = Player->X + 40;  // TODO: 40
+        Ball->Y              = Player->Y - 50;
+        Ball->W              = 25;
+        Ball->H              = 25;
+        const int BallXspeed = 2;
+        const int BallYspeed = 8;
+        Ball->Vel       = vec2_create(BallXspeed, BallYspeed);
 
         // tiles
         int xoff, yoff;  // keep track of row and column
@@ -351,7 +352,7 @@ void on_tile_got_hit(tile* t)
 void update_state(const Uint8* Keys)
 {
     // update player
-    const int playerspeed = Player->Velocity.X;
+    const int playerspeed = Player->Vel.X;
 
     // player movement
     if (Keys[SDL_SCANCODE_A]) {
@@ -370,24 +371,24 @@ void update_state(const Uint8* Keys)
 
 
     // ball update
-    Ball->X += Xspeed;
-    Ball->Y += Yspeed;
+    Ball->X += Ball->Vel.X;
+    Ball->Y += Ball->Vel.Y;
 
 
     // ball-level collision
     if (LEFT(Ball) < 0) {
-        Ball->X = 0;
-        Xspeed  = -Xspeed;
+        Ball->X          = 0;
+        Ball->Vel.X = -Ball->Vel.X;
     } else if (RIGHT(Ball) > SCR_WIDTH) {
-        Ball->X = SCR_WIDTH - Ball->W;
-        Xspeed  = -Xspeed;
+        Ball->X          = SCR_WIDTH - Ball->W;
+        Ball->Vel.X = -Ball->Vel.X;
     }
     if (TOP(Ball) < 0) {
-        Ball->Y = 0;
-        Yspeed  = -Yspeed;
+        Ball->Y          = 0;
+        Ball->Vel.Y = -Ball->Vel.Y;
     } else if (BOTTOM(Ball) > SCR_HEIGHT) {
-        Ball->Y = SCR_HEIGHT - Ball->H;
-        Yspeed  = -Yspeed;
+        Ball->Y          = SCR_HEIGHT - Ball->H;
+        Ball->Vel.Y = -Ball->Vel.Y;
     }
 
     // Ball-Player check
@@ -418,9 +419,9 @@ void update_state(const Uint8* Keys)
                 if (new_xspeed < -max_xspeed) new_xspeed = -max_xspeed;  // clip max
 
                 // update Ball
-                // printf("%d -> %d\n", Xspeed, new_xspeed);
-                Xspeed = new_xspeed;  // based on offset
-                Yspeed = -Yspeed;     // just changes direction in Y
+                // printf("%d -> %d\n", BallXspeed, new_xspeed);
+                Ball->Vel.X = new_xspeed;         // based on offset
+                Ball->Vel.Y = -Ball->Vel.Y;  // just changes direction in Y
 
                 // perform the procedure
                 on_tile_got_hit(t);
@@ -442,9 +443,9 @@ void update_state(const Uint8* Keys)
             if (new_xspeed > max_xspeed) new_xspeed = max_xspeed;    // clip max
             if (new_xspeed < -max_xspeed) new_xspeed = -max_xspeed;  // clip max
 
-            // printf("%d -> %d\n", Xspeed, new_xspeed);
-            Xspeed = new_xspeed;  // based on offset
-            Yspeed = -Yspeed;     // just changes direction in Y
+            // printf("%d -> %d\n", BallXspeed, new_xspeed);
+            Ball->Vel.X = new_xspeed;         // based on offset
+            Ball->Vel.Y = -Ball->Vel.Y;  // just changes direction in Y
         }
     }
 }
