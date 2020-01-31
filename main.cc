@@ -156,10 +156,10 @@ int main(int argc, char const* argv[])
         assert(UIFont);
 
         // alloc
-        Player    = calloc(1, sizeof(object));
-        Ball      = calloc(1, sizeof(object));
-        Tiles     = calloc(TileCount, sizeof(object));
-        Particles = calloc(ParticleCount, sizeof(object));
+        Player    = (object*) calloc(1, sizeof(object));
+        Ball      = (object*) calloc(1, sizeof(object));
+        Tiles     = (object*) calloc(TileCount, sizeof(object));
+        Particles = (object*) calloc(ParticleCount, sizeof(object));
         assert(Player && Ball && Tiles && Particles);
 
         // init gamestate

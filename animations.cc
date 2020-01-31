@@ -16,10 +16,10 @@
  */
 int anim_tile_breakout_animation(tile* t)
 {
+    const int gravity = 3;
     CHECK_ANIM_END(t)
 
     // printf("animating: %s\n", __func__);
-    const int gravity = 3;
     static int yspeed = 0;
     yspeed -= gravity;
 
@@ -34,10 +34,10 @@ on_anim_end:
 
 int anim_player_expand(tile* t)
 {
+    const int amt = 5;
     CHECK_ANIM_END(t)
 
     // printf("animating: %s\n", __func__);
-    const int amt = 5;
     t->X -= amt;
     t->W += 2 * amt;
     return 1;
