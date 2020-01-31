@@ -2,42 +2,11 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
-typedef struct vec2 {
-    float X, Y;
-    float _X, _Y;  // original values
-} vec2;
-
-struct object;
-
-typedef struct animation {
-    int (*anim_func)(struct object*);
-    int frame_count;
-} animation;
-
-// ball, tile and player are objects
-typedef struct object {
-    // general
-    int X, Y, W, H;
-    const char* Name;
-
-    // gameplay
-    int Hit;
-    vec2 Vel;
-
-    // animation
-    int IsAnimating;
-    animation Anim;
-
-    // graphics & texture
-    int TexRow, TexCol;
-
-    int Hidden;
-
-} object, tile;
+#include "object.h"
 
 
 // Constants
-#define SCR_WIDTH 780 // NOTE: touching this causes bugs
+#define SCR_WIDTH 780  // NOTE: touching this causes bugs
 #define SCR_HEIGHT 1.3 * SCR_WIDTH
 #define TILE_WIDTH 10 * 16
 #define TILE_HEIGHT 10 * 8
