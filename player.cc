@@ -18,7 +18,37 @@ player::player()
 
 void player::Update()
 {
-    // TODO
+    const Uint8* Keys = SDL_GetKeyboardState(NULL);  // TODO?
+
+    // slow motion!
+    // hold LSHIFT to slow down player. Useful for some "powerdown"
+    {  // effect_slowdown_player()
+
+        vec2_reset(&Vel);
+
+        const int is_slowmotion = Keys[SDL_SCANCODE_LSHIFT];
+        const float factor      = is_slowmotion ? .5 : 1;
+        vec2_scale(&Vel, factor);
+    }
+
+
+    const int playerspeed = Vel.X;
+
+    // movement
+    if (Keys[SDL_SCANCODE_A]) {
+        X -= playerspeed;  // move left
+    }
+    if (Keys[SDL_SCANCODE_D]) {
+        X += playerspeed;  // move right
+    }
+
+    // actions
+    if (Keys[SDL_SCANCODE_SPACE]) { puts("launch ball!"); }
+
+
+    // player-level collision detection
+    if (LEFT(this) < 0) { X = 0; }
+    if (RIGHT(this) > SCR_WIDTH) { X = SCR_WIDTH - W; }
 }
 
 extern SDL_Renderer* _renderer;  // TODO

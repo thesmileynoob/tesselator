@@ -106,17 +106,6 @@ int effect_hl_nearest_tile()
 }
 
 
-// hold LSHIFT to slow down player. Useful for some "powerdown"
-int effect_slowdown_player(const Uint8* Keys)
-{
-    vec2_reset(&Player->Vel);
-
-    const int is_slowmotion = Keys[SDL_SCANCODE_LSHIFT];
-    const float factor      = is_slowmotion ? .5 : 1;
-    vec2_scale(&Player->Vel, factor);
-    return 1;
-}
-
 void reset_particle(object* p)
 {
     const int max_vy = 3;
@@ -314,6 +303,7 @@ int main(int argc, char const* argv[])
         {
             Player->Draw();
         }
+
         // BALL
         {
 
@@ -437,26 +427,7 @@ void on_tile_got_hit(tile* t)
 
 void update_state(const Uint8* Keys)
 {
-    // slow motion!
-    effect_slowdown_player(Keys);
-    const int playerspeed = Player->Vel.X;
-
-
-    // player movement
-    if (Keys[SDL_SCANCODE_A]) {
-        Player->X -= playerspeed;  // move left
-    }
-    if (Keys[SDL_SCANCODE_D]) {
-        Player->X += playerspeed;  // move right
-    }
-
-    // player actions
-    if (Keys[SDL_SCANCODE_SPACE]) { puts("launch ball!"); }
-
-    // player-level collision detection
-    if (LEFT(Player) < 0) { Player->X = 0; }
-    if (RIGHT(Player) > SCR_WIDTH) { Player->X = SCR_WIDTH - Player->W; }
-
+    Player->Update();
 
     // ball update
     Ball->X += Ball->Vel.X;
