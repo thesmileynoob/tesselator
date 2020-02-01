@@ -9,15 +9,15 @@ add_compile_options(-g -Wall -std=c++17)
 include_directories('/usr/include/SDL2' '-D_REENTRANT')
 
 add_executable(debug
-        main.cc
-        object.cc
-        player.cc
-        ball.cc
-        tile.cc
-        ui.cc
-        gfx.cc
-        math.cc
-        scratchpad.cc
+        src/main.cc
+        src/object.cc
+        src/player.cc
+        src/ball.cc
+        src/tile.cc
+        src/ui.cc
+        src/gfx.cc
+        src/math.cc
+        src/scratchpad.cc
 )
 
 target_link_libraries(debug m SDL2 SDL2_image SDL2_ttf)
