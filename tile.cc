@@ -18,6 +18,7 @@ extern SDL_Renderer* _renderer;  // TODO
 extern SDL_Texture* Texture;     // TODO
 void tile::Draw()
 {
+    object::Draw();
     if (Hit || Hidden) return;  // don't draw if Hit
     const int pad     = 12;
     const int x       = pad + X;

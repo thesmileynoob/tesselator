@@ -12,7 +12,6 @@ player::player()
     H = 35;
 
     Vel = vec2(15, 0);
-
 }
 
 void player::Update()
@@ -54,6 +53,8 @@ extern SDL_Renderer* _renderer;  // TODO
 extern SDL_Texture* Texture;     // TODO
 void player::Draw()
 {
+    object::Draw();
+
     SDL_Rect player_rect = RECT(this);
     SDL_Rect tex_rect    = texture_rect(1, 1);  // TODO
     SDL_RenderCopy(_renderer, Texture, &tex_rect, &player_rect);
