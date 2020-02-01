@@ -44,9 +44,12 @@ void player::Update()
     if (Keys[SDL_SCANCODE_SPACE]) { puts("launch ball!"); }
 
 
-    // player-level collision detection
-    if (LEFT(this) < 0) { X = 0; }
-    if (RIGHT(this) > SCR_WIDTH) { X = SCR_WIDTH - W; }
+    // resolve player-level collision
+    const int left_lim  = game::level_left;
+    const int right_lim = game::level_right;
+
+    if (LEFT(this) < left_lim) { X = left_lim; }
+    if (RIGHT(this) > right_lim) { X = right_lim - W; }
 }
 
 
@@ -56,7 +59,6 @@ void player::Draw()
 
     SDL_Rect player_rect = RECT(this);
     SDL_Rect tex_rect    = gfx::texture_rect(1, 1);  // TODO
-
     gfx::draw_texture(gfx::Texture, &tex_rect, &player_rect);
     // SDL_RenderCopy(gfx::_renderer, Texture, &tex_rect, &player_rect);
 }

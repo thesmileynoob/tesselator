@@ -26,7 +26,9 @@ public:
     virtual void Update();
     virtual void Draw();
 
-    // return true if object is inside these bounds
+    // inside game::* bounds
+    bool IsInside();
+    // inside given bounds
     virtual bool IsInside(float left, float right, float top, float bottom);
 };
 

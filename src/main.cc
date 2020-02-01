@@ -160,7 +160,8 @@ int main(int argc, char const* argv[])
 
                 // perform checks
                 if (pot_right > game::level_right) {
-                    printf("pot_right: %d, lvl_rig: %d\n", pot_right, game::level_right);
+                    // printf("pot_right: %d, lvl_rig: %d\n", pot_right,
+                    // game::level_right);
                     /// go to start of next row
                     xoff = 0;
                     yoff += TILE_HEIGHT;

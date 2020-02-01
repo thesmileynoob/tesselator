@@ -19,6 +19,12 @@ void object::Update() {}
 
 void object::Draw() {}
 
+bool object::IsInside()
+{
+    return IsInside(game::level_left, game::level_right, game::level_top,
+                    game::level_bottom);
+}
+
 bool object::IsInside(float left, float right, float top, float bottom)
 {
     const int within_x_range = LEFT(this) >= left && RIGHT(this) <= right;

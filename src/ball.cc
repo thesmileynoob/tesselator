@@ -35,29 +35,34 @@ void ball::Update()
 
 
     // ball-level collision
-    if (IsInside(0, SCR_WIDTH, 0, SCR_HEIGHT)) {
-        // skip collision check
+    if (IsInside()) {
+        // skip collision check and return
         return;
-    } else {
-        // resolve collision
-        // printf("resolving ball-level collision\n");
+    }
 
-        // resolve horizontal collision
-        if (LEFT(this) < 0) {
-            X     = 0;
-            Vel.X = -Vel.X;
-        } else if (RIGHT(this) > SCR_WIDTH) {
-            X     = SCR_WIDTH - W;
-            Vel.X = -Vel.X;
-        }
+    // resolve collision
+    // printf("resolving ball-level collision\n");
 
-        // resolve vertical collision
-        if (TOP(this) < 0) {
-            Y     = 0;
-            Vel.Y = -Vel.Y;
-        } else if (BOTTOM(this) > SCR_HEIGHT) {
-            Y     = SCR_HEIGHT - H;
-            Vel.Y = -Vel.Y;
-        }
+    // resolve horizontal collision
+    const int left_lim   = game::level_left;
+    const int right_lim  = game::level_right;
+    const int top_lim    = game::level_top;
+    const int bottom_lim = game::level_bottom;
+
+    if (LEFT(this) < left_lim) {
+        X     = left_lim;
+        Vel.X = -Vel.X;
+    } else if (RIGHT(this) > right_lim) {
+        X     = game::level_right - W;
+        Vel.X = -Vel.X;
+    }
+
+    // resolve vertical collision
+    if (TOP(this) < top_lim) {
+        Y     = top_lim;
+        Vel.Y = -Vel.Y;
+    } else if (BOTTOM(this) > game::level_bottom) {
+        Y     = game::level_bottom - H;
+        Vel.Y = -Vel.Y;
     }
 }
