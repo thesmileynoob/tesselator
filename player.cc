@@ -1,6 +1,7 @@
 #include "player.h"
 #include "breakout.h"
 
+#include <cassert>
 
 player::player()
     : object()  // call parent constructor
@@ -12,7 +13,6 @@ player::player()
 
     Vel = vec2(15, 0);
 
-    Anim.anim_func   = &anim_player_expand;  // press b to expand!
     Anim.frame_count = 5;
 }
 
@@ -50,6 +50,7 @@ void player::Update()
     if (RIGHT(this) > SCR_WIDTH) { X = SCR_WIDTH - W; }
 }
 
+
 extern SDL_Renderer* _renderer;  // TODO
 extern SDL_Texture* Texture;     // TODO
 void player::Draw()
@@ -57,4 +58,31 @@ void player::Draw()
     SDL_Rect player_rect = RECT(this);
     SDL_Rect tex_rect    = texture_rect(1, 1);  // TODO
     SDL_RenderCopy(_renderer, Texture, &tex_rect, &player_rect);
+}
+
+
+// TODO
+int player::Animate()
+{
+    // player expand animation
+    if (!IsAnimating || !Anim.frame_count) {
+        return 0;  // TODO
+    }
+
+    const int amt = 5;
+    if (Anim.frame_count <= 0) {
+        // reset
+        assert(IsAnimating == 1);
+        IsAnimating      = 0;
+        Anim.frame_count = 0;
+        return 0;
+    } else {
+        // run animation
+        Anim.frame_count--;
+
+        // printf("animating: %s\n", __func__);
+        X -= amt;
+        W += 2 * amt;
+        return 1;
+    }
 }

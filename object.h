@@ -30,5 +30,6 @@ public:
 
     virtual void Update();
     virtual void Draw();
+    virtual int Animate();
 };
 typedef object tile;

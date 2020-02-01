@@ -229,12 +229,7 @@ int main(int argc, char const* argv[])
 
         // START ANIMATING
         {
-            animation* anim = &Player->Anim;
-            if (Player->IsAnimating && anim->frame_count) {
-                anim->frame_count--;
-                Player->Anim.anim_func(Player);
-            }
-
+            Player->Animate();
 
             for (int i = 0; i < TileCount; ++i) {
                 tile* t = &Tiles[i];

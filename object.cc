@@ -20,3 +20,5 @@ object::object()
 void object::Update() {}
 
 void object::Draw() {}
+
+int object::Animate() { return 0; }
