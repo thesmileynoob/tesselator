@@ -21,7 +21,11 @@ void player::Update()
     // TODO
 }
 
+extern SDL_Renderer* _renderer;  // TODO
+extern SDL_Texture* Texture;     // TODO
 void player::Draw()
 {
-    // TODO
+    SDL_Rect player_rect = RECT(this);
+    SDL_Rect tex_rect    = texture_rect(1, 1);  // TODO
+    SDL_RenderCopy(_renderer, Texture, &tex_rect, &player_rect);
 }

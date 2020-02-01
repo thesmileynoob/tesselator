@@ -157,8 +157,8 @@ int main(int argc, char const* argv[])
         assert(UIFont);
 
         // alloc
-        Player = new player();
-        Ball   = (object*) calloc(1, sizeof(object));
+        Player    = new player();
+        Ball      = (object*) calloc(1, sizeof(object));
         Tiles     = (object*) calloc(TileCount, sizeof(object));
         Particles = (object*) calloc(ParticleCount, sizeof(object));
         assert(Player && Ball && Tiles && Particles);
@@ -312,9 +312,7 @@ int main(int argc, char const* argv[])
 
         // PLAYER
         {
-            SDL_Rect PlayerRect = RECT(Player);
-            SDL_Rect TexRect    = texture_rect(1, 1);  // TODO
-            SDL_RenderCopy(_renderer, Texture, &TexRect, &PlayerRect);
+            Player->Draw();
         }
         // BALL
         {
