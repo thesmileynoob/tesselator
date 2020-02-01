@@ -1,11 +1,8 @@
 #pragma once
 
 #include "animation.h"
+#include "math.h"
 
-typedef struct vec2 {
-    float X, Y;
-    float _X, _Y;  // original values
-} vec2;
 
 
 // ball, tile and player are objects

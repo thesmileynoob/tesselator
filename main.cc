@@ -162,7 +162,7 @@ int main(int argc, char const* argv[])
             Ball->H              = 25;
             const int BallXspeed = 5;
             const int BallYspeed = 14;
-            Ball->Vel            = vec2_create(BallXspeed, BallYspeed);
+            Ball->Vel            = vec2(BallXspeed, BallYspeed);
         }
 
         // tiles

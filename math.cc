@@ -1,21 +1,28 @@
 #include "breakout.h"
 
-vec2 vec2_create(float x, float y)
+vec2::vec2()
+    : vec2(0, 0)
 {
-    vec2 result = {x, y, x, y};
-    return result;
+}
+
+vec2::vec2(float x, float y)
+    : X(x)
+    , Y(y)
+    , _X(x)
+    , _Y(y)
+{
 }
 
 
-void vec2_scale(vec2* v, float scale)
+void vec2::Scale(float scale)
 {
-    v->X *= scale;
-    v->Y *= scale;
+    X *= scale;
+    Y *= scale;
 }
 
 
-void vec2_reset(vec2* v)
+void vec2::Reset()
 {
-    v->X = v->_X;
-    v->Y = v->_Y;
+    X = _X;
+    Y = _Y;
 }

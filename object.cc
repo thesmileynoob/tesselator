@@ -8,13 +8,13 @@ object::object()
 
     Name = "Object";
     Hit  = 0;
-    Vel  = vec2_create(0, 0);
+    Vel  = vec2();
 
     IsAnimating = 0;
     Anim        = {};
 
     TexRow = TexCol = 0;
-    Hidden = 0;
+    Hidden          = 0;
 }
 
 void object::Update() {}

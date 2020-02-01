@@ -45,8 +45,3 @@ int anim_player_expand(tile* t);
 // ui
 void ui_score(int score, SDL_Texture** outScoreTexture, SDL_Rect* outScoreRect);
 void ui_fps(float fps, SDL_Texture** outTexture, SDL_Rect* outRect);
-
-// math
-vec2 vec2_create(float x, float y);
-void vec2_scale(vec2* v, float scale);
-void vec2_reset(vec2* v);

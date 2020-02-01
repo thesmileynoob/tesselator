@@ -10,7 +10,7 @@ player::player()
     W = 155;
     H = 35;
 
-    Vel = vec2_create(15, 0);
+    Vel = vec2(15, 0);
 
     Anim.anim_func   = &anim_player_expand;  // press b to expand!
     Anim.frame_count = 5;
@@ -22,13 +22,12 @@ void player::Update()
 
     // slow motion!
     // hold LSHIFT to slow down player. Useful for some "powerdown"
-    {  // effect_slowdown_player()
-
-        vec2_reset(&Vel);
+    {                 // effect_slowdown_player()
+        Vel.Reset();  // make sure we have the original velocity
 
         const int is_slowmotion = Keys[SDL_SCANCODE_LSHIFT];
         const float factor      = is_slowmotion ? .5 : 1;
-        vec2_scale(&Vel, factor);
+        Vel.Scale(factor);  // decrease velocity
     }
 
 
