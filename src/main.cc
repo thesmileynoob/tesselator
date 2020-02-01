@@ -88,9 +88,9 @@ int effect_hl_nearest_tile()
     if (nearest_tile == NULL) { return 0; }
 
     SDL_Rect rect = RECT(nearest_tile);
-    const int pad = 8;
-    rect.x += pad;
-    rect.y += pad;
+    const int pad = 3;
+    rect.x += game::level_left + pad;
+    rect.y += game::level_top + pad;
     rect.w -= 2 * pad;
     rect.h -= 2 * pad;
     if (SDL_SetRenderDrawBlendMode(gfx::_renderer, SDL_BLENDMODE_BLEND) == 1) {
@@ -172,9 +172,10 @@ int main(int argc, char const* argv[])
                 pot_right  = xoff + TILE_WIDTH;
                 pot_bottom = yoff + TILE_HEIGHT;
 
-                printf("i: %d, xoff: %d, yoff:%d\n", i, xoff, yoff);
-                printf("i: %d, potential_bottom: %d, lev_bot:%d\n", i, pot_bottom,
-                       game::level_bottom);
+                // printf("i: %d, xoff: %d, yoff:%d\n", i, xoff, yoff);
+                // printf("i: %d, potential_bottom: %d, lev_bot:%d\n", i, pot_bottom,
+                //        game::level_bottom);
+
                 // validate potential values
                 assert(pot_left >= 0);
                 assert(pot_right <= game::level_right);
