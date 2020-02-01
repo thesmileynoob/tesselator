@@ -7,5 +7,5 @@ struct ball : public object {
 public:
     ball();
     void Update() override {};
-    void Draw() override {};
+    void Draw() override;
 };

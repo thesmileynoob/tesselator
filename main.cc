@@ -156,17 +156,6 @@ int main(int argc, char const* argv[])
 
         // init gamestate
 
-        // ball
-        {
-            // Ball->X              = Player->X + 40;  // TODO: 40
-            // Ball->Y              = Player->Y - 50;
-            // Ball->W              = 25;
-            // Ball->H              = 25;
-            // const int BallXspeed = 5;
-            // const int BallYspeed = 14;
-            // Ball->Vel            = vec2(BallXspeed, BallYspeed);
-        }
-
         // tiles
         {
             int xoff, yoff;  // keep track of row and column
@@ -303,10 +292,11 @@ int main(int argc, char const* argv[])
 
         // BALL
         {
+            Ball->Draw();
 
-            SDL_Rect BallRect = RECT(Ball);
-            SDL_SetRenderDrawColor(_renderer, 25, 25, 255, 255);
-            SDL_RenderFillRect(_renderer, &BallRect);
+            // SDL_Rect BallRect = RECT(Ball);
+            // SDL_SetRenderDrawColor(_renderer, 25, 25, 255, 255);
+            // SDL_RenderFillRect(_renderer, &BallRect);
         }
 
         // "EFFECTS"

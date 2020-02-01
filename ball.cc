@@ -19,6 +19,15 @@ ball::ball()
     Vel = vec2(BallXspeed, BallYspeed);
 }
 
+extern SDL_Renderer* _renderer;  // TODO
+extern SDL_Texture* Texture;     // TODO
+void ball::Draw()
+{
+    SDL_Rect ball_rect = RECT(this);
+    SDL_SetRenderDrawColor(_renderer, 25, 25, 255, 255);
+    SDL_RenderFillRect(_renderer, &ball_rect);
+}
+
 #if 0
 void player::Update()
 {
@@ -54,15 +63,6 @@ void player::Update()
     if (RIGHT(this) > SCR_WIDTH) { X = SCR_WIDTH - W; }
 }
 
-
-extern SDL_Renderer* _renderer;  // TODO
-extern SDL_Texture* Texture;     // TODO
-void player::Draw()
-{
-    SDL_Rect player_rect = RECT(this);
-    SDL_Rect tex_rect    = texture_rect(1, 1);  // TODO
-    SDL_RenderCopy(_renderer, Texture, &tex_rect, &player_rect);
-}
 
 
 // TODO
