@@ -239,19 +239,26 @@ int main(int argc, char const* argv[])
 
             // vertical lines
             for (int i = 0; i < Cols + 1; ++i) {
-                // printf("");
-                x1 = i * TILE_WIDTH;
-                y1 = 0;
-                x2 = x1;
+                const int xoff = i * TILE_WIDTH;
+
+                // x is constant
+                x1 = x2 = game::level_left + xoff;
+
+                y1 = game::level_top;
                 y2 = y1 + SCR_HEIGHT;
+
                 SDL_RenderDrawLine(gfx::_renderer, x1, y1, x2, y2);
             }
             // horizontal lines
             for (int i = 0; i < Rows + 1; ++i) {
-                x1 = 0;
-                y1 = i * TILE_HEIGHT;
-                x2 = x1 + SCR_WIDTH;
-                y2 = y1;
+                const int yoff = i * TILE_HEIGHT;
+
+                // y is constant
+                y1 = y2 = game::level_top + yoff;
+
+                x1 = game::level_left;
+                x2 = game::level_right;
+
                 SDL_RenderDrawLine(gfx::_renderer, x1, y1, x2, y2);
             }
         }
