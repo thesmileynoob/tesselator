@@ -170,10 +170,6 @@ int main(int argc, char const* argv[])
                 t->TexRow = i % 5;
                 t->TexCol = (i + 2) % 5;
 
-                // t->Anim.anim_func   = &anim_tile_breakout_animation;
-                // t->Anim.frame_count = 5;
-
-
                 xoff += TILE_WIDTH;
                 if (RIGHT(t) > SCR_WIDTH) {
                     // wrap back to first column and the next row
@@ -204,11 +200,6 @@ int main(int argc, char const* argv[])
 
             if (ev.type == SDL_KEYUP) {
                 if (sym == SDLK_RETURN) { Rows++; }
-                if (sym == SDLK_b) {
-                    Player->IsAnimating = 1;
-                    if (!Player->Anim.frame_count) Player->Anim.frame_count += 5;
-                    printf("frame_count: %d\n", Player->Anim.frame_count);
-                }
             } else if (ev.type == SDL_KEYDOWN) {
             }
         }
@@ -218,21 +209,6 @@ int main(int argc, char const* argv[])
 
 
         Time += get_dt();
-
-        // START ANIMATING
-        {
-            Player->Animate();
-
-            for (int i = 0; i < TileCount; ++i) {
-                tile* t = &Tiles[i];
-                if(t->Hit) t->Animate();
-                // if (t->Hit && t->IsAnimating) {
-                //     t->Anim.frame_count--;
-                //     t->Animate();
-                // }
-            }
-        }
-        // END ANIMATING
 
 
         // START DRAWING
@@ -271,7 +247,6 @@ int main(int argc, char const* argv[])
             SDL_SetRenderDrawColor(_renderer, 255, 0, 0, 255);
             for (int i = 0; i < TileCount; ++i) {
                 tile* t = &Tiles[i];
-                if (!t->IsAnimating && t->Hit) continue;  // skip non-animating hit tiles
                 t->Draw();
             }
         }
@@ -384,9 +359,9 @@ int is_game_over()
 // do a bunch of stuff when a tile gets hit
 void on_tile_got_hit(tile* t)
 {
-    t->Hit++;            // mark it "Hit"
-    t->IsAnimating = 1;  // start animating
-    Score++;             // inc the score
+    t->Hit++;       // mark it "Hit"
+    t->Hidden = 1;  // don't draw hit tiles
+    Score++;        // inc the score
 
     // spawn particles
     ParticleSrcX = CENTER_X(t);

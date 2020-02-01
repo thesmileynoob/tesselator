@@ -7,5 +7,4 @@ struct tile : public object {
 public:
     tile();
     void Draw() override;
-    int Animate() override;
 };

@@ -10,8 +10,6 @@ object::object()
     Hit  = 0;
     Vel  = vec2();
 
-    IsAnimating = 0;
-    Anim        = {};
 
     TexRow = TexCol = 0;
     Hidden          = 0;
@@ -20,8 +18,6 @@ object::object()
 void object::Update() {}
 
 void object::Draw() {}
-
-int object::Animate() { return 0; }
 
 bool object::IsInside(float left, float right, float top, float bottom)
 {

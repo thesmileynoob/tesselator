@@ -1,6 +1,4 @@
 #pragma once
-
-#include "animation.h"
 #include "math.h"
 
 
@@ -15,10 +13,6 @@ public:
     int Hit;
     vec2 Vel;
 
-    // animation
-    int IsAnimating;
-    animation Anim;
-
     // graphics & texture
     int TexRow, TexCol;
 
@@ -29,7 +23,6 @@ public:
 
     virtual void Update();
     virtual void Draw();
-    virtual int Animate();
 
     // return true if object is inside these bounds
     virtual bool IsInside(float left, float right, float top, float bottom);

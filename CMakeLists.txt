@@ -14,7 +14,6 @@ add_executable(debug
         player.cc
         ball.cc
         tile.cc
-        animations.cc
         ui.cc
         math.cc
         scratchpad.cc

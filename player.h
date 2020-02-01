@@ -8,5 +8,4 @@ public:
     player();
     void Update() override;
     void Draw() override;
-    int Animate() override;
 };
