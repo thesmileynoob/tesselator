@@ -225,10 +225,11 @@ int main(int argc, char const* argv[])
 
             for (int i = 0; i < TileCount; ++i) {
                 tile* t = &Tiles[i];
-                if (t->Hit && t->IsAnimating) {
-                    t->Anim.frame_count--;
-                    t->Animate();
-                }
+                if(t->Hit) t->Animate();
+                // if (t->Hit && t->IsAnimating) {
+                //     t->Anim.frame_count--;
+                //     t->Animate();
+                // }
             }
         }
         // END ANIMATING

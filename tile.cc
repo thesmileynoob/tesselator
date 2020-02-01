@@ -37,24 +37,27 @@ void tile::Draw()
  */
 int tile::Animate()
 {
-    if (!IsAnimating || !Anim.frame_count) {
+    if (!IsAnimating) {
         return 0;  // TODO
     }
 
     // anim_tile_breakout_animation(tile * t)
     // printf("animating: %s\n", __func__);
-    const int gravity = 3;
+    const int gravity = 2;
     static int yspeed = 0;
 
     if (Anim.frame_count <= 0) {
         // reset
-        assert(IsAnimating == 1);
+        // printf("RESET ANIM\n");
+        // assert(IsAnimating == 1);
         IsAnimating      = 0;
         Anim.frame_count = 0;
         yspeed           = 0;
         return 0;
     } else {
-
+        // run animation
+        // printf("run \n");
+        Anim.frame_count--;
 
         yspeed -= gravity;
         Y -= yspeed;
