@@ -9,7 +9,8 @@ typedef struct vec2 {
 
 
 // ball, tile and player are objects
-typedef struct object {
+struct object {
+public:
     // general
     int X, Y, W, H;
     const char* Name;
@@ -26,4 +27,9 @@ typedef struct object {
     int TexRow, TexCol;
 
     int Hidden;
-} object, tile;
+
+public:
+    virtual void Update();
+    virtual void Draw();
+};
+typedef object tile;

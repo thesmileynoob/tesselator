@@ -10,6 +10,8 @@ include_directories('/usr/include/SDL2' '-D_REENTRANT')
 
 add_executable(debug
         main.cc
+        object.cc
+        player.cc
         animations.cc
         ui.cc
         math.cc
