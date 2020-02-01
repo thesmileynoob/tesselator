@@ -7,9 +7,9 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 
+#include "ball.h"
 #include "breakout.h"
 #include "player.h"
-#include "ball.h"
 
 
 const int ParticleCount = 8;
@@ -147,7 +147,7 @@ int main(int argc, char const* argv[])
         assert(UIFont);
 
         // alloc
-        Player    = new player();
+        Player = new player();
         // Ball      = (object*) calloc(1, sizeof(object));
         Ball      = new ball();
         Tiles     = (object*) calloc(TileCount, sizeof(object));
@@ -293,10 +293,6 @@ int main(int argc, char const* argv[])
         // BALL
         {
             Ball->Draw();
-
-            // SDL_Rect BallRect = RECT(Ball);
-            // SDL_SetRenderDrawColor(_renderer, 25, 25, 255, 255);
-            // SDL_RenderFillRect(_renderer, &BallRect);
         }
 
         // "EFFECTS"
@@ -416,26 +412,7 @@ void update_state(const Uint8* Keys)
 {
     Player->Update();
 
-    // ball update
-    Ball->X += Ball->Vel.X;
-    Ball->Y += Ball->Vel.Y;
-
-
-    // ball-level collision
-    if (LEFT(Ball) < 0) {
-        Ball->X     = 0;
-        Ball->Vel.X = -Ball->Vel.X;
-    } else if (RIGHT(Ball) > SCR_WIDTH) {
-        Ball->X     = SCR_WIDTH - Ball->W;
-        Ball->Vel.X = -Ball->Vel.X;
-    }
-    if (TOP(Ball) < 0) {
-        Ball->Y     = 0;
-        Ball->Vel.Y = -Ball->Vel.Y;
-    } else if (BOTTOM(Ball) > SCR_HEIGHT) {
-        Ball->Y     = SCR_HEIGHT - Ball->H;
-        Ball->Vel.Y = -Ball->Vel.Y;
-    }
+    Ball->Update();
 
     // Ball-Player check
     {

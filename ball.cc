@@ -28,67 +28,26 @@ void ball::Draw()
     SDL_RenderFillRect(_renderer, &ball_rect);
 }
 
-#if 0
-void player::Update()
+void ball::Update()
 {
-    const Uint8* Keys = SDL_GetKeyboardState(NULL);  // TODO?
+    // ball update
+    X += Vel.X;
+    Y += Vel.Y;
 
-    // slow motion!
-    // hold LSHIFT to slow down player. Useful for some "powerdown"
-    {                 // effect_slowdown_player()
-        Vel.Reset();  // make sure we have the original velocity
 
-        const int is_slowmotion = Keys[SDL_SCANCODE_LSHIFT];
-        const float factor      = is_slowmotion ? .5 : 1;
-        Vel.Scale(factor);  // decrease velocity
+    // ball-level collision
+    if (LEFT(this) < 0) {
+        X     = 0;
+        Vel.X = -Vel.X;
+    } else if (RIGHT(this) > SCR_WIDTH) {
+        X     = SCR_WIDTH - W;
+        Vel.X = -Vel.X;
     }
-
-
-    const int playerspeed = Vel.X;
-
-    // movement
-    if (Keys[SDL_SCANCODE_A]) {
-        X -= playerspeed;  // move left
-    }
-    if (Keys[SDL_SCANCODE_D]) {
-        X += playerspeed;  // move right
-    }
-
-    // actions
-    if (Keys[SDL_SCANCODE_SPACE]) { puts("launch ball!"); }
-
-
-    // player-level collision detection
-    if (LEFT(this) < 0) { X = 0; }
-    if (RIGHT(this) > SCR_WIDTH) { X = SCR_WIDTH - W; }
-}
-
-
-
-// TODO
-int player::Animate()
-{
-    // player expand animation
-    if (!IsAnimating || !Anim.frame_count) {
-        return 0;  // TODO
-    }
-
-    const int amt = 5;
-    if (Anim.frame_count <= 0) {
-        // reset
-        assert(IsAnimating == 1);
-        IsAnimating      = 0;
-        Anim.frame_count = 0;
-        return 0;
-    } else {
-        // run animation
-        Anim.frame_count--;
-
-        // printf("animating: %s\n", __func__);
-        X -= amt;
-        W += 2 * amt;
-        return 1;
+    if (TOP(this) < 0) {
+        Y     = 0;
+        Vel.Y = -Vel.Y;
+    } else if (BOTTOM(this) > SCR_HEIGHT) {
+        Y     = SCR_HEIGHT - H;
+        Vel.Y = -Vel.Y;
     }
 }
-
-#endif
