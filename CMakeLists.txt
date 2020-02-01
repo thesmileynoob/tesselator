@@ -12,6 +12,7 @@ add_executable(debug
         main.cc
         object.cc
         player.cc
+        ball.cc
         animations.cc
         ui.cc
         math.cc

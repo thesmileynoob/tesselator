@@ -9,6 +9,7 @@
 
 #include "breakout.h"
 #include "player.h"
+#include "ball.h"
 
 
 const int ParticleCount = 8;
@@ -32,7 +33,7 @@ tile* Tiles = NULL;
 
 player* Player;
 
-object* Ball;
+ball* Ball;
 
 SDL_Texture* Texture;
 Uint8 BgCol[3];  // r,g,b
@@ -147,7 +148,8 @@ int main(int argc, char const* argv[])
 
         // alloc
         Player    = new player();
-        Ball      = (object*) calloc(1, sizeof(object));
+        // Ball      = (object*) calloc(1, sizeof(object));
+        Ball      = new ball();
         Tiles     = (object*) calloc(TileCount, sizeof(object));
         Particles = (object*) calloc(ParticleCount, sizeof(object));
         assert(Player && Ball && Tiles && Particles);
@@ -156,13 +158,13 @@ int main(int argc, char const* argv[])
 
         // ball
         {
-            Ball->X              = Player->X + 40;  // TODO: 40
-            Ball->Y              = Player->Y - 50;
-            Ball->W              = 25;
-            Ball->H              = 25;
-            const int BallXspeed = 5;
-            const int BallYspeed = 14;
-            Ball->Vel            = vec2(BallXspeed, BallYspeed);
+            // Ball->X              = Player->X + 40;  // TODO: 40
+            // Ball->Y              = Player->Y - 50;
+            // Ball->W              = 25;
+            // Ball->H              = 25;
+            // const int BallXspeed = 5;
+            // const int BallYspeed = 14;
+            // Ball->Vel            = vec2(BallXspeed, BallYspeed);
         }
 
         // tiles
