@@ -10,6 +10,7 @@
 #include "ball.h"
 #include "breakout.h"
 #include "player.h"
+#include "tile.h"
 
 
 const int ParticleCount = 8;
@@ -148,9 +149,9 @@ int main(int argc, char const* argv[])
 
         // alloc
         Player = new player();
-        // Ball      = (object*) calloc(1, sizeof(object));
-        Ball      = new ball();
-        Tiles     = (object*) calloc(TileCount, sizeof(object));
+        Ball   = new ball();
+        // Tiles     = (object*) calloc(TileCount, sizeof(object));
+        Tiles     = new tile[TileCount];
         Particles = (object*) calloc(ParticleCount, sizeof(object));
         assert(Player && Ball && Tiles && Particles);
 
@@ -161,16 +162,16 @@ int main(int argc, char const* argv[])
             int xoff, yoff;  // keep track of row and column
             xoff = yoff = 0;
             for (int i = 0; i < TileCount; ++i) {
-                tile* t   = &Tiles[i];
-                t->X      = xoff;
-                t->Y      = yoff;
-                t->W      = TILE_WIDTH;
-                t->H      = TILE_HEIGHT;
+                tile* t = &Tiles[i];
+                t->X    = xoff;
+                t->Y    = yoff;
+                // t->W      = TILE_WIDTH;
+                // t->H      = TILE_HEIGHT;
                 t->TexRow = i % 5;
                 t->TexCol = (i + 2) % 5;
 
-                t->Anim.anim_func   = &anim_tile_breakout_animation;
-                t->Anim.frame_count = 5;
+                // t->Anim.anim_func   = &anim_tile_breakout_animation;
+                // t->Anim.frame_count = 5;
 
 
                 xoff += TILE_WIDTH;
@@ -226,7 +227,7 @@ int main(int argc, char const* argv[])
                 tile* t = &Tiles[i];
                 if (t->Hit && t->IsAnimating) {
                     t->Anim.frame_count--;
-                    t->Anim.anim_func(t);
+                    t->Animate();
                 }
             }
         }
@@ -267,20 +268,10 @@ int main(int argc, char const* argv[])
         {
             // TILES
             SDL_SetRenderDrawColor(_renderer, 255, 0, 0, 255);
-
-            const int pad = 12;
-
             for (int i = 0; i < TileCount; ++i) {
                 tile* t = &Tiles[i];
                 if (!t->IsAnimating && t->Hit) continue;  // skip non-animating hit tiles
-                const int x      = pad + t->X;
-                const int y      = pad + t->Y;
-                const int w      = t->W;
-                const int h      = t->H;
-                SDL_Rect TexRect = texture_rect(t->TexRow, t->TexCol);
-
-                SDL_Rect TileRect = {x, y, w - 2 * pad, h - 2 * pad};
-                SDL_RenderCopy(_renderer, Texture, &TexRect, &TileRect);
+                t->Draw();
             }
         }
 

@@ -34,4 +34,3 @@ public:
     // return true if object is inside these bounds
     virtual bool IsInside(float left, float right, float top, float bottom);
 };
-typedef object tile;
