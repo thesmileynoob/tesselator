@@ -8,6 +8,7 @@
 #include <SDL2/SDL_ttf.h>
 
 #include "ball.h"
+#include "ui.h"
 #include "breakout.h"
 #include "gfx.h"
 #include "player.h"
@@ -291,7 +292,7 @@ int main(int argc, char const* argv[])
 
                 SDL_Texture* score_texture;
                 SDL_Rect score_texture_rect;
-                ui_score(Score, &score_texture, &score_texture_rect);
+                ui::gen_score(Score, &score_texture, &score_texture_rect);
                 // SDL_RenderCopy(gfx::_renderer, score_texture, NULL,
                 // &score_texture_rect);
                 gfx::draw_texture(score_texture, NULL, &score_texture_rect);
@@ -307,7 +308,7 @@ int main(int argc, char const* argv[])
 
                 SDL_Texture* fps_texture;
                 SDL_Rect fps_texture_rect;
-                ui_fps(fps, &fps_texture, &fps_texture_rect);
+                ui::gen_fps(fps, &fps_texture, &fps_texture_rect);
                 // SDL_RenderCopy(gfx::_renderer, fps_texture, NULL, &fps_texture_rect);
                 gfx::draw_texture(fps_texture, NULL, &fps_texture_rect);
             }

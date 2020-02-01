@@ -1,5 +1,6 @@
 #pragma once
 #include "math.h"
+#include "gfx.h"
 
 
 // ball, tile and player are objects

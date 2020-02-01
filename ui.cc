@@ -2,10 +2,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "gfx.h"
 #include "breakout.h"
 
+
+namespace ui
+{
+
 /** create a texture and its rect of the score string */
-void ui_score(int score, SDL_Texture** outTexture, SDL_Rect* outRect)
+void gen_score(int score, SDL_Texture** outTexture, SDL_Rect* outRect)
 {
     static SDL_Texture* texture = NULL;
     static SDL_Rect rect;
@@ -46,7 +51,7 @@ void ui_score(int score, SDL_Texture** outTexture, SDL_Rect* outRect)
     *outRect    = rect;
 }
 
-void ui_fps(float fps, SDL_Texture** outTexture, SDL_Rect* outRect)
+void gen_fps(float fps, SDL_Texture** outTexture, SDL_Rect* outRect)
 {
     static SDL_Texture* texture = NULL;
     static SDL_Rect rect;
@@ -86,3 +91,5 @@ void ui_fps(float fps, SDL_Texture** outTexture, SDL_Rect* outRect)
     *outTexture = texture;
     *outRect    = rect;
 }
+
+}  // namespace ui

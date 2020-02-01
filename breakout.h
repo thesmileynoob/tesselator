@@ -2,10 +2,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
-#include "gfx.h"
-#include "object.h"
-#include "tile.h"
-
 
 // Constants
 #define SCR_WIDTH 780  // NOTE: touching this causes bugs
@@ -30,11 +26,3 @@ unsigned int get_dt();
 void update_state(const Uint8* Keys);
 int is_game_over();
 void reset_level();
-
-// animations
-int anim_tile_breakout_animation(tile* t);
-int anim_player_expand(tile* t);
-
-// ui
-void ui_score(int score, SDL_Texture** outScoreTexture, SDL_Rect* outScoreRect);
-void ui_fps(float fps, SDL_Texture** outTexture, SDL_Rect* outRect);
