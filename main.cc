@@ -157,29 +157,13 @@ int main(int argc, char const* argv[])
         assert(UIFont);
 
         // alloc
-        // Player = (object*) calloc(1, sizeof(object));
-        Player = new player;
-        // memset(Player, 0, sizeof(player));
+        Player = new player();
         Ball   = (object*) calloc(1, sizeof(object));
         Tiles     = (object*) calloc(TileCount, sizeof(object));
         Particles = (object*) calloc(ParticleCount, sizeof(object));
         assert(Player && Ball && Tiles && Particles);
 
         // init gamestate
-
-        // player
-        {
-
-            Player->X = SCR_WIDTH / 2;
-            Player->Y = 4.2 / 5.0 * SCR_HEIGHT;
-            Player->W = 155;
-            Player->H = 35;
-
-            Player->Vel = vec2_create(15, 0);
-
-            Player->Anim.anim_func   = &anim_player_expand;  // press b to expand!
-            Player->Anim.frame_count = 5;
-        }
 
         // ball
         {
