@@ -414,10 +414,9 @@ void update_state(const Uint8* Keys)
 
     Ball->Update();
 
-    // Ball-Player check
+    // ball-tiles collision
     {
-        SDL_Rect ball_rect   = RECT(Ball);
-        SDL_Rect player_rect = RECT(Player);
+        SDL_Rect ball_rect = RECT(Ball);
 
         SDL_Rect tile_rect;
         for (int i = 0; i < TileCount; ++i) {
@@ -432,7 +431,6 @@ void update_state(const Uint8* Keys)
                 const int ball_center = ball_rect.x + (ball_rect.w / 2);
                 const int tile_center = tile_rect.x + (tile_rect.w / 2);
                 const int max_xspeed  = 7;
-
                 // -ve means ball to the left
                 const int offset = (ball_center - tile_center) / 2;
 
@@ -451,7 +449,12 @@ void update_state(const Uint8* Keys)
                 break;
             }
         }
+    }
 
+    // ball-player collision
+    {
+        SDL_Rect ball_rect   = RECT(Ball);
+        SDL_Rect player_rect = RECT(Player);
         if (SDL_HasIntersection(&ball_rect, &player_rect) == SDL_TRUE) {
 
             const int ball_center   = ball_rect.x + (ball_rect.w / 2);

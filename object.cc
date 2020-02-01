@@ -22,3 +22,10 @@ void object::Update() {}
 void object::Draw() {}
 
 int object::Animate() { return 0; }
+
+bool object::IsInside(float left, float right, float top, float bottom)
+{
+    const int within_x_range = LEFT(this) >= left && RIGHT(this) <= right;
+    const int within_y_range = TOP(this) >= top && BOTTOM(this) <= bottom;
+    return within_x_range && within_y_range;
+}

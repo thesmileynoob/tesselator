@@ -4,7 +4,6 @@
 #include "math.h"
 
 
-
 // ball, tile and player are objects
 struct object {
 public:
@@ -31,5 +30,8 @@ public:
     virtual void Update();
     virtual void Draw();
     virtual int Animate();
+
+    // return true if object is inside these bounds
+    virtual bool IsInside(float left, float right, float top, float bottom);
 };
 typedef object tile;

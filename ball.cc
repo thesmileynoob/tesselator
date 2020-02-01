@@ -36,18 +36,29 @@ void ball::Update()
 
 
     // ball-level collision
-    if (LEFT(this) < 0) {
-        X     = 0;
-        Vel.X = -Vel.X;
-    } else if (RIGHT(this) > SCR_WIDTH) {
-        X     = SCR_WIDTH - W;
-        Vel.X = -Vel.X;
-    }
-    if (TOP(this) < 0) {
-        Y     = 0;
-        Vel.Y = -Vel.Y;
-    } else if (BOTTOM(this) > SCR_HEIGHT) {
-        Y     = SCR_HEIGHT - H;
-        Vel.Y = -Vel.Y;
+    if (IsInside(0, SCR_WIDTH, 0, SCR_HEIGHT)) {
+        // skip collision check
+        return;
+    } else {
+        // resolve collision
+        // printf("resolving ball-level collision\n");
+
+        // resolve horizontal collision
+        if (LEFT(this) < 0) {
+            X     = 0;
+            Vel.X = -Vel.X;
+        } else if (RIGHT(this) > SCR_WIDTH) {
+            X     = SCR_WIDTH - W;
+            Vel.X = -Vel.X;
+        }
+
+        // resolve vertical collision
+        if (TOP(this) < 0) {
+            Y     = 0;
+            Vel.Y = -Vel.Y;
+        } else if (BOTTOM(this) > SCR_HEIGHT) {
+            Y     = SCR_HEIGHT - H;
+            Vel.Y = -Vel.Y;
+        }
     }
 }
