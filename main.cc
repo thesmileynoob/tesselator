@@ -8,6 +8,7 @@
 #include <SDL2/SDL_ttf.h>
 
 #include "breakout.h"
+#include "player.h"
 
 
 const int ParticleCount = 8;
@@ -29,7 +30,7 @@ int TileCount = 5 * 3;
 // int TileCount = 2 * 2;
 tile* Tiles = NULL;
 
-object* Player;
+player* Player;
 
 object* Ball;
 
@@ -156,7 +157,9 @@ int main(int argc, char const* argv[])
         assert(UIFont);
 
         // alloc
-        Player = (object*) calloc(1, sizeof(object));
+        // Player = (object*) calloc(1, sizeof(object));
+        Player = new player;
+        // memset(Player, 0, sizeof(player));
         Ball   = (object*) calloc(1, sizeof(object));
         Tiles     = (object*) calloc(TileCount, sizeof(object));
         Particles = (object*) calloc(ParticleCount, sizeof(object));

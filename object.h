@@ -29,6 +29,8 @@ public:
     int Hidden;
 
 public:
+    object();
+
     virtual void Update();
     virtual void Draw();
 };
