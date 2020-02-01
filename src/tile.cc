@@ -19,8 +19,8 @@ void tile::Draw()
     object::Draw();
     if (Hit || Hidden) return;  // don't draw if Hit
     const int pad     = 12;
-    const int x       = pad + X;
-    const int y       = pad + Y;
+    const int x       = game::level_left + pad + X;
+    const int y       = game::level_top + pad + Y;
     const int w       = W;
     const int h       = H;
     SDL_Rect tex_rect = gfx::texture_rect(TexRow, TexCol);

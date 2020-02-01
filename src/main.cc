@@ -8,11 +8,12 @@
 #include <SDL2/SDL_ttf.h>
 
 #include "ball.h"
-#include "ui.h"
 #include "breakout.h"
 #include "gfx.h"
 #include "player.h"
 #include "tile.h"
+#include "ui.h"
+/// TODO: draw frame
 
 
 const int ParticleCount = 8;
@@ -133,13 +134,10 @@ int main(int argc, char const* argv[])
     // INIT
     {
         gfx::init(SCR_WIDTH, SCR_HEIGHT);
-        // _init_sdl(SCR_WIDTH, SCR_HEIGHT, &_window, &_renderer);
-
 
         // alloc
-        Player = new player();
-        Ball   = new ball();
-        // Tiles     = (object*) calloc(TileCount, sizeof(object));
+        Player    = new player();
+        Ball      = new ball();
         Tiles     = new tile[TileCount];
         Particles = (object*) calloc(ParticleCount, sizeof(object));
         assert(Player && Ball && Tiles && Particles);
@@ -148,23 +146,51 @@ int main(int argc, char const* argv[])
 
         // tiles
         {
-            int xoff, yoff;  // keep track of row and column
-            xoff = yoff = 0;
-            for (int i = 0; i < TileCount; ++i) {
-                tile* t = &Tiles[i];
-                t->X    = xoff;
-                t->Y    = yoff;
-                // t->W      = TILE_WIDTH;
-                // t->H      = TILE_HEIGHT;
-                t->TexRow = i % 5;
-                t->TexCol = (i + 2) % 5;
+            // layout
+            int xoff, yoff;                   // keep track of row and column
+            for (int i = 0, xoff = yoff = 0;  // top-left corner
+                 i < TileCount;               // break condition
+                 ++i, xoff += TILE_WIDTH) {
 
-                xoff += TILE_WIDTH;
-                if (RIGHT(t) > SCR_WIDTH) {
-                    // wrap back to first column and the next row
+                // LET: potential values
+                int pot_left   = xoff;
+                int pot_top    = yoff;
+                int pot_right  = xoff + TILE_WIDTH;
+                int pot_bottom = yoff + TILE_HEIGHT;
+
+                // perform checks
+                if (pot_right > game::level_right) {
+                    printf("pot_right: %d, lvl_rig: %d\n", pot_right, game::level_right);
+                    /// go to start of next row
                     xoff = 0;
                     yoff += TILE_HEIGHT;
                 }
+
+                // recalculate potential values
+                pot_left   = xoff;
+                pot_top    = yoff;
+                pot_right  = xoff + TILE_WIDTH;
+                pot_bottom = yoff + TILE_HEIGHT;
+
+                printf("i: %d, xoff: %d, yoff:%d\n", i, xoff, yoff);
+                printf("i: %d, potential_bottom: %d, lev_bot:%d\n", i, pot_bottom,
+                       game::level_bottom);
+                // validate potential values
+                assert(pot_left >= 0);
+                assert(pot_right <= game::level_right);
+                assert(pot_top >= 0);
+                assert(pot_bottom <= game::level_bottom);
+
+                tile* t = &Tiles[i];
+                t->X    = pot_left;
+                t->Y    = pot_top;
+            }
+
+            // everything else
+            for (int i = 0; i < TileCount; ++i) {
+                tile* t   = &Tiles[i];
+                t->TexRow = i % 5;
+                t->TexCol = (i + 2) % 5;
             }
         }
 
@@ -283,6 +309,25 @@ int main(int argc, char const* argv[])
                     // SDL_RenderCopy(gfx::_renderer, Texture, &tex_rect, &particle_rect);
                 }
             }
+        }
+
+        // FRAME
+        {
+            // draw 4 thick filled rects. one for each side of the frame.
+            const int fw      = FRAME_WIDTH;
+            const int swidth  = (int) SCR_WIDTH;
+            const int sheight = (int) SCR_HEIGHT;
+
+
+            // upper wall
+            SDL_Rect top_rect   = {0, 0, swidth, fw};
+            SDL_Rect bot_rect   = {0, sheight - fw, swidth, fw};
+            SDL_Rect left_rect  = {0, fw, fw, sheight - 2 * fw};
+            SDL_Rect right_rect = {swidth - fw, fw, fw, sheight - 2 * fw};
+            SDL_RenderDrawRect(gfx::_renderer, &top_rect);
+            SDL_RenderDrawRect(gfx::_renderer, &bot_rect);
+            SDL_RenderDrawRect(gfx::_renderer, &left_rect);
+            SDL_RenderDrawRect(gfx::_renderer, &right_rect);
         }
 
         // UI

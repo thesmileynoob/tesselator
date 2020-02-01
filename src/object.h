@@ -1,6 +1,7 @@
 #pragma once
-#include "math.h"
+#include "breakout.h"
 #include "gfx.h"
+#include "math.h"
 
 
 // ball, tile and player are objects
@@ -28,3 +29,13 @@ public:
     // return true if object is inside these bounds
     virtual bool IsInside(float left, float right, float top, float bottom);
 };
+
+namespace game
+{
+
+extern int level_left;
+extern int level_right;
+extern int level_top;
+extern int level_bottom;
+
+}  // namespace game

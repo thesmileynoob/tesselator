@@ -25,3 +25,14 @@ bool object::IsInside(float left, float right, float top, float bottom)
     const int within_y_range = TOP(this) >= top && BOTTOM(this) <= bottom;
     return within_x_range && within_y_range;
 }
+
+namespace game
+{
+
+// todo move to main.cc
+int level_left   = FRAME_WIDTH;
+int level_right  = SCR_WIDTH - FRAME_WIDTH;
+int level_top    = FRAME_WIDTH;
+int level_bottom = SCR_HEIGHT - FRAME_WIDTH;
+
+}  // namespace game

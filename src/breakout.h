@@ -5,9 +5,12 @@
 
 // Constants
 #define SCR_WIDTH 780  // NOTE: touching this causes bugs
-#define SCR_HEIGHT 1.3 * SCR_WIDTH
-#define TILE_WIDTH 10 * 16
-#define TILE_HEIGHT 10 * 8
+#define SCR_HEIGHT (int) (1.3 * SCR_WIDTH)
+#define FRAME_WIDTH 30
+#define _real_tile_width 16  // px
+#define _real_tile_height 8  // px
+#define TILE_WIDTH (9 * _real_tile_width)
+#define TILE_HEIGHT (9 * _real_tile_height)
 
 // Helpful macros
 #define TOP(Obj) Obj->Y

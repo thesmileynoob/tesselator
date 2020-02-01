@@ -1,4 +1,5 @@
 #include "gfx.h"
+#include "breakout.h"
 
 namespace gfx
 {
