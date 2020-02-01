@@ -336,6 +336,10 @@ int main(int argc, char const* argv[])
             SDL_RenderDrawRect(gfx::_renderer, &bot_rect);
             SDL_RenderDrawRect(gfx::_renderer, &left_rect);
             SDL_RenderDrawRect(gfx::_renderer, &right_rect);
+
+            // fill top rect
+            SDL_SetRenderDrawColor(gfx::_renderer, 40, 120, 40, 255);
+            SDL_RenderFillRect(gfx::_renderer, &top_rect);
         }
 
         // UI

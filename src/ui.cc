@@ -2,12 +2,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "gfx.h"
 #include "breakout.h"
+#include "gfx.h"
 
 
 namespace ui
 {
+
+SDL_Color _score_color{255, 0, 0, 255};
+SDL_Color _fps_color{0, 0, 255, 255};
 
 /** create a texture and its rect of the score string */
 void gen_score(int score, SDL_Texture** outTexture, SDL_Rect* outRect)
@@ -32,8 +35,7 @@ void gen_score(int score, SDL_Texture** outTexture, SDL_Rect* outRect)
         snprintf(string, max_len, "Score: %d", score);
 
         // make a texture of the string
-        SDL_Surface* surface =
-            TTF_RenderText_Solid(gfx::UIFont, string, (SDL_Color){255, 255, 255});
+        SDL_Surface* surface = TTF_RenderText_Solid(gfx::UIFont, string, _score_color);
         if (!surface) { printf("UIError: %s\n", TTF_GetError()); }
 
         texture = SDL_CreateTextureFromSurface(gfx::_renderer, surface);
@@ -72,8 +74,7 @@ void gen_fps(float fps, SDL_Texture** outTexture, SDL_Rect* outRect)
         snprintf(string, max_len, "%.1f FPS", fps);
 
         // make a texture of the string
-        SDL_Surface* surface =
-            TTF_RenderText_Solid(gfx::UIFont, string, (SDL_Color){255, 255, 255});
+        SDL_Surface* surface = TTF_RenderText_Solid(gfx::UIFont, string, _fps_color);
         if (!surface) { printf("UIError: %s\n", TTF_GetError()); }
 
         texture = SDL_CreateTextureFromSurface(gfx::_renderer, surface);
