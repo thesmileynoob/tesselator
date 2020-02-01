@@ -14,8 +14,6 @@ tile::tile()
     H = TILE_HEIGHT;
 }
 
-extern SDL_Renderer* _renderer;  // TODO
-extern SDL_Texture* Texture;     // TODO
 void tile::Draw()
 {
     object::Draw();
@@ -25,8 +23,9 @@ void tile::Draw()
     const int y       = pad + Y;
     const int w       = W;
     const int h       = H;
-    SDL_Rect tex_rect = texture_rect(TexRow, TexCol);
+    SDL_Rect tex_rect = gfx::texture_rect(TexRow, TexCol);
 
     SDL_Rect tile_rect = {x, y, w - 2 * pad, h - 2 * pad};
-    SDL_RenderCopy(_renderer, Texture, &tex_rect, &tile_rect);
+    // SDL_RenderCopy(gfx::_renderer, Texture, &tex_rect, &tile_rect);
+    gfx::draw_texture(gfx::Texture, &tex_rect, &tile_rect);
 }

@@ -19,14 +19,12 @@ ball::ball()
     Vel = vec2(BallXspeed, BallYspeed);
 }
 
-extern SDL_Renderer* _renderer;  // TODO
-extern SDL_Texture* Texture;     // TODO
 void ball::Draw()
 {
     object::Draw();
     SDL_Rect ball_rect = RECT(this);
-    SDL_SetRenderDrawColor(_renderer, 25, 25, 255, 255);
-    SDL_RenderFillRect(_renderer, &ball_rect);
+    SDL_SetRenderDrawColor(gfx::_renderer, 25, 25, 255, 255);
+    SDL_RenderFillRect(gfx::_renderer, &ball_rect);
 }
 
 void ball::Update()

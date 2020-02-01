@@ -2,6 +2,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
+#include "gfx.h"
 #include "object.h"
 #include "tile.h"
 
@@ -23,15 +24,6 @@
 
 #define RECT(Obj) \
     (SDL_Rect) { Obj->X, Obj->Y, Obj->W, Obj->H }
-
-
-// sdl
-int _init_sdl(int Width, int Height, SDL_Window** outWin, SDL_Renderer** outRenderer);
-int _deinit_sdl();
-
-// assets
-SDL_Texture* load_texture(const char* path);
-SDL_Rect texture_rect(unsigned int col, unsigned int row);
 
 // game
 unsigned int get_dt();

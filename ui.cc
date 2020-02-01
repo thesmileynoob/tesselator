@@ -1,12 +1,8 @@
-#include "breakout.h"
-
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-/// TODO: Right now these are defined in main.c
-extern SDL_Renderer* _renderer;
-extern TTF_Font* UIFont;
+#include "breakout.h"
 
 /** create a texture and its rect of the score string */
 void ui_score(int score, SDL_Texture** outTexture, SDL_Rect* outRect)
@@ -32,17 +28,17 @@ void ui_score(int score, SDL_Texture** outTexture, SDL_Rect* outRect)
 
         // make a texture of the string
         SDL_Surface* surface =
-            TTF_RenderText_Solid(UIFont, string, (SDL_Color){255, 255, 255});
+            TTF_RenderText_Solid(gfx::UIFont, string, (SDL_Color){255, 255, 255});
         if (!surface) { printf("UIError: %s\n", TTF_GetError()); }
 
-        texture = SDL_CreateTextureFromSurface(_renderer, surface);
+        texture = SDL_CreateTextureFromSurface(gfx::_renderer, surface);
         if (!texture) { printf("UIError: %s\n", SDL_GetError()); }
 
         SDL_FreeSurface(surface);  // not needed now
 
         // update score_rect
         rect.x = rect.y = 0;
-        TTF_SizeText(UIFont, string, &rect.w, &rect.h);
+        TTF_SizeText(gfx::UIFont, string, &rect.w, &rect.h);
     }
     assert(texture);
 
@@ -72,16 +68,16 @@ void ui_fps(float fps, SDL_Texture** outTexture, SDL_Rect* outRect)
 
         // make a texture of the string
         SDL_Surface* surface =
-            TTF_RenderText_Solid(UIFont, string, (SDL_Color){255, 255, 255});
+            TTF_RenderText_Solid(gfx::UIFont, string, (SDL_Color){255, 255, 255});
         if (!surface) { printf("UIError: %s\n", TTF_GetError()); }
 
-        texture = SDL_CreateTextureFromSurface(_renderer, surface);
+        texture = SDL_CreateTextureFromSurface(gfx::_renderer, surface);
         if (!texture) { printf("UIError: %s\n", SDL_GetError()); }
 
         SDL_FreeSurface(surface);  // not needed now
 
         // update score_rect
-        TTF_SizeText(UIFont, string, &rect.w, &rect.h);
+        TTF_SizeText(gfx::UIFont, string, &rect.w, &rect.h);
         rect.x = SCR_WIDTH - rect.w - 10;  // 10 padding
         rect.y = 0;
     }

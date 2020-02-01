@@ -15,6 +15,7 @@ add_executable(debug
         ball.cc
         tile.cc
         ui.cc
+        gfx.cc
         math.cc
         scratchpad.cc
 )
