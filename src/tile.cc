@@ -1,5 +1,6 @@
 #include "tile.h"
 #include "breakout.h"
+#include "game.h"
 
 #include <cassert>
 

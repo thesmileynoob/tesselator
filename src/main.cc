@@ -13,6 +13,7 @@
 #include "player.h"
 #include "tile.h"
 #include "ui.h"
+#include "game.h"
 
 
 // TODO: move to particles.h?

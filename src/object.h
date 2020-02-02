@@ -31,13 +31,3 @@ public:
     // inside given bounds
     virtual bool IsInside(float left, float right, float top, float bottom);
 };
-
-namespace game
-{
-
-extern int level_left;
-extern int level_right;
-extern int level_top;
-extern int level_bottom;
-
-}  // namespace game

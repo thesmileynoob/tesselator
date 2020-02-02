@@ -1,6 +1,7 @@
 #include "player.h"
 #include "breakout.h"
 #include "gfx.h"
+#include "game.h"
 
 #include <cassert>
 

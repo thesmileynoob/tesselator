@@ -17,6 +17,7 @@ add_executable(debug
         src/ui.cc
         src/gfx.cc
         src/math.cc
+        src/game.cc
         src/scratchpad.cc
 )
 

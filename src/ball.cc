@@ -1,6 +1,7 @@
 #include "ball.h"
 #include "breakout.h"
 #include "player.h"
+#include "game.h"
 
 #include <cassert>
 
