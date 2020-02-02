@@ -208,6 +208,7 @@ int main(int argc, char const* argv[])
     }
 
 
+    Time        = 0;
     GameRunning = 1;
     while (GameRunning) {
         SDL_Event ev;
@@ -223,9 +224,6 @@ int main(int argc, char const* argv[])
 
         // handle input and update state
         update_state(SDL_GetKeyboardState(NULL));
-
-
-        Time += get_dt();
 
 
         // START DRAWING
@@ -367,8 +365,15 @@ int main(int argc, char const* argv[])
                 SDL_Texture* fps_texture;
                 SDL_Rect fps_texture_rect;
                 ui::gen_fps(fps, &fps_texture, &fps_texture_rect);
-                // SDL_RenderCopy(gfx::_renderer, fps_texture, NULL, &fps_texture_rect);
                 gfx::draw_texture(fps_texture, NULL, &fps_texture_rect);
+            }
+
+            // time
+            {
+                SDL_Texture* time_texture;
+                SDL_Rect time_texture_rect;
+                ui::gen_time(Time, &time_texture, &time_texture_rect);
+                gfx::draw_texture(time_texture, NULL, &time_texture_rect);
             }
         }
 
@@ -390,6 +395,7 @@ int main(int argc, char const* argv[])
         }
 
         SDL_Delay(1000 / 60);  // fps
+        Time += get_dt();
     }
 
 

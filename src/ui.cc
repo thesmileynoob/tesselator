@@ -57,7 +57,7 @@ void gen_fps(float fps, SDL_Texture** outTexture, SDL_Rect* outRect)
 {
     static SDL_Texture* texture = NULL;
     static SDL_Rect rect;
-    const int timeout_len = 50;
+    const int timeout_len = 100;
     static int timeout    = 0;  // recalculate once in 'timeout_len' iterations
 
     // re-construct the score_texture iff timeout = 0
@@ -85,6 +85,50 @@ void gen_fps(float fps, SDL_Texture** outTexture, SDL_Rect* outRect)
         // update score_rect
         TTF_SizeText(gfx::UIFont, string, &rect.w, &rect.h);
         rect.x = SCR_WIDTH - rect.w - 10;  // 10 padding
+        rect.y = 0;
+    }
+    assert(texture);
+
+    *outTexture = texture;
+    *outRect    = rect;
+}
+
+void gen_time(unsigned int time_ms, SDL_Texture** outTexture, SDL_Rect* outRect)
+{
+    static SDL_Texture* texture = NULL;
+    static SDL_Rect rect;
+    const int timeout_len_ms = 1000 / 60;
+    static int timeout       = 0;  // recalculate once in 'timeout_len' iterations
+
+    // re-construct the score_texture iff timeout = 0
+    if (timeout-- <= 0) {
+        timeout = timeout_len_ms;  // reset timeout
+        // printf("UI re-constructing time texture!\n");
+
+        // cleanup previous texture
+        if (texture) SDL_DestroyTexture(texture);
+
+        // construct the string to be displayed
+        const int max_len = 15;
+        char string[max_len];
+
+        const int time_s    = time_ms / 1000;
+        const int time_mins = time_s / 60;
+        const int time_secs = time_s % 60;
+        snprintf(string, max_len, "Time: %d:%02d", time_mins, time_secs);
+
+        // make a texture of the string
+        SDL_Surface* surface = TTF_RenderText_Solid(gfx::UIFont, string, _fps_color);
+        if (!surface) { printf("UIError: %s\n", TTF_GetError()); }
+
+        texture = SDL_CreateTextureFromSurface(gfx::_renderer, surface);
+        if (!texture) { printf("UIError: %s\n", SDL_GetError()); }
+
+        SDL_FreeSurface(surface);  // not needed now
+
+        // update score_rect
+        TTF_SizeText(gfx::UIFont, string, &rect.w, &rect.h);
+        rect.x = (SCR_WIDTH / 2) - (rect.w / 2);
         rect.y = 0;
     }
     assert(texture);
