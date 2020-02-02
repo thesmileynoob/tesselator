@@ -1,16 +1,15 @@
 #include "ball.h"
 #include "breakout.h"
-#include "player.h"
 #include "game.h"
+#include "player.h"
 
 #include <cassert>
 
-extern player* Player;  // TODO
 ball::ball()
     : object()  // call parent constructor
 {
-    X = Player->X + 40;  // TODO: 40
-    Y = Player->Y - 50;
+    X = game::Player->X + 40;  // TODO: 40
+    Y = game::Player->Y - 50;
     W = 25;
     H = 25;
 
