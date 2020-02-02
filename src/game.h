@@ -1,5 +1,9 @@
 #pragma once
+
+#include <vector>
+
 #include "ball.h"
+#include "particles.h"
 #include "player.h"
 #include "tile.h"
 
@@ -26,13 +30,7 @@ extern player* Player;
 extern ball* Ball;
 extern Uint8 BgCol[3];  // r,g,b
 
-
-// TODO: move to particles.h?
-extern const int ParticleCount;
-extern object* Particles;
-extern int ParticleSrcX;
-extern int ParticleSrcY;
-
+extern std::vector<particle_src*> PSources;
 
 // load level and init resources
 void load_level(int n);

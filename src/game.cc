@@ -1,6 +1,7 @@
 #include "game.h"
 
 #include "breakout.h"
+#include "particles.h"
 #include "ui.h"
 
 namespace game
@@ -25,35 +26,12 @@ player* Player = nullptr;
 ball* Ball     = nullptr;
 Uint8 BgCol[3];  // r,g,b
 
-const int ParticleCount = 8;
-object* Particles;
-int ParticleSrcX = SCR_WIDTH / 2;
-int ParticleSrcY = SCR_HEIGHT / 2;
+std::vector<particle_src*> PSources;
+// const int ParticleCount = 8;
+// object* Particles;
+// int ParticleSrcX = SCR_WIDTH / 2;
+// int ParticleSrcY = SCR_HEIGHT / 2;
 
-
-void reset_particle(object* p)
-{
-    const int max_vy = 3;
-
-    const int _rand_dir = rand() % 2 ? -1 : 1;  // random direction
-
-    const int xoff = _rand_dir * (rand() % 13);
-    const int yoff = _rand_dir * (rand() % 25);
-
-    p->X = ParticleSrcX + xoff;
-    p->Y = ParticleSrcY + yoff;
-    p->W = (5) + rand() % 20;
-    p->H = (5) + rand() % 20;
-
-
-    p->Vel = (vec2){rand() % 2 ? -1 : 1, -1 * rand() % max_vy};
-
-
-    p->TexRow = rand() % 5;
-    p->TexCol = rand() % 5;
-
-    p->Hidden = 0;
-}
 
 tile* get_nearest_tile()
 {
@@ -119,11 +97,11 @@ int effect_hl_nearest_tile()
 void load_level(int n)
 {
     // alloc
-    Player    = new player();
-    Ball      = new ball();
-    Tiles     = new tile[game::TileCount];
-    Particles = (object*) calloc(ParticleCount, sizeof(object));
-    assert(Player && Ball && Tiles && Particles);
+    Player = new player();
+    Ball   = new ball();
+    Tiles  = new tile[game::TileCount];
+    // Particles = (object*) calloc(ParticleCount, sizeof(object));
+    assert(Player && Ball && Tiles);
 
     // tiles
     {
@@ -168,15 +146,6 @@ void load_level(int n)
             tile* t   = &game::Tiles[i];
             t->TexRow = i % 5;
             t->TexCol = (i + 2) % 5;
-        }
-    }
-
-    // particles
-    {
-        for (int i = 0; i < ParticleCount; ++i) {
-            object* p = &Particles[i];
-            reset_particle(p);
-            p->Hidden = 1;  // initially hidden
         }
     }
 }
@@ -255,33 +224,17 @@ void draw_frame()
     // "EFFECTS"
     {
         effect_hl_nearest_tile();
+        for (int i = 0; i < PSources.size(); ++i) {
+            particle_src* psrc = PSources[i];
+            if (psrc->IsDone()) { continue; }
+            psrc->Draw();
+        }
 
-        // particles
-        {
-
-            const int xmin = ParticleSrcX - 100;
-            const int xmax = ParticleSrcX + 100;
-
-            const int ymin = ParticleSrcY - 100;
-            const int ymax = ParticleSrcY + 100;
-
-            for (int i = 0; i < ParticleCount; ++i) {
-                object* p = &Particles[i];
-                if (p->Hidden) continue;
-
-                p->X += p->Vel.X;
-                p->Y += p->Vel.Y;
-
-                if (p->X > xmax || p->X < xmin || p->Y > ymax || p->Y < ymin) {
-                    // particle out of bounds. Don't draw it.
-                    p->Hidden = 1;
-                }
-
-
-                SDL_Rect tex_rect      = gfx::texture_rect(p->TexRow, p->TexCol);
-                SDL_Rect particle_rect = RECT(p);
-                gfx::draw_texture(gfx::Texture, &tex_rect, &particle_rect);
-            }
+        // delete done particle sources
+        for (int i = 0; i < PSources.size(); ++i) {
+            particle_src* psrc = PSources[i];
+            auto start         = PSources.begin();
+            if (psrc->IsDone()) { PSources.erase(start + i); }
         }
     }
 

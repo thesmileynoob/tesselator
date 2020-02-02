@@ -84,15 +84,19 @@ void on_tile_got_hit(tile* t)
     game::Score++;  // inc the score
 
     // spawn particles
-    game::ParticleSrcX = CENTER_X(t);
-    game::ParticleSrcY = CENTER_Y(t);
-    for (int i = 0; i < game::ParticleCount; ++i) {
-        object* p = &game::Particles[i];
-        game::reset_particle(p);
-        // set particle texture matching the hit tile
-        p->TexRow = t->TexRow;
-        p->TexCol = t->TexCol;
-    }
+    int px             = CENTER_X(t);
+    int py             = CENTER_Y(t);
+    int count          = 8;
+    particle_src* psrc = new particle_src(px, py, count, t->TexRow, t->TexCol);
+    game::PSources.emplace_back(psrc);
+
+    // for (int i = 0; i < game::ParticleCount; ++i) {
+    //     object* p = &game::Particles[i];
+    //     game::reset_particle(p);
+    //     // set particle texture matching the hit tile
+    //     p->TexRow = t->TexRow;
+    //     p->TexCol = t->TexCol;
+    // }
 }
 
 void update_state(const Uint8* Keys)
