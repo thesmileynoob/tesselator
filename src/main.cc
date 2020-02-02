@@ -13,9 +13,9 @@
 #include "player.h"
 #include "tile.h"
 #include "ui.h"
-/// TODO: draw frame
 
 
+// TODO: move to particles.h?
 const int ParticleCount = 8;
 object* Particles;
 int ParticleSrcX = SCR_WIDTH / 2;
@@ -30,102 +30,17 @@ unsigned int Time;  // time taken to finish the level
 int Cols      = 5;
 int Rows      = 3;
 int TileCount = 5 * 3;
-// int Cols      = 2;
-// int Rows      = 2;
-// int TileCount = 2 * 2;
-tile* Tiles = NULL;
+tile* Tiles   = NULL;
 
 player* Player;
-
 ball* Ball;
-
 Uint8 BgCol[3];  // r,g,b
 
+/** LOCAL FUNCTIONS */
 // slightly buggy af
-tile* get_nearest_tile()
-{
-    const int ballx = CENTER_X(Ball);
-    const int bally = CENTER_Y(Ball);
-
-    tile* nearest_tile    = NULL;
-    int nearest_tile_id   = -1;
-    int nearest_tile_dist = 10000;
-    for (int i = 0; i < TileCount; ++i) {
-        tile* t = &Tiles[i];
-        if (t->Hit) continue;  // skip hit tiles
-
-        const int tilex = CENTER_X(t);
-        const int tiley = CENTER_Y(t);
-
-        // see you _do_ use the stuff you learn in school!
-        const int xsqr = pow((ballx - tilex), 2);
-        const int ysqr = pow((bally - tiley), 2);
-        const int dist = sqrt(xsqr + ysqr);
-
-        if (dist < nearest_tile_dist) {
-            nearest_tile      = t;
-            nearest_tile_id   = i;
-            nearest_tile_dist = dist;
-            // printf("nearest: id: %d, dist: %d\n", i, dist);
-        }
-    }
-
-    if (nearest_tile == NULL) {
-        printf("%s: no nearest tile found!\n", __func__);
-        return NULL;
-    }
-    assert(nearest_tile_id != -1);
-    assert(!nearest_tile->Hit);
-
-    // printf("FINAL nearest: id: %d, dist: %d\n", nearest_tile_id, nearest_tile_dist);
-    return nearest_tile;
-}
-
-int effect_hl_nearest_tile()
-{
-
-    tile* nearest_tile = get_nearest_tile();
-    if (nearest_tile == NULL) { return 0; }
-
-    SDL_Rect rect = RECT(nearest_tile);
-    const int pad = 3;
-    rect.x += game::level_left + pad;
-    rect.y += game::level_top + pad;
-    rect.w -= 2 * pad;
-    rect.h -= 2 * pad;
-    if (SDL_SetRenderDrawBlendMode(gfx::_renderer, SDL_BLENDMODE_BLEND) == 1) {
-        puts("blendmode ERROR");
-    }
-    SDL_SetRenderDrawColor(gfx::_renderer, 255, 255, 255, 100);
-    SDL_RenderFillRect(gfx::_renderer, &rect);
-    SDL_SetRenderDrawBlendMode(gfx::_renderer, SDL_BLENDMODE_NONE);
-    return 1;
-}
-
-
-void reset_particle(object* p)
-{
-    const int max_vy = 3;
-
-    const int _rand_dir = rand() % 2 ? -1 : 1;  // random direction
-
-    const int xoff = _rand_dir * (rand() % 13);
-    const int yoff = _rand_dir * (rand() % 25);
-
-    p->X = ParticleSrcX + xoff;
-    p->Y = ParticleSrcY + yoff;
-    p->W = (5) + rand() % 20;
-    p->H = (5) + rand() % 20;
-
-
-    p->Vel = (vec2){rand() % 2 ? -1 : 1, -1 * rand() % max_vy};
-
-
-    p->TexRow = rand() % 5;
-    p->TexCol = rand() % 5;
-
-    p->Hidden = 0;
-}
+static tile* get_nearest_tile();
+static int effect_hl_nearest_tile();
+static void reset_particle(object* p);
 
 
 /** here we go! */
@@ -510,4 +425,88 @@ unsigned int get_dt()
     const unsigned int dt       = newtime - oldtime;
     oldtime                     = newtime;
     return dt;
+}
+
+tile* get_nearest_tile()
+{
+    const int ballx = CENTER_X(Ball);
+    const int bally = CENTER_Y(Ball);
+
+    tile* nearest_tile    = NULL;
+    int nearest_tile_id   = -1;
+    int nearest_tile_dist = 10000;
+    for (int i = 0; i < TileCount; ++i) {
+        tile* t = &Tiles[i];
+        if (t->Hit) continue;  // skip hit tiles
+
+        const int tilex = CENTER_X(t);
+        const int tiley = CENTER_Y(t);
+
+        // see you _do_ use the stuff you learn in school!
+        const int xsqr = pow((ballx - tilex), 2);
+        const int ysqr = pow((bally - tiley), 2);
+        const int dist = sqrt(xsqr + ysqr);
+
+        if (dist < nearest_tile_dist) {
+            nearest_tile      = t;
+            nearest_tile_id   = i;
+            nearest_tile_dist = dist;
+            // printf("nearest: id: %d, dist: %d\n", i, dist);
+        }
+    }
+
+    if (nearest_tile == NULL) {
+        printf("%s: no nearest tile found!\n", __func__);
+        return NULL;
+    }
+    assert(nearest_tile_id != -1);
+    assert(!nearest_tile->Hit);
+
+    // printf("FINAL nearest: id: %d, dist: %d\n", nearest_tile_id, nearest_tile_dist);
+    return nearest_tile;
+}
+
+int effect_hl_nearest_tile()
+{
+
+    tile* nearest_tile = get_nearest_tile();
+    if (nearest_tile == NULL) { return 0; }
+
+    SDL_Rect rect = RECT(nearest_tile);
+    const int pad = 3;
+    rect.x += game::level_left + pad;
+    rect.y += game::level_top + pad;
+    rect.w -= 2 * pad;
+    rect.h -= 2 * pad;
+    if (SDL_SetRenderDrawBlendMode(gfx::_renderer, SDL_BLENDMODE_BLEND) == 1) {
+        puts("blendmode ERROR");
+    }
+    SDL_SetRenderDrawColor(gfx::_renderer, 255, 255, 255, 100);
+    SDL_RenderFillRect(gfx::_renderer, &rect);
+    SDL_SetRenderDrawBlendMode(gfx::_renderer, SDL_BLENDMODE_NONE);
+    return 1;
+}
+
+void reset_particle(object* p)
+{
+    const int max_vy = 3;
+
+    const int _rand_dir = rand() % 2 ? -1 : 1;  // random direction
+
+    const int xoff = _rand_dir * (rand() % 13);
+    const int yoff = _rand_dir * (rand() % 25);
+
+    p->X = ParticleSrcX + xoff;
+    p->Y = ParticleSrcY + yoff;
+    p->W = (5) + rand() % 20;
+    p->H = (5) + rand() % 20;
+
+
+    p->Vel = (vec2){rand() % 2 ? -1 : 1, -1 * rand() % max_vy};
+
+
+    p->TexRow = rand() % 5;
+    p->TexCol = rand() % 5;
+
+    p->Hidden = 0;
 }
