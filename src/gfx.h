@@ -9,6 +9,8 @@
 #include <SDL2/SDL_keycode.h>
 #include <SDL2/SDL_ttf.h>
 
+#include "math.h"
+
 namespace gfx
 {
 // env
@@ -22,6 +24,9 @@ void init(int width, int height);
 void deinit();
 
 void draw_texture(SDL_Texture* t, SDL_Rect* src, SDL_Rect* dst);
+
+// for debug
+void draw_crosshair(vec2 center, int width, int height);
 
 SDL_Texture* load_texture(const char* path);
 

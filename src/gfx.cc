@@ -35,6 +35,20 @@ void draw_texture(SDL_Texture* t, SDL_Rect* src, SDL_Rect* dst)
     SDL_RenderCopy(_renderer, t, src, dst);
 }
 
+
+void draw_crosshair(vec2 center, int width, int height)
+{
+    const int half_width  = width / 2;
+    const int half_height = height / 2;
+
+    // horiz line
+    SDL_RenderDrawLine(_renderer, center.X - half_width, center.Y, center.X + half_width,
+                       center.Y);
+    // vertical line
+    SDL_RenderDrawLine(_renderer, center.X, center.Y - half_height, center.X,
+                       center.Y + half_height);
+}
+
 SDL_Texture* load_texture(const char* path)
 {
     SDL_Surface* surf = IMG_Load(path);
