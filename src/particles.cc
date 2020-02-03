@@ -1,4 +1,5 @@
 #include "particles.h"
+#include "game.h"
 
 particle_src::particle_src(int x, int y, int count, int texrow, int texcol)
     : X(x)
@@ -36,8 +37,9 @@ void particle_src::Draw()
         object* p = &Particles[i];
         if (p->Hidden) continue;
 
-        p->X += p->Vel.X;
-        p->Y += p->Vel.Y;
+        const float factor = game::is_slow_motion ? game::slow_motion_factor : 1;
+        p->X += p->Vel.X * factor;
+        p->Y += p->Vel.Y * factor;
 
         if (p->X > xmax || p->X < xmin || p->Y > ymax || p->Y < ymin) {
             // particle out of bounds. Don't draw it.
@@ -54,24 +56,43 @@ void particle_src::Draw()
 
 void particle_src::reset_particle(object* p)
 {
-    const int max_vy = 3;
+    const vec2 max_vel{1, 7};
 
-    const int _rand_dir = rand() % 2 ? -1 : 1;  // random direction
 
-    const int xoff = _rand_dir * (rand() % 13);
-    const int yoff = _rand_dir * (rand() % 25);
+    // random direction
+    int _rand_dir = rand() % 2 ? -1 : 1;
+
+    const vec2 max_off{15, 25};
+
+    _rand_dir      = rand() % 2 ? -1 : 1;
+    const int xoff = _rand_dir * (rand() % (int) max_off.X);
+
+    _rand_dir      = rand() % 2 ? -1 : 1;
+    const int yoff = _rand_dir * (rand() % (int) max_off.Y);
+
+    const int min_width  = TILE_WIDTH / 10;
+    const int min_height = TILE_HEIGHT / 10;
+    const int max_width  = min_width * 3;
+    const int max_height = min_height * 3;
 
     p->X = X + xoff;
     p->Y = Y + yoff;
-    p->W = (5) + rand() % 20;
-    p->H = (5) + rand() % 20;
+    p->W = min_width + (rand() % max_width);
+    p->H = min_height + (rand() % max_height);
 
+    const int min_x_vel = 1;
+    const int min_y_vel = -2;
+    const int max_x_vel = 2;
+    const int max_y_vel = -4;
 
-    p->Vel = (vec2){rand() % 2 ? -1 : 1, -1 * rand() % max_vy};
+    _rand_dir = rand() % 2 ? -1 : 1;
+    int vel_x = min_x_vel + (rand() % max_x_vel);
+    vel_x *= _rand_dir;
 
+    int vel_y = min_y_vel - (rand() % max_y_vel);
 
-    p->TexRow = rand() % 5;
-    p->TexCol = rand() % 5;
+    p->Vel.X = vel_x;
+    p->Vel.Y = vel_y;
 
     p->Hidden = 0;
 }
