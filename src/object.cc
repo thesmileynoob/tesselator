@@ -36,6 +36,7 @@ int object::Right() const { return Left() + W; }
 int object::Top() const { return Y; }
 int object::Bottom() const { return Top() + H; }
 SDL_Rect object::Rect() const { return {Left(), Top(), W, H}; };
+vec2 object::Center() const { return {Left() + (W / 2), Top() + (H / 2)}; }
 
 // absolute
 int object::AbsLeft() const { return game::level_left + X; }
@@ -43,3 +44,4 @@ int object::AbsRight() const { return Left() + W; }
 int object::AbsTop() const { return game::level_top + Y; }
 int object::AbsBottom() const { return Top() + H; }
 SDL_Rect object::AbsRect() const { return {AbsLeft(), AbsTop(), W, H}; };
+vec2 object::AbsCenter() const { return {AbsLeft() + (W / 2), AbsTop() + (H / 2)}; }

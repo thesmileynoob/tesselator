@@ -32,6 +32,7 @@ public:
     int Top() const;
     int Bottom() const;
     SDL_Rect Rect() const;
+    vec2 Center() const;
 
     // relative to window
     int AbsLeft() const;
@@ -39,6 +40,7 @@ public:
     int AbsTop() const;
     int AbsBottom() const;
     SDL_Rect AbsRect() const;
+    vec2 AbsCenter() const;
 
     // inside game::* bounds
     bool IsInside();
