@@ -39,13 +39,18 @@ int main(int argc, char const* argv[])
             if (sym == SDLK_q || ev.type == SDL_QUIT) { game::Running = 0; }
 
             if (ev.type == SDL_KEYUP) {
-                if (sym == SDLK_RETURN) { game::Rows++; }
-            } else if (ev.type == SDL_KEYDOWN) {
+                if (sym == SDLK_RETURN) {
+                    // toggle debug_mode
+                    game::debug_mode = !game::debug_mode;
+                }
             }
         }
 
-        // handle input and update state
-        update_state(SDL_GetKeyboardState(NULL));
+        // handle input
+
+        // update state
+        game::Player->Update();
+        game::Ball->Update();
 
         // render
         game::draw_frame();
@@ -88,12 +93,6 @@ void on_tile_got_hit(tile* t)
     game::PSources.emplace_back(psrc);
 }
 
-void update_state(const Uint8* Keys)
-{
-    game::Player->Update();
-    game::Ball->Update();
-
-}
 
 /**
  * returns: dt in millisecs

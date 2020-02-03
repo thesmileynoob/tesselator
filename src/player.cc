@@ -58,4 +58,12 @@ void player::Draw()
     SDL_Rect player_rect = AbsRect();                // absolute position
     SDL_Rect tex_rect    = gfx::texture_rect(1, 1);  // TODO
     gfx::draw_texture(gfx::Texture, &tex_rect, &player_rect);
+
+
+    if (game::debug_mode) {
+        SDL_SetRenderDrawColor(gfx::_renderer, 255, 255, 255, 255);
+        const int height = H + 20;
+        const int width  = W + 20;
+        gfx::draw_crosshair(AbsCenter(), width, height);
+    }
 }

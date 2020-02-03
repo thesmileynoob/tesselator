@@ -20,12 +20,22 @@ ball::ball()
 }
 
 
+// NOTE: Always use Abs* for Drawing
 void ball::Draw()
 {
     object::Draw();
+
+    // draw ball
     SDL_Rect ball_rect = AbsRect();
     SDL_SetRenderDrawColor(gfx::_renderer, 25, 25, 255, 255);
     SDL_RenderFillRect(gfx::_renderer, &ball_rect);
+
+    if (game::debug_mode) {
+        SDL_SetRenderDrawColor(gfx::_renderer, 255, 255, 255, 255);
+        const int height = H + 20;
+        const int width  = W + 20;
+        gfx::draw_crosshair(AbsCenter(), width, height);
+    }
 }
 
 
@@ -39,6 +49,7 @@ void ball::Update()
     X += Vel.X * factor;
     Y += Vel.Y * factor;
 
+    const int max_xspeed = 7;  // max ball speed in X dir
 
     // ball-boundary collision
     // if we are not inside playable area, we skip this check
@@ -81,10 +92,9 @@ void ball::Update()
 
             // most critical part of the whole codebase
             if (SDL_HasIntersection(&ball_rect, &tile_rect) == SDL_TRUE) {
-                // ball has hit the tile
                 const int ball_center = ball_rect.x + (ball_rect.w / 2);
                 const int tile_center = tile_rect.x + (tile_rect.w / 2);
-                const int max_xspeed  = 7;
+
                 // -ve means ball to the left
                 const int offset = (ball_center - tile_center) / 2;
 
@@ -111,13 +121,12 @@ void ball::Update()
         SDL_Rect player_rect = game::Player->Rect();
 
         if (SDL_HasIntersection(&ball_rect, &player_rect) == SDL_TRUE) {
+            const vec2 ball_center   = Center();
+            const vec2 player_center = game::Player->Center();
 
-            const int ball_center   = ball_rect.x + (ball_rect.w / 2);
-            const int player_center = player_rect.x + (player_rect.w / 2);
-            const int max_xspeed    = 7;
-
-            // -ve means ball to the left
-            const int offset = (ball_center - player_center) / 2;
+            // offset b/w center of ball and player
+            const int offset = (ball_center.X - player_center.X) / 2;
+            printf("offset: %d\n", offset);
 
             float scale    = 0.2;  // TODO: Better name
             int new_xspeed = scale * offset;
