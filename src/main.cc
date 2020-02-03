@@ -91,67 +91,8 @@ void on_tile_got_hit(tile* t)
 void update_state(const Uint8* Keys)
 {
     game::Player->Update();
-
     game::Ball->Update();
 
-    // ball-tiles collision
-    {
-        SDL_Rect ball_rect = RECT(game::Ball);
-
-        SDL_Rect tile_rect;
-        for (int i = 0; i < game::TileCount; ++i) {
-            tile* t = &game::Tiles[i];
-            if (t->Hit) continue;
-
-            tile_rect = RECT(t);
-
-            // most critical part of the whole codebase
-            if (SDL_HasIntersection(&ball_rect, &tile_rect) == SDL_TRUE) {
-                // ball has hit the tile
-                const int ball_center = ball_rect.x + (ball_rect.w / 2);
-                const int tile_center = tile_rect.x + (tile_rect.w / 2);
-                const int max_xspeed  = 7;
-                // -ve means ball to the left
-                const int offset = (ball_center - tile_center) / 2;
-
-                float scale    = 0.2;  // TODO: Better name
-                int new_xspeed = scale * offset;
-                if (new_xspeed > max_xspeed) new_xspeed = max_xspeed;    // clip max
-                if (new_xspeed < -max_xspeed) new_xspeed = -max_xspeed;  // clip max
-
-                // update Ball
-                game::Ball->Vel.X = new_xspeed;          // based on offset
-                game::Ball->Vel.Y = -game::Ball->Vel.Y;  // just changes direction in Y
-
-                // perform the procedure
-                on_tile_got_hit(t);
-                break;
-            }
-        }
-    }
-
-    // ball-player collision
-    {
-        SDL_Rect ball_rect   = RECT(game::Ball);
-        SDL_Rect player_rect = RECT(game::Player);
-        if (SDL_HasIntersection(&ball_rect, &player_rect) == SDL_TRUE) {
-
-            const int ball_center   = ball_rect.x + (ball_rect.w / 2);
-            const int player_center = player_rect.x + (player_rect.w / 2);
-            const int max_xspeed    = 7;
-
-            // -ve means ball to the left
-            const int offset = (ball_center - player_center) / 2;
-
-            float scale    = 0.2;  // TODO: Better name
-            int new_xspeed = scale * offset;
-            if (new_xspeed > max_xspeed) new_xspeed = max_xspeed;    // clip max
-            if (new_xspeed < -max_xspeed) new_xspeed = -max_xspeed;  // clip max
-
-            game::Ball->Vel.X = new_xspeed;          // based on offset
-            game::Ball->Vel.Y = -game::Ball->Vel.Y;  // just changes direction in Y
-        }
-    }
 }
 
 /**

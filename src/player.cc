@@ -26,16 +26,9 @@ void player::Update()
 
     // slow motion!
     // hold LSHIFT to slow down player. Useful for some "powerdown"
-    {                 // effect_slowdown_player()
-        Vel.Reset();  // make sure we have the original velocity
-
-        const int is_slowmotion = Keys[SDL_SCANCODE_LSHIFT];
-        const float factor      = is_slowmotion ? .5 : 1;
-        Vel.Scale(factor);  // decrease velocity
-    }
-
-
-    const int playerspeed = Vel.X;
+    float factor = 1.;
+    if (Keys[SDL_SCANCODE_LSHIFT]) { factor = .5; }
+    const int playerspeed = Vel.X * factor;
 
     // movement
     if (Keys[SDL_SCANCODE_A]) {
@@ -50,11 +43,11 @@ void player::Update()
 
 
     // resolve player-level collision
-    const int left_lim  = game::level_left;
-    const int right_lim = game::level_right;
+    const int left_lim  = 0;
+    const int right_lim = game::level_width;
 
-    if (LEFT(this) < left_lim) { X = left_lim; }
-    if (RIGHT(this) > right_lim) { X = right_lim - W; }
+    if (Left() <= left_lim) { X = left_lim; }
+    if (Right() >= right_lim) { X = right_lim - W; }
 }
 
 
@@ -62,8 +55,7 @@ void player::Draw()
 {
     object::Draw();
 
-    SDL_Rect player_rect = RECT(this);
+    SDL_Rect player_rect = AbsRect();                // absolute position
     SDL_Rect tex_rect    = gfx::texture_rect(1, 1);  // TODO
     gfx::draw_texture(gfx::Texture, &tex_rect, &player_rect);
-    // SDL_RenderCopy(gfx::_renderer, Texture, &tex_rect, &player_rect);
 }

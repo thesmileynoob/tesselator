@@ -4,10 +4,9 @@
 #include "particles.h"
 #include "ui.h"
 
+// game global variables
 namespace game
 {
-
-// todo move to main.cc
 int level_left   = FRAME_WIDTH;
 int level_right  = SCR_WIDTH - FRAME_WIDTH;
 int level_top    = FRAME_WIDTH;
@@ -30,11 +29,15 @@ player* Player = nullptr;
 ball* Ball     = nullptr;
 Uint8 BgCol[3];  // r,g,b
 
+// particle sources
 std::vector<particle_src*> PSources;
-// const int ParticleCount = 8;
-// object* Particles;
-// int ParticleSrcX = SCR_WIDTH / 2;
-// int ParticleSrcY = SCR_HEIGHT / 2;
+
+}  // namespace game
+
+
+// functions
+namespace game
+{
 
 static tile* get_nearest_tile();
 static int effect_hl_nearest_tile();
@@ -113,39 +116,35 @@ void load_level(int n)
     // tiles
     {
         // layout
-        int xoff, yoff;                   // keep track of row and column
-        for (int i = 0, xoff = yoff = 0;  // top-left corner
-             i < game::TileCount;         // break condition
-             ++i, xoff += TILE_WIDTH) {
+        int xoff, yoff;   // keep track of row and column
+        xoff = yoff = 0;  // start at top-left corner
+        for (int i = 0; i < game::TileCount; ++i, xoff += TILE_WIDTH) {
 
-            // LET: potential values
-            int pot_left   = xoff;
-            int pot_top    = yoff;
-            int pot_right  = xoff + TILE_WIDTH;
-            int pot_bottom = yoff + TILE_HEIGHT;
+            // let potential value of tile
+            int potential_right = xoff + TILE_WIDTH;
 
-            // perform checks
-            if (pot_right > game::level_right) {
-                /// go to start of next row
-                xoff = 0;
-                yoff += TILE_HEIGHT;
+            // see if the tile goes off the right edge of the level
+            if (potential_right > game::level_width) {
+                /// go to beginning of next row
+                xoff = 0;             // beginning
+                yoff += TILE_HEIGHT;  // next row
             }
 
-            // recalculate potential values
-            pot_left   = xoff;
-            pot_top    = yoff;
-            pot_right  = xoff + TILE_WIDTH;
-            pot_bottom = yoff + TILE_HEIGHT;
+            // final values
+            const int final_left   = xoff;
+            const int final_top    = yoff;
+            const int final_right  = xoff + TILE_WIDTH;
+            const int final_bottom = yoff + TILE_HEIGHT;
 
             // validate potential values
-            assert(pot_left >= 0);
-            assert(pot_right <= game::level_right);
-            assert(pot_top >= 0);
-            assert(pot_bottom <= game::level_bottom);
+            assert(final_left >= 0);
+            assert(final_right <= game::level_width);
+            assert(final_top >= 0);
+            assert(final_bottom <= game::level_height);
 
             tile* t = &game::Tiles[i];
-            t->X    = pot_left;
-            t->Y    = pot_top;
+            t->X    = final_left;
+            t->Y    = final_top;
         }
 
         // everything else

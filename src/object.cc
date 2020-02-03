@@ -20,11 +20,7 @@ void object::Update() {}
 
 void object::Draw() {}
 
-bool object::IsInside()
-{
-    return IsInside(game::level_left, game::level_right, game::level_top,
-                    game::level_bottom);
-}
+bool object::IsInside() { return IsInside(0, game::level_width, 0, game::level_height); }
 
 bool object::IsInside(float left, float right, float top, float bottom)
 {
