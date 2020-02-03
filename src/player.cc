@@ -17,8 +17,6 @@ player::player()
     W = player_width;
     H = player_height;
 
-    printf("lw: %d, lcent: %d, X: %d, \n", game::level_width, lvl_center, X);
-
     Vel = vec2(15, 0);
 }
 
@@ -62,7 +60,6 @@ void player::Update()
 
 void player::Draw()
 {
-    printf("DRAW::player::X = %d\n", X);
     object::Draw();
 
     SDL_Rect player_rect = RECT(this);

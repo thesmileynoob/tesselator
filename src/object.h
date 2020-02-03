@@ -3,12 +3,12 @@
 #include "gfx.h"
 #include "math.h"
 
-
 // ball, tile and player are objects
 struct object {
 public:
-    // general
-    int X, Y, W, H;
+    // absolute coordinates
+    int X, Y;
+    int W, H;
     const char* Name;
 
     // gameplay
@@ -25,6 +25,18 @@ public:
 
     virtual void Update();
     virtual void Draw();
+
+    // relative to game::
+    int Left() const;
+    int Right() const;
+    int Top() const;
+    int Bottom() const;
+
+    // relative to window
+    int AbsLeft() const;
+    int AbsRight() const;
+    int AbsTop() const;
+    int AbsBottom() const;
 
     // inside game::* bounds
     bool IsInside();

@@ -32,3 +32,16 @@ bool object::IsInside(float left, float right, float top, float bottom)
     const int within_y_range = TOP(this) >= top && BOTTOM(this) <= bottom;
     return within_x_range && within_y_range;
 }
+
+
+// relative to level
+int object::Left() const { return X; }
+int object::Right() const { return Left() + W; }
+int object::Top() const { return Y; }
+int object::Bottom() const { return Top() + H; }
+
+// absolute
+int object::AbsLeft() const { return game::level_left + X; }
+int object::AbsRight() const { return Left() + W; }
+int object::AbsTop() const { return game::level_top + Y; }
+int object::AbsBottom() const { return Top() + H; }
