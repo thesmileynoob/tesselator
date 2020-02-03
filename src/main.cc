@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -17,8 +18,7 @@
 
 
 /** LOCAL FUNCTIONS */
-// slightly buggy af
-
+animation Anim;
 
 /** here we go! */
 int main(int argc, char const* argv[])
@@ -28,10 +28,16 @@ int main(int argc, char const* argv[])
     // game must be init after gfx::init()
     game::load_level(0);
 
+    Anim.Tag     = ANIM_PLAYER_LOSE_LIFE;
+    Anim.Time    = 1000;
+    Anim.Elapsed = 0;
+
     // main game loop
     game::Time    = 0;
     game::Running = 1;
     while (game::Running) {
+        const unsigned int DT = get_dt();
+
         // handle system events
         SDL_Event ev;
         while (SDL_PollEvent(&ev)) {
@@ -65,6 +71,12 @@ int main(int argc, char const* argv[])
         game::Player->Update();
         game::Ball->Update();
 
+        // animation
+        if (!Anim.IsDone()) {
+            printf("elaspsed: %4d, time: %d, DT: %d\n", Anim.Elapsed, Anim.Time, DT);
+            Anim.Tick(DT);
+        }
+
         // render
         game::draw_frame();
 
@@ -82,7 +94,7 @@ int main(int argc, char const* argv[])
         }
 
         SDL_Delay(1000 / 60);  // fps
-        game::Time += get_dt();
+        game::Time += DT;
     }
 
 

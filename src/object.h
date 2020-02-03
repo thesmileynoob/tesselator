@@ -2,6 +2,8 @@
 #include "breakout.h"
 #include "gfx.h"
 #include "math.h"
+#include "animation.h"
+
 
 // ball, tile and player are objects
 struct object {
