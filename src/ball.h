@@ -8,4 +8,7 @@ public:
     ball();
     void Update() override;
     void Draw() override;
+
+private:
+    void handleCollision(object* obj);
 };

@@ -92,24 +92,10 @@ void ball::Update()
 
             // most critical part of the whole codebase
             if (SDL_HasIntersection(&ball_rect, &tile_rect) == SDL_TRUE) {
-                const int ball_center = ball_rect.x + (ball_rect.w / 2);
-                const int tile_center = tile_rect.x + (tile_rect.w / 2);
+                handleCollision(t);
 
-                // -ve means ball to the left
-                const int offset = (ball_center - tile_center) / 2;
-
-                float scale    = 0.2;  // TODO: Better name
-                int new_xspeed = scale * offset;
-                if (new_xspeed > max_xspeed) new_xspeed = max_xspeed;    // clip max
-                if (new_xspeed < -max_xspeed) new_xspeed = -max_xspeed;  // clip max
-
-                // update Ball
-                game::Ball->Vel.X = new_xspeed;          // based on offset
-                game::Ball->Vel.Y = -game::Ball->Vel.Y;  // just changes direction in Y
-
-                // perform the procedure
-                extern void on_tile_got_hit(tile * t);  /// TODO: TEMP
-                on_tile_got_hit(t);
+                // notify that a tile got hit
+                game::on_tile_got_hit(t);
                 break;
             }
         }
@@ -121,20 +107,26 @@ void ball::Update()
         SDL_Rect player_rect = game::Player->Rect();
 
         if (SDL_HasIntersection(&ball_rect, &player_rect) == SDL_TRUE) {
-            const vec2 ball_center   = Center();
-            const vec2 player_center = game::Player->Center();
-
-            // offset b/w center of ball and player
-            const int offset = (ball_center.X - player_center.X) / 2;
-            printf("offset: %d\n", offset);
-
-            float scale    = 0.2;  // TODO: Better name
-            int new_xspeed = scale * offset;
-            if (new_xspeed > max_xspeed) new_xspeed = max_xspeed;    // clip max
-            if (new_xspeed < -max_xspeed) new_xspeed = -max_xspeed;  // clip max
-
-            game::Ball->Vel.X = new_xspeed;          // based on offset
-            game::Ball->Vel.Y = -game::Ball->Vel.Y;  // just changes direction in Y
+            handleCollision(game::Player);
         }
     }
+}
+
+void ball::handleCollision(object* obj)
+{
+    const int max_xspeed   = 7;
+    const vec2 ball_center = Center();
+    const vec2 obj_center  = obj->Center();
+
+    // offset b/w center of ball and player
+    const int offset = (ball_center.X - obj_center.X) / 2;
+    // printf("offset: %d\n", offset);
+
+    float scale    = 0.2;  // TODO: Better name
+    int new_xspeed = scale * offset;
+    if (new_xspeed > max_xspeed) new_xspeed = max_xspeed;    // clip max
+    if (new_xspeed < -max_xspeed) new_xspeed = -max_xspeed;  // clip max
+
+    Vel.X = new_xspeed;  // based on offset
+    Vel.Y = -Vel.Y;      // just changes direction in Y
 }
