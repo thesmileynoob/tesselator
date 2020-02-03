@@ -20,7 +20,6 @@ extern int level_bottom;
 extern int level_width;
 extern int level_height;
 
-
 extern int Cols;
 extern int Rows;
 extern int TileCount;
@@ -36,6 +35,12 @@ extern Uint8 BgCol[3];  // r,g,b
 
 extern std::vector<particle_src*> PSources;
 
+}  // namespace game
+
+
+namespace game
+{
+
 // load level and init resources
 void load_level(int n);
 void reset_level();
@@ -44,5 +49,6 @@ void draw_frame();
 
 bool is_game_over();
 void reset_particle(object* p);
+void on_tile_got_hit(tile* t);
 
 }  // namespace game

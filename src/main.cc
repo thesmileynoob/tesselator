@@ -77,23 +77,6 @@ int main(int argc, char const* argv[])
 }
 
 
-// EVENT
-// do a bunch of stuff when a tile gets hit
-void on_tile_got_hit(tile* t)
-{
-    t->Hit++;       // mark it "Hit"
-    t->Hidden = 1;  // don't draw hit tiles
-    game::Score++;  // inc the score
-
-    // create a new particle_src at the center of the hit tile
-    int px             = CENTER_X(t);
-    int py             = CENTER_Y(t);
-    int count          = 8;
-    particle_src* psrc = new particle_src(px, py, count, t->TexRow, t->TexCol);
-    game::PSources.emplace_back(psrc);
-}
-
-
 /**
  * returns: dt in millisecs
  */
