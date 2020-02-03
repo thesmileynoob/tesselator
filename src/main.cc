@@ -47,6 +47,11 @@ int main(int argc, char const* argv[])
         }
 
         // handle input
+        {
+            const Uint8* Keys    = SDL_GetKeyboardState(NULL);
+            game::is_slow_motion = Keys[SDL_SCANCODE_LSHIFT] ? true : false;
+        }
+
 
         // update state
         game::Player->Update();

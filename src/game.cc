@@ -9,31 +9,35 @@ namespace game
 {
 bool debug_mode = true;
 
+/// level (aka playable area) dimensions
 int level_left   = FRAME_WIDTH;
 int level_right  = SCR_WIDTH - FRAME_WIDTH;
 int level_top    = FRAME_WIDTH;
 int level_bottom = SCR_HEIGHT - FRAME_WIDTH;
-
 int level_width  = level_right - level_left;
 int level_height = level_bottom - level_top;
-
 
 int Cols      = 5;
 int Rows      = 3;
 int TileCount = 5 * 3;
 
+// meta
 int Running;        // game running flag
 int Score;          // current level score. you win when Score == TileCount
 unsigned int Time;  // time taken to finish the level
 
+// objects
 tile* Tiles    = nullptr;
 player* Player = nullptr;
 ball* Ball     = nullptr;
 Uint8 BgCol[3];  // r,g,b
 
-// particle sources
+// particles
 std::vector<particle_src*> PSources;
 
+// effects
+bool is_slow_motion    = false;
+float slow_motion_factor = .5;
 }  // namespace game
 
 

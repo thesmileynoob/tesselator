@@ -44,8 +44,7 @@ void ball::Update()
     // ball update
     const Uint8* Keys = SDL_GetKeyboardState(NULL);
 
-    float factor = 1.;
-    if (Keys[SDL_SCANCODE_LSHIFT]) { factor = .5; }
+    const float factor = game::is_slow_motion ? game::slow_motion_factor : 1;
     X += Vel.X * factor;
     Y += Vel.Y * factor;
 

@@ -24,16 +24,23 @@ extern int Cols;
 extern int Rows;
 extern int TileCount;
 
+// meta
 extern int Running;        // game running flag
 extern int Score;          // current level score. you win when Score == TileCount
 extern unsigned int Time;  // time taken to finish the level
 
+// objects
 extern tile* Tiles;
 extern player* Player;
 extern ball* Ball;
 extern Uint8 BgCol[3];  // r,g,b
 
+// particles
 extern std::vector<particle_src*> PSources;
+
+// effects
+extern bool is_slow_motion;
+extern float slow_motion_factor;
 
 }  // namespace game
 

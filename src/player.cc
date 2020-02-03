@@ -26,8 +26,9 @@ void player::Update()
 
     // slow motion!
     // hold LSHIFT to slow down player. Useful for some "powerdown"
-    float factor = 1.;
-    if (Keys[SDL_SCANCODE_LSHIFT]) { factor = .5; }
+
+    const float factor = game::is_slow_motion ? game::slow_motion_factor : 1;
+
     const int playerspeed = Vel.X * factor;
 
     // movement
