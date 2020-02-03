@@ -43,6 +43,14 @@ int main(int argc, char const* argv[])
                     // toggle debug_mode
                     game::debug_mode = !game::debug_mode;
                 }
+                // change slow_motion_factor
+                if (sym == SDLK_w) {
+                    game::slow_motion_factor += .1;
+                } else if (sym == SDLK_s) {
+                    game::slow_motion_factor -= .1;
+                }
+                // reset slow_motion_factor
+                if (sym == SDLK_r) { game::slow_motion_factor -= .5; }
             }
         }
 
