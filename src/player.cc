@@ -1,17 +1,23 @@
 #include "player.h"
 #include "breakout.h"
-#include "gfx.h"
 #include "game.h"
+#include "gfx.h"
 
 #include <cassert>
 
 player::player()
     : object()  // call parent constructor
 {
-    X = SCR_WIDTH / 2;
-    Y = 4.2 / 5.0 * SCR_HEIGHT;
-    W = 155;
-    H = 35;
+    const int lvl_center    = game::level_width / 2;
+    const int player_width  = 155;
+    const int player_height = 35;
+
+    X = lvl_center - (player_width / 2);
+    Y = 4.2 / 5.0 * game::level_height;
+    W = player_width;
+    H = player_height;
+
+    printf("lw: %d, lcent: %d, X: %d, \n", game::level_width, lvl_center, X);
 
     Vel = vec2(15, 0);
 }
@@ -56,6 +62,7 @@ void player::Update()
 
 void player::Draw()
 {
+    printf("DRAW::player::X = %d\n", X);
     object::Draw();
 
     SDL_Rect player_rect = RECT(this);

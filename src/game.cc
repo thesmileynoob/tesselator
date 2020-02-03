@@ -13,6 +13,10 @@ int level_right  = SCR_WIDTH - FRAME_WIDTH;
 int level_top    = FRAME_WIDTH;
 int level_bottom = SCR_HEIGHT - FRAME_WIDTH;
 
+int level_width  = level_right - level_left;
+int level_height = level_bottom - level_top;
+
+
 int Cols      = 5;
 int Rows      = 3;
 int TileCount = 5 * 3;
@@ -32,6 +36,9 @@ std::vector<particle_src*> PSources;
 // int ParticleSrcX = SCR_WIDTH / 2;
 // int ParticleSrcY = SCR_HEIGHT / 2;
 
+static tile* get_nearest_tile();
+static int effect_hl_nearest_tile();
+// static void reset_particle(object* p);
 
 tile* get_nearest_tile()
 {

@@ -53,7 +53,7 @@ void ball::Update()
         X     = left_lim;
         Vel.X = -Vel.X;
     } else if (RIGHT(this) > right_lim) {
-        X     = game::level_right - W;
+        X     = right_lim - W;
         Vel.X = -Vel.X;
     }
 
@@ -61,8 +61,8 @@ void ball::Update()
     if (TOP(this) < top_lim) {
         Y     = top_lim;
         Vel.Y = -Vel.Y;
-    } else if (BOTTOM(this) > game::level_bottom) {
-        Y     = game::level_bottom - H;
+    } else if (BOTTOM(this) > bottom_lim) {
+        Y     = bottom_lim - H;
         Vel.Y = -Vel.Y;
     }
 }

@@ -18,9 +18,6 @@
 
 /** LOCAL FUNCTIONS */
 // slightly buggy af
-static tile* get_nearest_tile();
-static int effect_hl_nearest_tile();
-static void reset_particle(object* p);
 
 
 /** here we go! */
@@ -83,20 +80,12 @@ void on_tile_got_hit(tile* t)
     t->Hidden = 1;  // don't draw hit tiles
     game::Score++;  // inc the score
 
-    // spawn particles
+    // create a new particle_src at the center of the hit tile
     int px             = CENTER_X(t);
     int py             = CENTER_Y(t);
     int count          = 8;
     particle_src* psrc = new particle_src(px, py, count, t->TexRow, t->TexCol);
     game::PSources.emplace_back(psrc);
-
-    // for (int i = 0; i < game::ParticleCount; ++i) {
-    //     object* p = &game::Particles[i];
-    //     game::reset_particle(p);
-    //     // set particle texture matching the hit tile
-    //     p->TexRow = t->TexRow;
-    //     p->TexCol = t->TexCol;
-    // }
 }
 
 void update_state(const Uint8* Keys)

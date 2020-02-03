@@ -11,10 +11,13 @@
 namespace game
 {
 
+/// level (aka playable area) dimensions
 extern int level_left;
 extern int level_right;
 extern int level_top;
 extern int level_bottom;
+extern int level_width;
+extern int level_height;
 
 
 extern int Cols;
