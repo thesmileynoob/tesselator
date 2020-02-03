@@ -28,15 +28,14 @@ int main(int argc, char const* argv[])
     // game must be init after gfx::init()
     game::load_level(0);
 
-    Anim.Tag     = ANIM_PLAYER_LOSE_LIFE;
-    Anim.Time    = 1000;
-    Anim.Elapsed = 0;
+    Anim = animation(ANIM_PLAYER_LOSE_LIFE, 3000 /*sec*/);
 
     // main game loop
     game::Time    = 0;
     game::Running = 1;
     while (game::Running) {
-        const unsigned int DT = get_dt();
+        const unsigned int DT      = get_dt();
+        static bool button_pressed = false;
 
         // handle system events
         SDL_Event ev;
@@ -57,6 +56,7 @@ int main(int argc, char const* argv[])
                 }
                 // reset slow_motion_factor
                 if (sym == SDLK_r) { game::slow_motion_factor -= .5; }
+                if (sym == SDLK_p) { button_pressed = true; }
             }
         }
 
@@ -72,8 +72,11 @@ int main(int argc, char const* argv[])
         game::Ball->Update();
 
         // animation
-        if (!Anim.IsDone()) {
-            printf("elaspsed: %4d, time: %d, DT: %d\n", Anim.Elapsed, Anim.Time, DT);
+        if (button_pressed) game::Player->LoseLife();
+
+        if (Anim.ShouldRun && (!Anim.IsDone())) {
+            // printf("elaspsed: %4d, time: %d, DT: %d\n", Anim.Elapsed, Anim.Time,
+            // DT);
             Anim.Tick(DT);
         }
 

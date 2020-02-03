@@ -36,7 +36,7 @@ Uint8 BgCol[3];  // r,g,b
 std::vector<particle_src*> PSources;
 
 // effects
-bool is_slow_motion    = false;
+bool is_slow_motion      = false;
 float slow_motion_factor = .5;
 }  // namespace game
 
@@ -186,6 +186,13 @@ void on_tile_got_hit(tile* t)
     game::PSources.emplace_back(psrc);
 }
 
+void on_player_lose_life()
+{
+    Player->LoseLife();
+    // slow_motion_factor = .1;
+    // is_slow_motion     = true;
+    printf("GameOVER - YOU LOSE\n");
+}
 
 void draw_frame()
 {

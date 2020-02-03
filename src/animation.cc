@@ -4,36 +4,64 @@
 #include <cmath>
 #include <cstdio>
 
+animation::animation()
+    : animation(ANIM_NO_TAG, 0)
+{
+}
+
+animation::animation(animation_tag tag, int time_ms)
+    : Tag{tag}
+    , Time{time_ms}
+    , Elapsed{0}
+    , Done{false}
+    , ShouldRun{false}
+{
+}
+
+bool animation::IsDone() const { return Done || (Elapsed >= Time); }
+
+void animation::call_the_right_method()
+{
+    switch (Tag) {
+    case ANIM_NO_TAG: assert(0); break;  // should never happen
+    case ANIM_PLAYER_LOSE_LIFE: player_lose_life(); break;
+    default: assert(0); break;
+    }
+}
 
 void animation::Tick(unsigned int _DT)
 {
     assert(!Done);
 
     const unsigned int max_dt = Time - Elapsed;
-    const unsigned int dt     = std::min(_DT, max_dt);  // NEVER OVERSHOOT (in life? :( )
-    Elapsed += dt;
+    Dt                        = std::min(_DT, max_dt);  // NEVER OVERSHOOT (in life? :( )
+    Elapsed += Dt;
+
+    // all the methods are guranteed correct Elapsed, Dt times
+    call_the_right_method();
+}
+
+void animation::player_lose_life()
+{
+    // blink every 300 ms
+    if (Elapsed < 150) {
+        game::Player->Hidden = true;
+    } else if (Elapsed < 300) {
+        game::Player->Hidden = false;
+    } else if (Elapsed < 450) {
+        game::Player->Hidden = true;
+    } else if (Elapsed < 600) {
+        game::Player->Hidden = false;
+    } else if (Elapsed < 950) {
+        game::Player->Hidden = true;
+    }
 
 
-    // jump?
-    const int ymin = 500;
-    const int y    = game::Player->Y;
-
-    // demonstration of another end condition
-    if (y <= ymin) {
+    // slide off screen to the bottom
+    const int y = game::Player->Y;
+    if (y >= SCR_HEIGHT) {
         Done = true;
         return;
     }
-
-    // puts("tick");
-    game::Player->Y -= 10;
-    // printf("p->Y: %d\n", game::Player->Y);
-}
-
-
-bool animation::IsDone()
-{
-    if (Done || Elapsed >= Time) {
-        // printf("done\n");
-        return true;
-    }
+    game::Player->Y += 5;
 }

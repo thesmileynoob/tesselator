@@ -54,6 +54,7 @@ void player::Update()
 
 void player::Draw()
 {
+    if (Hidden) return;
     object::Draw();
 
     SDL_Rect player_rect = AbsRect();                // absolute position
@@ -67,4 +68,11 @@ void player::Draw()
         const int width  = W + 20;
         gfx::draw_crosshair(AbsCenter(), width, height);
     }
+}
+
+
+void player::LoseLife()
+{
+    extern animation Anim;
+    Anim.ShouldRun = true;
 }

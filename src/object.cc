@@ -18,7 +18,13 @@ object::object()
 
 void object::Update() {}
 
-void object::Draw() {}
+void object::Draw()
+{
+    if (Hidden) {
+        // puts("warning: drawing hidden obj!\n");
+        return;
+    }
+}
 
 bool object::IsInside() { return IsInside(0, game::level_width, 0, game::level_height); }
 

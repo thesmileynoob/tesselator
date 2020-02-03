@@ -56,6 +56,9 @@ void draw_frame();
 
 bool is_game_over();
 void reset_particle(object* p);
+
+// events
 void on_tile_got_hit(tile* t);
+void on_player_lose_life();
 
 }  // namespace game

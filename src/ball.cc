@@ -89,18 +89,27 @@ void ball::Update()
         if (Left() <= left_lim) {
             X     = left_lim;
             Vel.X = -Vel.X;
+            return;
         } else if (Right() >= right_lim) {
             X     = right_lim - W;
             Vel.X = -Vel.X;
+            return;
         }
 
         // resolve vertical collision
         if (Top() < top_lim) {
+            // hit top rect
             Y     = top_lim;
             Vel.Y = -Vel.Y;
+            return;
         } else if (Bottom() > bottom_lim) {
+            // hit bottom rect
             Y     = bottom_lim - H;
             Vel.Y = -Vel.Y;
+
+            // finally some action
+            game::on_player_lose_life();
+            return;
         }
     }
 
