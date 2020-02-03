@@ -31,12 +31,14 @@ public:
     int Right() const;
     int Top() const;
     int Bottom() const;
+    SDL_Rect Rect() const;
 
     // relative to window
     int AbsLeft() const;
     int AbsRight() const;
     int AbsTop() const;
     int AbsBottom() const;
+    SDL_Rect AbsRect() const;
 
     // inside game::* bounds
     bool IsInside();
