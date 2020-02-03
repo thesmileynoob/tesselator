@@ -30,6 +30,33 @@ void ball::Draw()
     SDL_SetRenderDrawColor(gfx::_renderer, 25, 25, 255, 255);
     SDL_RenderFillRect(gfx::_renderer, &ball_rect);
 
+    if (game::is_slow_motion) {
+        if (SDL_SetRenderDrawBlendMode(gfx::_renderer, SDL_BLENDMODE_BLEND) == 1) {
+            puts("blendmode ERROR");
+        }
+
+        const int lag      = 1.3;  // px
+        SDL_Rect ball_rect = AbsRect();
+
+        ball_rect.x -= lag * Vel.X;
+        ball_rect.y -= lag * Vel.Y;
+        SDL_SetRenderDrawColor(gfx::_renderer, 25, 25, 255, 100);
+        SDL_RenderFillRect(gfx::_renderer, &ball_rect);
+
+        ball_rect.x -= lag * Vel.X;
+        ball_rect.y -= lag * Vel.Y;
+        SDL_SetRenderDrawColor(gfx::_renderer, 25, 25, 255, 25);
+        SDL_RenderFillRect(gfx::_renderer, &ball_rect);
+
+        // draw ball again
+        ball_rect = AbsRect();
+        SDL_SetRenderDrawColor(gfx::_renderer, 25, 25, 255, 255);
+        SDL_RenderFillRect(gfx::_renderer, &ball_rect);
+
+        SDL_SetRenderDrawBlendMode(gfx::_renderer, SDL_BLENDMODE_NONE);
+    }
+
+
     if (game::debug_mode) {
         SDL_SetRenderDrawColor(gfx::_renderer, 255, 255, 255, 255);
         const int height = H + 20;
