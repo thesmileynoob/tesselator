@@ -7,6 +7,8 @@
 // game global variables
 namespace game
 {
+bool debug_mode = true;
+
 int level_left   = FRAME_WIDTH;
 int level_right  = SCR_WIDTH - FRAME_WIDTH;
 int level_top    = FRAME_WIDTH;

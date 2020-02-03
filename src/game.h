@@ -10,6 +10,7 @@
 
 namespace game
 {
+extern bool debug_mode;
 
 /// level (aka playable area) dimensions
 extern int level_left;
