@@ -77,23 +77,38 @@ void animation::player_lose_life(unsigned int dt)
         }
     }
 
-    // blink every 300 ms
-    if (Elapsed < 150) {
+    // blink every blink_freq ms
+    const int blink_freq    = 100;             // ms
+    const int blink_freq_x2 = 2 * blink_freq;  // ms
+
+    // remainder goes from 0 to twice the blink_freq (blink_freq_x2).
+    // because of this, we can turn on and off (ie "blink") the player
+    // half of the time (ie once every half blink_freq_x2 ms).
+    /// NOTE: I don't know how I came up with this. Human brain > worm hole?
+    const int remainder = Elapsed % blink_freq_x2;  // [0, 2 * blink_freq]
+    if (remainder < blink_freq) {
         game::Player->Hidden = true;
-    } else if (Elapsed < 300) {
+    } else {
         game::Player->Hidden = false;
-    } else if (Elapsed < 450) {
-        game::Player->Hidden = true;
-    } else if (Elapsed < 600) {
-        game::Player->Hidden = false;
-    } else if (Elapsed < 950) {
-        game::Player->Hidden = true;
     }
 
-    // slide off screen to the bottom
-    game::Player->Y += 5;
+    /** previous version of blink for historical reasons. here freq is 150 ms */
+    // if (Elapsed < 150) {
+    //     game::Player->Hidden = true;
+    // } else if (Elapsed < 300) {
+    //     game::Player->Hidden = false;
+    // } else if (Elapsed < 450) {
+    //     game::Player->Hidden = true;
+    // } else if (Elapsed < 600) {
+    //     game::Player->Hidden = false;
+    // } else if (Elapsed < 950) {
+    //     game::Player->Hidden = true;
+    // }
 
-    game::slow_motion_factor = .7;
+    // slide off the bottom edge of the screen
+    game::Player->Y += 3;
+
+    game::slow_motion_factor = .5;
     game::is_slow_motion     = true;
 }
 
@@ -110,6 +125,6 @@ void animation::game_over_delay(unsigned int dt)
 
     // ultimate objective
     // GTA:V (tm)
-    game::slow_motion_factor = .3;
+    game::slow_motion_factor = .2;
     game::is_slow_motion     = true;
 }
