@@ -9,8 +9,7 @@ enum animation_tag {
 struct animation {
 
 private:
-    bool Done;
-    int Dt;
+    bool Done;  // set to true if animation has "finished"
 
 public:
     animation_tag Tag;
@@ -27,6 +26,8 @@ public:
 
 
 private:
-    void call_the_right_method();
-    void player_lose_life();
+    void call_the_right_method(unsigned int dt);
+
+    // methods
+    void player_lose_life(unsigned int dt);
 };

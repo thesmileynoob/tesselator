@@ -20,11 +20,11 @@ animation::animation(animation_tag tag, int time_ms)
 
 bool animation::IsDone() const { return Done || (Elapsed >= Time); }
 
-void animation::call_the_right_method()
+void animation::call_the_right_method(unsigned int dt)
 {
     switch (Tag) {
     case ANIM_NO_TAG: assert(0); break;  // should never happen
-    case ANIM_PLAYER_LOSE_LIFE: player_lose_life(); break;
+    case ANIM_PLAYER_LOSE_LIFE: player_lose_life(dt); break;
     default: assert(0); break;
     }
 }
@@ -34,14 +34,15 @@ void animation::Tick(unsigned int _DT)
     assert(!Done);
 
     const unsigned int max_dt = Time - Elapsed;
-    Dt                        = std::min(_DT, max_dt);  // NEVER OVERSHOOT (in life? :( )
-    Elapsed += Dt;
+
+    int final_dt = std::min(_DT, max_dt);  // NEVER OVERSHOOT (in life? :( )
+    Elapsed += final_dt;
 
     // all the methods are guranteed correct Elapsed, Dt times
-    call_the_right_method();
+    call_the_right_method(final_dt);
 }
 
-void animation::player_lose_life()
+void animation::player_lose_life(unsigned int dt)
 {
     // blink every 300 ms
     if (Elapsed < 150) {
