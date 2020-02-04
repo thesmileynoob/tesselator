@@ -6,7 +6,7 @@ struct ball : public object {
 
 public:
     ball();
-    void Update() override;
+    void update() override;
     void Draw() override;
 
 private:

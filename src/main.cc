@@ -68,8 +68,8 @@ int main(int argc, char const* argv[])
 
 
         // update state
-        game::Player->Update();
-        game::Ball->Update();
+        game::Player->update();
+        game::Ball->update();
 
         // animation
         if (button_pressed) game::Player->LoseLife();

@@ -20,7 +20,7 @@ player::player()
     Vel = vec2(15, 0);
 }
 
-void player::Update()
+void player::update()
 {
     const Uint8* Keys = SDL_GetKeyboardState(NULL);  // TODO?
 

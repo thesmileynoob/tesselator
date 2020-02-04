@@ -25,7 +25,7 @@ public:
 public:
     object();
 
-    virtual void Update();
+    virtual void update();
     virtual void Draw();
 
     // relative to game::

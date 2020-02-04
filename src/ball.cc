@@ -66,7 +66,7 @@ void ball::Draw()
 }
 
 
-void ball::Update()
+void ball::update()
 {
     // ball update
     // const Uint8* Keys = SDL_GetKeyboardState(NULL);

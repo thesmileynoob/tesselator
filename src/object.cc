@@ -16,7 +16,7 @@ object::object()
     Hidden          = 0;
 }
 
-void object::Update() {}
+void object::update() {}
 
 void object::Draw()
 {
