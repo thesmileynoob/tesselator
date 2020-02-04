@@ -6,5 +6,5 @@ struct tile : public object {
 
 public:
     tile();
-    void Draw() override;
+    void draw() override;
 };

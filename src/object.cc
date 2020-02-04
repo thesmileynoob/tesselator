@@ -18,7 +18,7 @@ object::object()
 
 void object::update() {}
 
-void object::Draw()
+void object::draw()
 {
     if (Hidden) {
         // puts("warning: drawing hidden obj!\n");

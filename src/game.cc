@@ -251,19 +251,19 @@ void draw_frame()
         SDL_SetRenderDrawColor(gfx::_renderer, 255, 0, 0, 255);
         for (int i = 0; i < game::TileCount; ++i) {
             tile* t = &game::Tiles[i];
-            t->Draw();
+            t->draw();
         }
     }
 
 
     // PLAYER
     {
-        game::Player->Draw();
+        game::Player->draw();
     }
 
     // BALL
     {
-        game::Ball->Draw();
+        game::Ball->draw();
     }
 
     // "EFFECTS"

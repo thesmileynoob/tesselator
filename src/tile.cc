@@ -12,9 +12,9 @@ tile::tile()
     H = TILE_HEIGHT;
 }
 
-void tile::Draw()
+void tile::draw()
 {
-    object::Draw();
+    object::draw();
 
     if (Hit || Hidden) return;  // don't draw if Hit or Hidden
 

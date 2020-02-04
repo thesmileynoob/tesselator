@@ -7,7 +7,7 @@ struct player : public object {
 public:
     player();
     void update() override;
-    void Draw() override;
+    void draw() override;
 
     void LoseLife();
 };

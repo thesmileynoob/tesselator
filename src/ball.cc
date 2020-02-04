@@ -21,9 +21,9 @@ ball::ball()
 
 
 // NOTE: Always use Abs* for Drawing
-void ball::Draw()
+void ball::draw()
 {
-    object::Draw();
+    object::draw();
 
     // draw ball
     SDL_Rect ball_rect = AbsRect();

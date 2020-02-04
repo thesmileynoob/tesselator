@@ -26,7 +26,7 @@ public:
     object();
 
     virtual void update();
-    virtual void Draw();
+    virtual void draw();
 
     // relative to game::
     float Left() const;

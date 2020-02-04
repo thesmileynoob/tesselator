@@ -52,10 +52,10 @@ void player::update()
 }
 
 
-void player::Draw()
+void player::draw()
 {
     if (Hidden) return;
-    object::Draw();
+    object::draw();
 
     SDL_Rect player_rect = AbsRect();                // absolute position
     SDL_Rect tex_rect    = gfx::texture_rect(1, 1);  // TODO

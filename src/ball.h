@@ -7,7 +7,7 @@ struct ball : public object {
 public:
     ball();
     void update() override;
-    void Draw() override;
+    void draw() override;
 
 private:
     void handleCollision(object* obj);
