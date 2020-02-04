@@ -2,17 +2,15 @@
     - background graphics (easy)
     - multiple-hit tiles (easy)
     - load and save gamestate (easy)
-    - rename variables to match set conventions (easy)
 
-    - dynamic combo, score, time-left text (med)
-    - add struct particle_src? (med)
-    - slow motion! (med?)
     - more levels (med)
     - add some powerups (med)
+    - dynamic combo text (hard?)
 
     - start screen and pause menu (hard)
     - sound (not for the faint of heart) (veteran)
     - realistic breaking animation (veteran)
+    - screen transitions (veteran)
 
 
 
@@ -24,16 +22,15 @@
 
 # High-level design
 ## Level
-    ************
-    * - - - - -*
-    * - - - - -*    <- Tiles
-    * - - - - -*
-    * - -   - -*
-    * -     - -*
-    *          *
-    *     o    *    <- Ball
-    *   ----   *    <- Player
-    ************
+
+       origin-> ************
+                * - - - - -*
+                * - - - - -*    <- Tiles
+                * - -   - -*
+                *          *
+                *     o    *    <- Ball
+                *   ----   *    <- Player
+                ************
 
 ## Steps:
     1. initialize external libs (SDL_*)
@@ -93,22 +90,20 @@ Final project structure should look something like this
 
 ```
 tesselator
-├── animations.c
 ├── assets
 │   ├── bomber_font.png
 │   ├── font_04b.ttf
 │   ├── SFX_Pickup_01.wav
 │   └── tiles.png
-├── breakout.h
 ├── build
 │   ├── debug    #### This is the executable
 │   ├── Makefile
-│   └── ...
+│   ├── ...
 ├── CMakeLists.txt
-├── main.c
 ├── README.md
-├── scratchpad.c
-└── ui.c
+├── src
+│   ├── **.h
+│   ├── **.cc
 └── ...
 
 ```
