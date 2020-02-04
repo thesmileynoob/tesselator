@@ -26,7 +26,7 @@ void ball::draw()
     object::draw();
 
     // draw ball
-    SDL_Rect ball_rect = AbsRect();
+    SDL_Rect ball_rect = abs_rect();
     SDL_SetRenderDrawColor(gfx::_renderer, 25, 25, 255, 255);
     SDL_RenderFillRect(gfx::_renderer, &ball_rect);
 
@@ -36,7 +36,7 @@ void ball::draw()
         }
 
         const int lag      = 1.3;  // px
-        SDL_Rect ball_rect = AbsRect();
+        SDL_Rect ball_rect = abs_rect();
 
         ball_rect.x -= lag * Vel.X;
         ball_rect.y -= lag * Vel.Y;
@@ -49,7 +49,7 @@ void ball::draw()
         SDL_RenderFillRect(gfx::_renderer, &ball_rect);
 
         // draw ball again
-        ball_rect = AbsRect();
+        ball_rect = abs_rect();
         SDL_SetRenderDrawColor(gfx::_renderer, 25, 25, 255, 255);
         SDL_RenderFillRect(gfx::_renderer, &ball_rect);
 
@@ -61,7 +61,7 @@ void ball::draw()
         SDL_SetRenderDrawColor(gfx::_renderer, 255, 255, 255, 255);
         const int height = H + 20;
         const int width  = W + 20;
-        gfx::draw_crosshair(AbsCenter(), width, height);
+        gfx::draw_crosshair(abs_center(), width, height);
     }
 }
 
@@ -85,23 +85,23 @@ void ball::update()
         const int top_lim    = 0;
         const int bottom_lim = game::level_height;
 
-        if (Left() <= left_lim) {
+        if (left() <= left_lim) {
             X     = left_lim;
             Vel.X = -Vel.X;
             return;
-        } else if (Right() >= right_lim) {
+        } else if (right() >= right_lim) {
             X     = right_lim - W;
             Vel.X = -Vel.X;
             return;
         }
 
         // resolve vertical collision
-        if (Top() < top_lim) {
+        if (top() < top_lim) {
             // hit top rect
             Y     = top_lim;
             Vel.Y = -Vel.Y;
             return;
-        } else if (Bottom() > bottom_lim) {
+        } else if (bottom() > bottom_lim) {
             // hit bottom rect
             Y     = bottom_lim - H;
             Vel.Y = -Vel.Y;
@@ -115,14 +115,14 @@ void ball::update()
 
     // ball-tiles collision
     {
-        SDL_Rect ball_rect = Rect();
+        SDL_Rect ball_rect = rect();
 
         SDL_Rect tile_rect;
         for (int i = 0; i < game::TileCount; ++i) {
             tile* t = &game::Tiles[i];
             if (t->Hit) continue;
 
-            tile_rect = t->Rect();
+            tile_rect = t->rect();
 
             // most critical part of the whole codebase
             if (SDL_HasIntersection(&ball_rect, &tile_rect) == SDL_TRUE) {
@@ -137,8 +137,8 @@ void ball::update()
 
     // ball-player collision
     {
-        SDL_Rect ball_rect   = Rect();
-        SDL_Rect player_rect = game::Player->Rect();
+        SDL_Rect ball_rect   = rect();
+        SDL_Rect player_rect = game::Player->rect();
 
         if (SDL_HasIntersection(&ball_rect, &player_rect) == SDL_TRUE) {
             handleCollision(game::Player);
@@ -149,8 +149,8 @@ void ball::update()
 void ball::handleCollision(object* obj)
 {
     const int max_xspeed   = 7;  // max ball speed in X dir
-    const vec2 ball_center = Center();
-    const vec2 obj_center  = obj->Center();
+    const vec2 ball_center = center();
+    const vec2 obj_center  = obj->center();
 
     // offset b/w center of ball and player
     const int offset = (ball_center.X - obj_center.X) / 2;

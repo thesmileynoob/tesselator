@@ -47,8 +47,8 @@ void player::update()
     const int left_lim  = 0;
     const int right_lim = game::level_width;
 
-    if (Left() <= left_lim) { X = left_lim; }
-    if (Right() >= right_lim) { X = right_lim - W; }
+    if (left() <= left_lim) { X = left_lim; }
+    if (right() >= right_lim) { X = right_lim - W; }
 }
 
 
@@ -57,7 +57,7 @@ void player::draw()
     if (Hidden) return;
     object::draw();
 
-    SDL_Rect player_rect = AbsRect();                // absolute position
+    SDL_Rect player_rect = abs_rect();                // absolute position
     SDL_Rect tex_rect    = gfx::texture_rect(1, 1);  // TODO
     gfx::draw_texture(gfx::Texture, &tex_rect, &player_rect);
 
@@ -66,7 +66,7 @@ void player::draw()
         SDL_SetRenderDrawColor(gfx::_renderer, 255, 255, 255, 255);
         const int height = H + 20;
         const int width  = W + 20;
-        gfx::draw_crosshair(AbsCenter(), width, height);
+        gfx::draw_crosshair(abs_center(), width, height);
     }
 }
 

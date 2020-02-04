@@ -31,29 +31,29 @@ bool object::IsWithinWorld()
     return IsInside(0, game::level_width, 0, game::level_height);
 }
 
-bool object::IsInside(float left, float right, float top, float bottom)
+bool object::IsInside(float _left, float _right, float _top, float _bottom)
 {
-    const bool within_x_range = Left() >= left && Right() <= right;
-    const bool within_y_range = Top() >= top && Bottom() <= bottom;
+    const bool within_x_range = left() >= _left && right() <= _right;
+    const bool within_y_range = top() >= _top && bottom() <= _bottom;
     return within_x_range && within_y_range;
 }
 
 
 // relative to level
-float object::Left() const { return X; }
-float object::Right() const { return Left() + W; }
-float object::Top() const { return Y; }
-float object::Bottom() const { return Top() + H; }
-SDL_Rect object::Rect() const { return {(int) Left(), (int) Top(), (int) W, (int) H}; };
-vec2 object::Center() const { return {Left() + (W / 2), Top() + (H / 2)}; }
+float object::left() const { return X; }
+float object::right() const { return left() + W; }
+float object::top() const { return Y; }
+float object::bottom() const { return top() + H; }
+SDL_Rect object::rect() const { return {(int) left(), (int) top(), (int) W, (int) H}; };
+vec2 object::center() const { return {left() + (W / 2), top() + (H / 2)}; }
 
 // absolute
-float object::AbsLeft() const { return game::level_left + X; }
-float object::AbsRight() const { return Left() + W; }
-float object::AbsTop() const { return game::level_top + Y; }
-float object::AbsBottom() const { return Top() + H; }
-SDL_Rect object::AbsRect() const
+float object::abs_left() const { return game::level_left + X; }
+float object::abs_right() const { return left() + W; }
+float object::abs_top() const { return game::level_top + Y; }
+float object::abs_bottom() const { return top() + H; }
+SDL_Rect object::abs_rect() const
 {
-    return {(int) AbsLeft(), (int) AbsTop(), (int) W, (int) H};
+    return {(int) abs_left(), (int) abs_top(), (int) W, (int) H};
 };
-vec2 object::AbsCenter() const { return {AbsLeft() + (W / 2), AbsTop() + (H / 2)}; }
+vec2 object::abs_center() const { return {abs_left() + (W / 2), abs_top() + (H / 2)}; }

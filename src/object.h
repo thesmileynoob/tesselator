@@ -29,20 +29,21 @@ public:
     virtual void draw();
 
     // relative to game::
-    float Left() const;
-    float Right() const;
-    float Top() const;
-    float Bottom() const;
-    SDL_Rect Rect() const;
-    vec2 Center() const;
+    float left() const;
+    float right() const;
+    float top() const;
+    float bottom() const;
+    SDL_Rect rect() const;
+    vec2 center() const;
 
     // relative to window
-    float AbsLeft() const;
-    float AbsRight() const;
-    float AbsTop() const;
-    float AbsBottom() const;
-    SDL_Rect AbsRect() const;
-    vec2 AbsCenter() const;
+    float abs_left() const;
+    float abs_right() const;
+    float abs_top() const;
+    float abs_bottom() const;
+    SDL_Rect abs_rect() const;
+    vec2 abs_center() const;
+    //
 
     // inside game::* bounds
     bool IsWithinWorld();

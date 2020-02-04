@@ -54,7 +54,7 @@ tile* get_nearest_tile()
     // const int ballx = CENTER_X(game::Ball);
     // const int bally = CENTER_Y(game::Ball);
 
-    const vec2 ball_center = Ball->Center();
+    const vec2 ball_center = Ball->center();
     const int ballx        = ball_center.X;
     const int bally        = ball_center.Y;
 
@@ -67,7 +67,7 @@ tile* get_nearest_tile()
 
         // const int tilex = CENTER_X(t);
         // const int tiley = CENTER_Y(t);
-        const vec2 tile_center = t->Center();
+        const vec2 tile_center = t->center();
         const int tilex        = tile_center.X;
         const int tiley        = tile_center.Y;
 
@@ -101,7 +101,7 @@ int effect_hl_nearest_tile()
     if (nearest_tile == NULL) { return 0; }
 
     const int pad = 5;
-    SDL_Rect rect = nearest_tile->AbsRect();
+    SDL_Rect rect = nearest_tile->abs_rect();
     rect.x += pad;
     rect.y += pad;
     rect.w -= 2 * pad;
@@ -187,7 +187,7 @@ void on_tile_got_hit(tile* t)
     game::Score++;  // inc the score
 
     // create a new particle_src at the center of the hit tile
-    const vec2 tile_center = t->Center();
+    const vec2 tile_center = t->center();
     // int px             = CENTER_X(t);
     // int py             = CENTER_Y(t);
     int count = 8;
