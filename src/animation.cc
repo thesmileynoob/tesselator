@@ -18,7 +18,7 @@ animation::animation(animation_tag tag, int time_ms)
 {
 }
 
-bool animation::IsDone() const { return Done || (Elapsed >= Time); }
+bool animation::is_done() const { return Done || (Elapsed >= Time); }
 
 void animation::call_the_right_method(unsigned int dt)
 {
@@ -29,7 +29,7 @@ void animation::call_the_right_method(unsigned int dt)
     }
 }
 
-void animation::Tick(unsigned int _DT)
+void animation::tick(unsigned int _DT)
 {
     assert(!Done);
 

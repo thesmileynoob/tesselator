@@ -1,8 +1,8 @@
 #pragma once
+#include "animation.h"
 #include "breakout.h"
 #include "gfx.h"
 #include "math.h"
-#include "animation.h"
 
 
 // ball, tile and player are objects
@@ -46,7 +46,7 @@ public:
     //
 
     // inside game::* bounds
-    bool IsWithinWorld();
+    bool is_within_world();
     // inside given bounds
-    virtual bool IsInside(float left, float right, float top, float bottom);
+    virtual bool is_inside(float left, float right, float top, float bottom);
 };

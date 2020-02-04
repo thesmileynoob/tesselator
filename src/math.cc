@@ -14,14 +14,14 @@ vec2::vec2(float x, float y)
 }
 
 
-void vec2::Scale(float scale)
+void vec2::scale(float scale)
 {
     X *= scale;
     Y *= scale;
 }
 
 
-void vec2::Reset()
+void vec2::reset()
 {
     X = _X;
     Y = _Y;

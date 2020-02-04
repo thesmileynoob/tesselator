@@ -9,5 +9,5 @@ public:
     void update() override;
     void draw() override;
 
-    void LoseLife();
+    void lose_life();
 };

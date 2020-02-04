@@ -21,8 +21,8 @@ public:
     animation();
     animation(animation_tag tag, int time_ms);
 
-    bool IsDone() const;
-    void Tick(unsigned int DT);
+    bool is_done() const;
+    void tick(unsigned int DT);
 
 
 private:

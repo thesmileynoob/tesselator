@@ -10,5 +10,5 @@ public:
     void draw() override;
 
 private:
-    void handleCollision(object* obj);
+    void handle_collision(object* obj);
 };

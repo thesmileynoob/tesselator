@@ -78,7 +78,7 @@ void ball::update()
 
     // ball-boundary collision
     // if we are not inside playable area, we skip this check
-    if (!IsWithinWorld()) {
+    if (!is_within_world()) {
         // resolve horizontal collision
         const int left_lim   = 0;
         const int right_lim  = game::level_width;
@@ -126,7 +126,7 @@ void ball::update()
 
             // most critical part of the whole codebase
             if (SDL_HasIntersection(&ball_rect, &tile_rect) == SDL_TRUE) {
-                handleCollision(t);
+                handle_collision(t);
 
                 // notify that a tile got hit
                 game::on_tile_got_hit(t);
@@ -141,12 +141,12 @@ void ball::update()
         SDL_Rect player_rect = game::Player->rect();
 
         if (SDL_HasIntersection(&ball_rect, &player_rect) == SDL_TRUE) {
-            handleCollision(game::Player);
+            handle_collision(game::Player);
         }
     }
 }
 
-void ball::handleCollision(object* obj)
+void ball::handle_collision(object* obj)
 {
     const int max_xspeed   = 7;  // max ball speed in X dir
     const vec2 ball_center = center();

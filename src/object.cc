@@ -26,12 +26,12 @@ void object::draw()
     }
 }
 
-bool object::IsWithinWorld()
+bool object::is_within_world()
 {
-    return IsInside(0, game::level_width, 0, game::level_height);
+    return is_inside(0, game::level_width, 0, game::level_height);
 }
 
-bool object::IsInside(float _left, float _right, float _top, float _bottom)
+bool object::is_inside(float _left, float _right, float _top, float _bottom)
 {
     const bool within_x_range = left() >= _left && right() <= _right;
     const bool within_y_range = top() >= _top && bottom() <= _bottom;

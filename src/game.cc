@@ -198,7 +198,7 @@ void on_tile_got_hit(tile* t)
 
 void on_player_lose_life()
 {
-    Player->LoseLife();
+    Player->lose_life();
     // slow_motion_factor = .1;
     // is_slow_motion     = true;
     printf("GameOVER - YOU LOSE\n");

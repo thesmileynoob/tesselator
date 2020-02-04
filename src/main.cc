@@ -72,12 +72,12 @@ int main(int argc, char const* argv[])
         game::Ball->update();
 
         // animation
-        if (button_pressed) game::Player->LoseLife();
+        if (button_pressed) game::Player->lose_life();
 
-        if (Anim.ShouldRun && (!Anim.IsDone())) {
+        if (Anim.ShouldRun && (!Anim.is_done())) {
             // printf("elaspsed: %4d, time: %d, DT: %d\n", Anim.Elapsed, Anim.Time,
             // DT);
-            Anim.Tick(DT);
+            Anim.tick(DT);
         }
 
         // render

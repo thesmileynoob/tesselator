@@ -71,7 +71,7 @@ void player::draw()
 }
 
 
-void player::LoseLife()
+void player::lose_life()
 {
     extern animation Anim;
     Anim.ShouldRun = true;
