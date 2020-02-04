@@ -29,6 +29,7 @@ int main(int argc, char const* argv[])
     // main game loop
     game::Time    = 0;
     game::Running = 1;
+    game::Score   = game::TileCount - 5;  // TEMP: DEBUG: TESTING game end condition
     while (game::Running) {
         const unsigned int DT = get_dt();
 

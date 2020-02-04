@@ -290,59 +290,72 @@ void draw_frame()
     }
 
     // UI
+    {  // score
+
+
+        SDL_Texture* texture;
+        SDL_Rect rect;
+        ui::gen_score(game::Score, &texture, &rect);
+        gfx::draw_texture(texture, NULL, &rect);
+    }
+
+    // fps
     {
-        // score
-        {
+        static unsigned int old_time = 0;                    // ms
+        unsigned int new_time        = SDL_GetTicks();       // ms
+        unsigned int delta           = new_time - old_time;  // ms
+        old_time                     = new_time;
+        const int fps                = 1000 / delta;
 
-            SDL_Texture* texture;
-            SDL_Rect rect;
-            ui::gen_score(game::Score, &texture, &rect);
-            gfx::draw_texture(texture, NULL, &rect);
-        }
+        SDL_Texture* texture;
+        SDL_Rect rect;
+        ui::gen_fps(fps, &texture, &rect);
+        gfx::draw_texture(texture, NULL, &rect);
+    }
 
-        // fps
-        {
-            static unsigned int old_time = 0;                    // ms
-            unsigned int new_time        = SDL_GetTicks();       // ms
-            unsigned int delta           = new_time - old_time;  // ms
-            old_time                     = new_time;
-            const int fps                = 1000 / delta;
-
-            SDL_Texture* texture;
-            SDL_Rect rect;
-            ui::gen_fps(fps, &texture, &rect);
-            gfx::draw_texture(texture, NULL, &rect);
-        }
-
-        // time
-        {
-            SDL_Texture* texture;
-            SDL_Rect rect;
-            ui::gen_time(game::Time, &texture, &rect);
-            gfx::draw_texture(texture, NULL, &rect);
-        }
-
-
-        // player_lose_life
-        {
-            if (Player->Dead) {
-                SDL_Texture* texture;
-                SDL_Rect rect;
-
-                ui::gen_player_lose_life(&texture, &rect);
-
-                // increase text size
-                rect = scale_sdl_rect(rect, 1.3f);
-
-                gfx::draw_texture(texture, NULL, &rect);
-            }
-        }
+    // time
+    {
+        SDL_Texture* texture;
+        SDL_Rect rect;
+        ui::gen_time(game::Time, &texture, &rect);
+        gfx::draw_texture(texture, NULL, &rect);
     }
 
 
+    // player_lose_life
+    {
+        if (Player->Dead) {
+            SDL_Texture* texture;
+            SDL_Rect rect;
+
+            ui::gen_player_lose_life(&texture, &rect);
+
+            // increase text size
+            rect = scale_sdl_rect(rect, 1.3f);
+
+            gfx::draw_texture(texture, NULL, &rect);
+        }
+    }
+
+    // you win
+    {
+        bool condition = is_game_over();
+        if (condition) {
+            SDL_Texture* texture;
+            SDL_Rect rect;
+
+            ui::gen_generic_text("YOU WIN", &texture, &rect);
+
+            // increase text size
+            rect = scale_sdl_rect(rect, 1.3f);
+
+            gfx::draw_texture(texture, NULL, &rect);
+        }
+    }
+
     SDL_RenderPresent(gfx::_renderer);
     // END DRAWING
-}
+}  // namespace game
 
 /////// ANIMATIONS ////////
 void queue_animation(animation* anim)
