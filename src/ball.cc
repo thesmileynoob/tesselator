@@ -69,17 +69,16 @@ void ball::Draw()
 void ball::Update()
 {
     // ball update
-    const Uint8* Keys = SDL_GetKeyboardState(NULL);
+    // const Uint8* Keys = SDL_GetKeyboardState(NULL);
 
     const float factor = game::is_slow_motion ? game::slow_motion_factor : 1;
     X += Vel.X * factor;
     Y += Vel.Y * factor;
 
-    const int max_xspeed = 7;  // max ball speed in X dir
 
     // ball-boundary collision
     // if we are not inside playable area, we skip this check
-    if (!IsInside()) {
+    if (!IsWithinWorld()) {
         // resolve horizontal collision
         const int left_lim   = 0;
         const int right_lim  = game::level_width;
@@ -149,7 +148,7 @@ void ball::Update()
 
 void ball::handleCollision(object* obj)
 {
-    const int max_xspeed   = 7;
+    const int max_xspeed   = 7;  // max ball speed in X dir
     const vec2 ball_center = Center();
     const vec2 obj_center  = obj->Center();
 

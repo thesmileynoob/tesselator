@@ -10,10 +10,10 @@ animation::animation()
 }
 
 animation::animation(animation_tag tag, int time_ms)
-    : Tag{tag}
+    : Done{false}
+    , Tag{tag}
     , Time{time_ms}
     , Elapsed{0}
-    , Done{false}
     , ShouldRun{false}
 {
 }

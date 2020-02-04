@@ -9,8 +9,8 @@
 struct object {
 public:
     // absolute coordinates
-    int X, Y;
-    int W, H;
+    float X, Y;
+    float W, H;
     const char* Name;
 
     // gameplay
@@ -29,23 +29,23 @@ public:
     virtual void Draw();
 
     // relative to game::
-    int Left() const;
-    int Right() const;
-    int Top() const;
-    int Bottom() const;
+    float Left() const;
+    float Right() const;
+    float Top() const;
+    float Bottom() const;
     SDL_Rect Rect() const;
     vec2 Center() const;
 
     // relative to window
-    int AbsLeft() const;
-    int AbsRight() const;
-    int AbsTop() const;
-    int AbsBottom() const;
+    float AbsLeft() const;
+    float AbsRight() const;
+    float AbsTop() const;
+    float AbsBottom() const;
     SDL_Rect AbsRect() const;
     vec2 AbsCenter() const;
 
     // inside game::* bounds
-    bool IsInside();
+    bool IsWithinWorld();
     // inside given bounds
     virtual bool IsInside(float left, float right, float top, float bottom);
 };

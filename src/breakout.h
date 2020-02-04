@@ -13,16 +13,16 @@
 #define TILE_HEIGHT (9 * _real_tile_height)
 
 // Helpful macros
-#define TOP(Obj) Obj->Y
-#define BOTTOM(Obj) Obj->Y + Obj->H
-#define LEFT(Obj) Obj->X
-#define RIGHT(Obj) Obj->X + Obj->W
+// #define TOP(Obj) Obj->Y
+// #define BOTTOM(Obj) Obj->Y + Obj->H
+// #define LEFT(Obj) Obj->X
+// #define RIGHT(Obj) Obj->X + Obj->W
 
-#define CENTER_X(Obj) LEFT(Obj) + (Obj->W / 2);
-#define CENTER_Y(Obj) TOP(Obj) + (Obj->H / 2);
+// #define CENTER_X(Obj) LEFT(Obj) + (Obj->W / 2);
+// #define CENTER_Y(Obj) TOP(Obj) + (Obj->H / 2);
 
-#define RECT(Obj) \
-    (SDL_Rect) { Obj->X, Obj->Y, Obj->W, Obj->H }
+// #define RECT(Obj)
+//     (SDL_Rect) { Obj->X, Obj->Y, Obj->W, Obj->H }
 
 // game
 unsigned int get_dt();

@@ -12,3 +12,10 @@ public:
     void Scale(float scale);
     void Reset();
 };
+
+// float rect
+// struct frect {
+//     float x, y, w, h;
+//     frect();
+//     frect(float x, float y, float w, float h);
+// };

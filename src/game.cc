@@ -51,8 +51,12 @@ static int effect_hl_nearest_tile();
 
 tile* get_nearest_tile()
 {
-    const int ballx = CENTER_X(game::Ball);
-    const int bally = CENTER_Y(game::Ball);
+    // const int ballx = CENTER_X(game::Ball);
+    // const int bally = CENTER_Y(game::Ball);
+
+    const vec2 ball_center = Ball->Center();
+    const int ballx        = ball_center.X;
+    const int bally        = ball_center.Y;
 
     tile* nearest_tile    = NULL;
     int nearest_tile_id   = -1;
@@ -61,8 +65,11 @@ tile* get_nearest_tile()
         tile* t = &game::Tiles[i];
         if (t->Hit) continue;  // skip hit tiles
 
-        const int tilex = CENTER_X(t);
-        const int tiley = CENTER_Y(t);
+        // const int tilex = CENTER_X(t);
+        // const int tiley = CENTER_Y(t);
+        const vec2 tile_center = t->Center();
+        const int tilex        = tile_center.X;
+        const int tiley        = tile_center.Y;
 
         // see you _do_ use the stuff you learn in school!
         const int xsqr = pow((ballx - tilex), 2);
@@ -86,6 +93,7 @@ tile* get_nearest_tile()
     return nearest_tile;
 }
 
+// NOTE: this is a DRAWING function. Use AbsRect()
 int effect_hl_nearest_tile()
 {
 
@@ -93,9 +101,9 @@ int effect_hl_nearest_tile()
     if (nearest_tile == NULL) { return 0; }
 
     const int pad = 5;
-    SDL_Rect rect = RECT(nearest_tile);
-    rect.x += game::level_left + pad;
-    rect.y += game::level_top + pad;
+    SDL_Rect rect = nearest_tile->AbsRect();
+    rect.x += pad;
+    rect.y += pad;
     rect.w -= 2 * pad;
     rect.h -= 2 * pad;
 
@@ -179,10 +187,12 @@ void on_tile_got_hit(tile* t)
     game::Score++;  // inc the score
 
     // create a new particle_src at the center of the hit tile
-    int px             = CENTER_X(t);
-    int py             = CENTER_Y(t);
-    int count          = 8;
-    particle_src* psrc = new particle_src(px, py, count, t->TexRow, t->TexCol);
+    const vec2 tile_center = t->Center();
+    // int px             = CENTER_X(t);
+    // int py             = CENTER_Y(t);
+    int count = 8;
+    particle_src* psrc =
+        new particle_src(tile_center.X, tile_center.Y, count, t->TexRow, t->TexCol);
     game::PSources.emplace_back(psrc);
 }
 
@@ -259,14 +269,14 @@ void draw_frame()
     // "EFFECTS"
     {
         effect_hl_nearest_tile();
-        for (int i = 0; i < PSources.size(); ++i) {
+        for (std::size_t i = 0; i < PSources.size(); ++i) {
             particle_src* psrc = PSources[i];
             if (psrc->IsDone()) { continue; }
             psrc->Draw();
         }
 
         // delete done particle sources
-        for (int i = 0; i < PSources.size(); ++i) {
+        for (std::size_t i = 0; i < PSources.size(); ++i) {
             particle_src* psrc = PSources[i];
             auto start         = PSources.begin();
             if (psrc->IsDone()) { PSources.erase(start + i); }
