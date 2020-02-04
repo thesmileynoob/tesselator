@@ -175,4 +175,43 @@ void gen_player_lose_life(SDL_Texture** outTexture, SDL_Rect* outRect)
     *outRect    = rect;
 }
 
+
+void gen_generic_text(const char* _text, SDL_Texture** outTexture, SDL_Rect* outRect)
+{
+    assert(_text);
+
+    static SDL_Texture* texture = nullptr;
+    static const char* text     = nullptr;
+    static SDL_Rect rect;
+
+    // set text
+    if (text && (text == _text)) { assert(texture); }
+    if (!text) { text = _text; }
+
+    // generate texture if not already
+    if (!texture) {
+        // make a texture of the _text
+        SDL_Surface* surface =
+            TTF_RenderText_Solid(gfx::UIFont, _text, _player_lose_life_color);
+        if (!surface) { printf("UIError: %s\n", TTF_GetError()); }
+
+        // set texture
+        texture = SDL_CreateTextureFromSurface(gfx::_renderer, surface);
+        if (!texture) { printf("UIError: %s\n", SDL_GetError()); }
+
+        SDL_FreeSurface(surface);  // not needed now
+
+        // update rect
+        TTF_SizeText(gfx::UIFont, _text, &rect.w, &rect.h);
+        rect.x = (SCR_WIDTH / 2) - (rect.w / 2);
+        rect.y = SCR_HEIGHT / 2;
+    }
+
+    assert(texture);
+    assert(_text);
+
+    *outTexture = texture;
+    *outRect    = rect;
+}
+
 }  // namespace ui

@@ -14,4 +14,6 @@ void gen_time(unsigned int time_ms, SDL_Texture** outTexture, SDL_Rect* outRect)
 
 // player lost a life text
 void gen_player_lose_life(SDL_Texture** outTexture, SDL_Rect* outRect);
+
+void gen_generic_text(const char* text, SDL_Texture** outTexture, SDL_Rect* outRect);
 }  // namespace ui
