@@ -1,4 +1,5 @@
 # TODO
+    - add asset attributions (opengameart.com)
     - background graphics (easy)
     - multiple-hit tiles (easy)
     - load and save gamestate (easy)
