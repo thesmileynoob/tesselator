@@ -42,6 +42,9 @@ extern std::vector<particle_src*> PSources;
 extern bool is_slow_motion;
 extern float slow_motion_factor;
 
+// animations
+extern std::vector<animation*> Animations;
+
 }  // namespace game
 
 

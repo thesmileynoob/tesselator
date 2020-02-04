@@ -17,9 +17,6 @@
 #include "ui.h"
 
 
-/** LOCAL FUNCTIONS */
-animation Anim;
-
 /** here we go! */
 int main(int argc, char const* argv[])
 {
@@ -28,7 +25,6 @@ int main(int argc, char const* argv[])
     // game must be init after gfx::init()
     game::load_level(0);
 
-    Anim = animation(ANIM_PLAYER_LOSE_LIFE, 3000 /*sec*/);
 
     // main game loop
     game::Time    = 0;
@@ -74,8 +70,21 @@ int main(int argc, char const* argv[])
         // animation
         if (button_pressed) game::Player->lose_life();
 
-        if (Anim.ShouldRun && (!Anim.is_done())) {
-            Anim.tick(DT);
+        // tick animation
+        for (std::size_t i = 0; i < game::Animations.size(); ++i) {
+            animation* a = game::Animations[i];
+            if (a->ShouldRun && (!a->is_done())) { a->tick(DT); }
+        }
+
+        // delete finished animations
+        auto start = game::Animations.begin();
+        for (std::size_t i = 0; i < game::Animations.size(); ++i) {
+            animation* a = game::Animations[i];
+            if (!a->is_done()) continue;
+            // animation done
+            // remove it from the list
+            printf("removing animation: %s\n", a->get_name());
+            game::Animations.erase(start + i);
         }
 
         // render

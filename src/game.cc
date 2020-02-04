@@ -38,6 +38,10 @@ std::vector<particle_src*> PSources;
 // effects
 bool is_slow_motion      = false;
 float slow_motion_factor = .5;
+
+// animations
+std::vector<animation*> Animations;
+
 }  // namespace game
 
 
@@ -267,9 +271,9 @@ void draw_frame()
         }
 
         // delete done particle sources
+        auto start = PSources.begin();
         for (std::size_t i = 0; i < PSources.size(); ++i) {
             particle_src* psrc = PSources[i];
-            auto start         = PSources.begin();
             if (psrc->IsDone()) { PSources.erase(start + i); }
         }
     }

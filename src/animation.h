@@ -6,6 +6,7 @@ enum animation_tag {
     ANIM_PLAYER_LOSE_LIFE,  // Player lost a life
 };
 
+
 struct animation {
 
 private:
@@ -21,8 +22,10 @@ public:
     animation();
     animation(animation_tag tag, int time_ms);
 
+    // return true if animation is done. useful to remove animation from the list
     bool is_done() const;
     void tick(unsigned int DT);
+    const char* get_name() const;
 
 
 private:

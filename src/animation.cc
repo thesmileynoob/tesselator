@@ -4,6 +4,11 @@
 #include <cmath>
 #include <cstdio>
 
+const char* _tag_str[] = {
+    "ANIM_NO_TAG",
+    "ANIM_PLAYER_LOSE_LIFE",
+};
+
 animation::animation()
     : animation(ANIM_NO_TAG, 0)
 {
@@ -17,6 +22,8 @@ animation::animation(animation_tag tag, int time_ms)
     , ShouldRun{false}
 {
 }
+
+const char* animation::get_name() const { return _tag_str[Tag]; }
 
 bool animation::is_done() const { return Done || (Elapsed >= Time); }
 

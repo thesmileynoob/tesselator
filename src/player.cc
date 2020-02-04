@@ -69,6 +69,8 @@ void player::draw()
 
 void player::lose_life()
 {
-    extern animation Anim;
-    Anim.ShouldRun = true;
+    // start animation
+    animation* anim = new animation(ANIM_PLAYER_LOSE_LIFE, 3000 /* ms */);
+    anim->ShouldRun = true;
+    game::Animations.emplace_back(anim);
 }
