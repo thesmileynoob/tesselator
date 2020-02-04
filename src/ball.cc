@@ -69,7 +69,6 @@ void ball::draw()
 void ball::update()
 {
     // ball update
-    // const Uint8* Keys = SDL_GetKeyboardState(NULL);
 
     const float factor = game::is_slow_motion ? game::slow_motion_factor : 1;
     X += Vel.X * factor;

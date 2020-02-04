@@ -75,8 +75,6 @@ int main(int argc, char const* argv[])
         if (button_pressed) game::Player->lose_life();
 
         if (Anim.ShouldRun && (!Anim.is_done())) {
-            // printf("elaspsed: %4d, time: %d, DT: %d\n", Anim.Elapsed, Anim.Time,
-            // DT);
             Anim.tick(DT);
         }
 

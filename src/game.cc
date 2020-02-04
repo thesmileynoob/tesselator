@@ -47,13 +47,9 @@ namespace game
 
 static tile* get_nearest_tile();
 static int effect_hl_nearest_tile();
-// static void reset_particle(object* p);
 
 tile* get_nearest_tile()
 {
-    // const int ballx = CENTER_X(game::Ball);
-    // const int bally = CENTER_Y(game::Ball);
-
     const vec2 ball_center = Ball->center();
     const int ballx        = ball_center.X;
     const int bally        = ball_center.Y;
@@ -65,8 +61,6 @@ tile* get_nearest_tile()
         tile* t = &game::Tiles[i];
         if (t->Hit) continue;  // skip hit tiles
 
-        // const int tilex = CENTER_X(t);
-        // const int tiley = CENTER_Y(t);
         const vec2 tile_center = t->center();
         const int tilex        = tile_center.X;
         const int tiley        = tile_center.Y;
@@ -124,7 +118,6 @@ void load_level(int n)
     Player = new player();
     Ball   = new ball();
     Tiles  = new tile[game::TileCount];
-    // Particles = (object*) calloc(ParticleCount, sizeof(object));
     assert(Player && Ball && Tiles);
 
     // tiles
@@ -188,9 +181,7 @@ void on_tile_got_hit(tile* t)
 
     // create a new particle_src at the center of the hit tile
     const vec2 tile_center = t->center();
-    // int px             = CENTER_X(t);
-    // int py             = CENTER_Y(t);
-    int count = 8;
+    int count              = 8;
     particle_src* psrc =
         new particle_src(tile_center.X, tile_center.Y, count, t->TexRow, t->TexCol);
     game::PSources.emplace_back(psrc);
@@ -199,7 +190,7 @@ void on_tile_got_hit(tile* t)
 void on_player_lose_life()
 {
     Player->lose_life();
-    // slow_motion_factor = .1;
+    // slow_motion_factor = .1; /// TODO
     // is_slow_motion     = true;
     printf("GameOVER - YOU LOSE\n");
 }

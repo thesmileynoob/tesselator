@@ -23,12 +23,8 @@ player::player()
 void player::update()
 {
     const Uint8* Keys = SDL_GetKeyboardState(NULL);  // TODO?
-
     // slow motion!
-    // hold LSHIFT to slow down player. Useful for some "powerdown"
-
-    const float factor = game::is_slow_motion ? game::slow_motion_factor : 1;
-
+    const float factor    = game::is_slow_motion ? game::slow_motion_factor : 1;
     const int playerspeed = Vel.X * factor;
 
     // movement
@@ -57,7 +53,7 @@ void player::draw()
     if (Hidden) return;
     object::draw();
 
-    SDL_Rect player_rect = abs_rect();                // absolute position
+    SDL_Rect player_rect = abs_rect();               // absolute position
     SDL_Rect tex_rect    = gfx::texture_rect(1, 1);  // TODO
     gfx::draw_texture(gfx::Texture, &tex_rect, &player_rect);
 
