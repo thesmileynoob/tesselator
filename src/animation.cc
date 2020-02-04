@@ -85,6 +85,9 @@ void animation::player_lose_life(unsigned int dt)
 
     // slide off screen to the bottom
     game::Player->Y += 5;
+
+    game::slow_motion_factor = .7;
+    game::is_slow_motion     = true;
 }
 
 void animation::game_over_delay(unsigned int dt)

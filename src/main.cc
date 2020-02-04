@@ -58,19 +58,16 @@ int main(int argc, char const* argv[])
         // handle input
         {
             const Uint8* Keys    = SDL_GetKeyboardState(NULL);
-            game::is_slow_motion = false;
-            if (Keys[SDL_SCANCODE_LSHIFT] || game::Player->Dead) {
-                game::is_slow_motion = true;
-            }
+            game::is_slow_motion = Keys[SDL_SCANCODE_LSHIFT] ? true : false;
         }
 
+        // animation
+        game::update_animations(DT);
 
         // update state
         game::Player->update();
         game::Ball->update();
 
-        // animation
-        game::update_animations(DT);
 
         // render
         game::draw_frame();

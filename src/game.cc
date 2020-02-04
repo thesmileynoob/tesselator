@@ -83,7 +83,7 @@ tile* get_nearest_tile()
     }
 
     if (nearest_tile == NULL) {
-        printf("%s: no nearest tile found!\n", __func__);
+        // printf("%s: no nearest tile found!\n", __func__);
         return NULL;
     }
     assert(nearest_tile_id != -1);
@@ -264,21 +264,29 @@ void draw_frame()
 
 
         // upper wall
-        SDL_Rect top_rect   = {0, 0, swidth, fw};
-        SDL_Rect bot_rect   = {0, sheight - fw, swidth, fw};
-        SDL_Rect left_rect  = {0, fw, fw, sheight - 2 * fw};
-        SDL_Rect right_rect = {swidth - fw, fw, fw, sheight - 2 * fw};
+        SDL_Rect top_rect    = {0, 0, swidth, fw};
+        SDL_Rect bottom_rect = {0, sheight - fw, swidth, fw};
+        SDL_Rect left_rect   = {0, fw, fw, sheight - 2 * fw};
+        SDL_Rect right_rect  = {swidth - fw, fw, fw, sheight - 2 * fw};
 
         SDL_SetRenderDrawColor(gfx::_renderer, 255, 0, 255, 50);
 
         SDL_RenderDrawRect(gfx::_renderer, &top_rect);
-        SDL_RenderDrawRect(gfx::_renderer, &bot_rect);
+        SDL_RenderDrawRect(gfx::_renderer, &bottom_rect);
         SDL_RenderDrawRect(gfx::_renderer, &left_rect);
         SDL_RenderDrawRect(gfx::_renderer, &right_rect);
 
         // fill top rect
         SDL_SetRenderDrawColor(gfx::_renderer, 40, 120, 40, 255);
         SDL_RenderFillRect(gfx::_renderer, &top_rect);
+
+        if (is_slow_motion) {
+            // fill left, right and bottom rects with a nice color
+            SDL_SetRenderDrawColor(gfx::_renderer, 0, 51, 153, 150);
+            SDL_RenderFillRect(gfx::_renderer, &left_rect);
+            SDL_RenderFillRect(gfx::_renderer, &right_rect);
+            SDL_RenderFillRect(gfx::_renderer, &bottom_rect);
+        }
     }
 
     // UI
@@ -399,7 +407,7 @@ static bool called_once = false;
 void on_game_over(enum game_over_reason reason)
 {
     if (called_once) {
-        puts("called once");
+        // puts("called once");
         return;
     }
     called_once = true;
@@ -432,11 +440,10 @@ void on_game_over(enum game_over_reason reason)
 
     puts("*********************************");
 
-    const unsigned int duration = 1000;
+    const unsigned int duration = 3000;
     animation* anim             = new animation(ANIM_GAME_OVER_DELAY, duration);
     anim->ShouldRun             = true;
     queue_animation(anim);
 }
-
 
 }  // namespace game
