@@ -28,9 +28,16 @@ const char* animation::get_name() const { return _tag_str[Tag]; }
 
 bool animation::is_done() const { return Done || (Elapsed >= Time); }
 
+void animation::mark_done()
+{
+    printf("animation done: %s\n", get_name());
+    Done = true;
+    return;
+}
+
 void animation::tick(unsigned int _DT)
 {
-    assert(!Done);
+    assert(!Done);  // avoid ticking once animation is finished
 
     const unsigned int max_dt = Time - Elapsed;
 
@@ -40,6 +47,7 @@ void animation::tick(unsigned int _DT)
     // all the methods are guranteed correct Elapsed, Dt times
     call_the_right_method(final_dt);
 }
+
 
 void animation::call_the_right_method(unsigned int dt)
 {
@@ -54,17 +62,16 @@ void animation::call_the_right_method(unsigned int dt)
 
 void animation::player_lose_life(unsigned int dt)
 {
-    // done condition
+    // done conditions
     {
+        // if any of the following conditions is true, stop!
         const int y = game::Player->Y;
         if (y >= SCR_HEIGHT + 500) {
-            printf("player oob\n");
-            Done = true;
+            mark_done();
             game::on_game_over(game::GAME_OVER_DEAD);
             return;
         } else if (Elapsed >= Time) {
-            printf("player dead time done\n");
-            Done = true;
+            mark_done();
             game::on_game_over(game::GAME_OVER_DEAD);
             return;
         }
@@ -95,7 +102,7 @@ void animation::game_over_delay(unsigned int dt)
     // done condition
     {
         if (Elapsed >= Time) {
-            Done          = true;
+            mark_done();
             game::Running = false;
             return;
         }

@@ -25,11 +25,18 @@ public:
 
     // return true if animation is done. useful to remove animation from the list
     bool is_done() const;
+
     void tick(unsigned int DT);
+
+
     const char* get_name() const;
 
 
 private:
+    // mark the animation as finished. is_done() will return true after this
+    void mark_done();
+
+    // call the correct animation method based on 'Tag'
     void call_the_right_method(unsigned int dt);
 
     ///// methods ////
