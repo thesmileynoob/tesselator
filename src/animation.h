@@ -4,6 +4,7 @@
 enum animation_tag {
     ANIM_NO_TAG = 0,        // should never happen
     ANIM_PLAYER_LOSE_LIFE,  // Player lost a life
+    ANIM_GAME_OVER_DELAY,   // game over, run a bit more
 };
 
 
@@ -31,6 +32,9 @@ public:
 private:
     void call_the_right_method(unsigned int dt);
 
-    // methods
+    ///// methods ////
+
     void player_lose_life(unsigned int dt);
+    // run the game a little more before closing window
+    void game_over_delay(unsigned int dt);
 };

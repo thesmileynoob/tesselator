@@ -7,6 +7,7 @@
 const char* _tag_str[] = {
     "ANIM_NO_TAG",
     "ANIM_PLAYER_LOSE_LIFE",
+    "ANIM_GAME_OVER_DELAY",
 };
 
 animation::animation()
@@ -27,15 +28,6 @@ const char* animation::get_name() const { return _tag_str[Tag]; }
 
 bool animation::is_done() const { return Done || (Elapsed >= Time); }
 
-void animation::call_the_right_method(unsigned int dt)
-{
-    switch (Tag) {
-    case ANIM_NO_TAG: assert(0); break;  // should never happen
-    case ANIM_PLAYER_LOSE_LIFE: player_lose_life(dt); break;
-    default: assert(0); break;
-    }
-}
-
 void animation::tick(unsigned int _DT)
 {
     assert(!Done);
@@ -49,18 +41,31 @@ void animation::tick(unsigned int _DT)
     call_the_right_method(final_dt);
 }
 
+void animation::call_the_right_method(unsigned int dt)
+{
+    switch (Tag) {
+    case ANIM_NO_TAG: assert(0); break;  // should never happen
+    case ANIM_PLAYER_LOSE_LIFE: player_lose_life(dt); break;
+    case ANIM_GAME_OVER_DELAY: game_over_delay(dt); break;
+    default: assert(0); break;
+    }
+}
+
+
 void animation::player_lose_life(unsigned int dt)
 {
     // done condition
     {
         const int y = game::Player->Y;
         if (y >= SCR_HEIGHT + 500) {
+            printf("player oob\n");
             Done = true;
-            game::on_game_over();
+            game::on_game_over(game::GAME_OVER_DEAD);
             return;
         } else if (Elapsed >= Time) {
+            printf("player dead time done\n");
             Done = true;
-            game::on_game_over();
+            game::on_game_over(game::GAME_OVER_DEAD);
             return;
         }
     }
@@ -80,4 +85,21 @@ void animation::player_lose_life(unsigned int dt)
 
     // slide off screen to the bottom
     game::Player->Y += 5;
+}
+
+void animation::game_over_delay(unsigned int dt)
+{
+    // done condition
+    {
+        if (Elapsed >= Time) {
+            Done          = true;
+            game::Running = false;
+            return;
+        }
+    }
+
+    // ultimate objective
+    // GTA:V (tm)
+    game::slow_motion_factor = .3;
+    game::is_slow_motion     = true;
 }

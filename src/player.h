@@ -3,6 +3,7 @@
 #include "object.h"
 
 struct player : public object {
+    bool Dead;
 
 public:
     player();

@@ -7,7 +7,17 @@
 #include "player.h"
 #include "tile.h"
 
+// structs and enums
+namespace game
+{
+enum game_over_reason {
+    GAME_OVER_WIN = 0,  // standard win condition
+    GAME_OVER_DEAD,     // player dead
+    GAME_OVER_TIMEUP,   // TODO
+};
+}
 
+// variables
 namespace game
 {
 extern bool debug_mode;
@@ -42,12 +52,10 @@ extern std::vector<particle_src*> PSources;
 extern bool is_slow_motion;
 extern float slow_motion_factor;
 
-// animations
-extern std::vector<animation*> Animations;
-
 }  // namespace game
 
 
+// functions
 namespace game
 {
 
@@ -58,9 +66,13 @@ void reset_level();
 bool is_game_over();
 void draw_frame();
 
+// animations
+void queue_animation(animation* anim);
+void update_animations(unsigned int DT);
+
 // events
 void on_tile_got_hit(tile* t);
 void on_player_lose_life();
-void on_game_over();
+void on_game_over(enum game_over_reason reason);
 
 }  // namespace game

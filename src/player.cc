@@ -18,6 +18,8 @@ player::player()
     H = player_height;
 
     Vel = vec2(15, 0);
+
+    Dead = false;
 }
 
 void player::update()
@@ -69,10 +71,7 @@ void player::draw()
 
 void player::lose_life()
 {
-    // start animation
-    const unsigned int duration = 3000;  // ms
-
-    animation* anim = new animation(ANIM_PLAYER_LOSE_LIFE, duration);
-    anim->ShouldRun = true;
-    game::Animations.emplace_back(anim);
+    // TODO: lives--
+    // TODO: if(lives == 0)
+    Dead = true;
 }

@@ -30,8 +30,7 @@ int main(int argc, char const* argv[])
     game::Time    = 0;
     game::Running = 1;
     while (game::Running) {
-        const unsigned int DT      = get_dt();
-        static bool button_pressed = false;
+        const unsigned int DT = get_dt();
 
         // handle system events
         SDL_Event ev;
@@ -52,14 +51,17 @@ int main(int argc, char const* argv[])
                 }
                 // reset slow_motion_factor
                 if (sym == SDLK_r) { game::slow_motion_factor -= .5; }
-                if (sym == SDLK_p) { button_pressed = true; }
+                if (sym == SDLK_p) { game::Player->lose_life(); }
             }
         }
 
         // handle input
         {
             const Uint8* Keys    = SDL_GetKeyboardState(NULL);
-            game::is_slow_motion = Keys[SDL_SCANCODE_LSHIFT] ? true : false;
+            game::is_slow_motion = false;
+            if (Keys[SDL_SCANCODE_LSHIFT] || game::Player->Dead) {
+                game::is_slow_motion = true;
+            }
         }
 
 
@@ -68,32 +70,13 @@ int main(int argc, char const* argv[])
         game::Ball->update();
 
         // animation
-        if (button_pressed) game::Player->lose_life();
-
-        // tick animation
-        for (std::size_t i = 0; i < game::Animations.size(); ++i) {
-            animation* a = game::Animations[i];
-            if (a->ShouldRun && (!a->is_done())) { a->tick(DT); }
-        }
-
-        // delete finished animations
-        auto start = game::Animations.begin();
-        for (std::size_t i = 0; i < game::Animations.size(); ++i) {
-            animation* a = game::Animations[i];
-            if (!a->is_done()) continue;
-            // animation done
-            // remove it from the list
-            printf("removing animation: %s\n", a->get_name());
-            game::Animations.erase(start + i);
-        }
+        game::update_animations(DT);
 
         // render
         game::draw_frame();
 
         // check win/lose condition
-        if (game::is_game_over()) {
-            game::on_game_over();
-        }
+        if (game::is_game_over()) { game::on_game_over(game::GAME_OVER_WIN); }
 
         SDL_Delay(1000 / 60);  // fps
         game::Time += DT;

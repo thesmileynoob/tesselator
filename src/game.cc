@@ -4,8 +4,6 @@
 #include "particles.h"
 #include "ui.h"
 
-static bool DRAW_OUCH = false;
-
 // game global variables
 namespace game
 {
@@ -42,7 +40,8 @@ bool is_slow_motion      = false;
 float slow_motion_factor = .5;
 
 // animations
-std::vector<animation*> Animations;
+// use queue_animation() and update_animations() for interaction
+std::vector<animation*> _Animations;
 
 }  // namespace game
 
@@ -318,7 +317,7 @@ void draw_frame()
 
         // player_lose_life
         {
-            if (DRAW_OUCH) {
+            if (Player->Dead) {
                 SDL_Texture* texture;
                 SDL_Rect rect;
 
@@ -335,6 +334,33 @@ void draw_frame()
 
     SDL_RenderPresent(gfx::_renderer);
     // END DRAWING
+}
+
+/////// ANIMATIONS ////////
+void queue_animation(animation* anim)
+{
+    printf("queuing animation: %s\n", anim->get_name());
+    _Animations.emplace_back(anim);
+}
+
+void update_animations(unsigned int DT)
+{
+    // tick animation
+    for (std::size_t i = 0; i < _Animations.size(); ++i) {
+        animation* a = _Animations[i];
+        if (a->ShouldRun && (!a->is_done())) { a->tick(DT); }
+    }
+
+    // delete finished animations
+    auto start = _Animations.begin();
+    for (std::size_t i = 0; i < _Animations.size(); ++i) {
+        animation* a = _Animations[i];
+        if (!a->is_done()) continue;
+        // animation done
+        // remove it from the list
+        printf("removing animation: %s\n", a->get_name());
+        _Animations.erase(start + i);
+    }
 }
 
 
@@ -355,40 +381,47 @@ void on_tile_got_hit(tile* t)
     game::PSources.emplace_back(psrc);
 }
 
+// do a bunch of stuff when the player loses a life
 void on_player_lose_life()
 {
-    if (DRAW_OUCH)
-        return;  // do nothing for now // TODO: if(Player->life == 0) or something
-
+    if (Player->Dead) return;
     Player->lose_life();
-    DRAW_OUCH = true;
-    // slow_motion_factor = .1; /// TODO
-    // is_slow_motion     = true;
-    printf("GameOVER - YOU LOSE\n");
+
+    // start animation
+    const unsigned int duration = 3000;  // ms
+    animation* anim             = new animation(ANIM_PLAYER_LOSE_LIFE, duration);
+    anim->ShouldRun             = true;
+    queue_animation(anim);
+    printf("PLAYER DEAD\n");
 }
 
-void on_game_over()
+static bool called_once = false;
+void on_game_over(enum game_over_reason reason)
 {
-    // right now score == tilecount means WIN
-    bool due_to_all_tile_broken = game::Score == game::TileCount;
+    if (called_once) {
+        puts("called once");
+        return;
+    }
+    called_once = true;
 
     puts("*********************************");
     puts("Game Over");
 
-    // print header
+    // print header. depends on 'reason'
     {
-        if (due_to_all_tile_broken) {
-            // win due to all tiles broken
-            puts("YOU WIN!");
-        } else {
-            // lose due to no player lives left
-            puts("No lives left, YOU LOSE!");
+        switch (reason) {
+        case GAME_OVER_WIN: puts("YOU WIN!"); break;
+        case GAME_OVER_DEAD: puts("No lives left, YOU LOSE!"); break;
+        default: puts("ERROR: GAME OVER NO REASON!"); break;
         }
     }
 
     // print common footer
     {
+        // score
         printf("Score: %d\n", game::Score);
+
+        // time taken
         const int in_secs = game::Time / 1000;
         const int mins    = in_secs / 60;
         const int secs    = in_secs % 60;
@@ -399,8 +432,10 @@ void on_game_over()
 
     puts("*********************************");
 
-    // ultimate objective
-    game::Running = false;
+    const unsigned int duration = 1000;
+    animation* anim             = new animation(ANIM_GAME_OVER_DELAY, duration);
+    anim->ShouldRun             = true;
+    queue_animation(anim);
 }
 
 
