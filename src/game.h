@@ -55,13 +55,12 @@ namespace game
 void load_level(int n);
 void reset_level();
 
-void draw_frame();
-
 bool is_game_over();
-void reset_particle(object* p);
+void draw_frame();
 
 // events
 void on_tile_got_hit(tile* t);
 void on_player_lose_life();
+void on_game_over();
 
 }  // namespace game

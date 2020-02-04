@@ -69,7 +69,7 @@ void animation::player_lose_life(unsigned int dt)
     const int y = game::Player->Y;
     if (y >= SCR_HEIGHT) {
         Done = true;
-        return;
+        game::on_game_over();
     }
     game::Player->Y += 5;
 }

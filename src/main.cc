@@ -91,17 +91,7 @@ int main(int argc, char const* argv[])
         game::draw_frame();
 
         // check win/lose condition
-        if (game::is_game_over()) {
-            puts("Game Over");
-            puts("You Win!");
-            printf("Score: %d\n", game::Score);
-            const int in_secs = game::Time / 1000;
-            const int mins    = in_secs / 60;
-            const int secs    = in_secs % 60;
-            printf("Time: %d mins and %d secs!\n", mins, secs);
-            game::Running = 0;
-            continue;
-        }
+        if (game::is_game_over()) { game::on_game_over(); }
 
         SDL_Delay(1000 / 60);  // fps
         game::Time += DT;

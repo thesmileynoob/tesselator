@@ -175,30 +175,6 @@ bool is_game_over()
         return true;
 }
 
-// EVENT
-// do a bunch of stuff when a tile gets hit
-void on_tile_got_hit(tile* t)
-{
-    t->Hit++;       // mark it "Hit"
-    t->Hidden = 1;  // don't draw hit tiles
-    game::Score++;  // inc the score
-
-    // create a new particle_src at the center of the hit tile
-    const vec2 tile_center = t->center();
-    int count              = 8;
-    particle_src* psrc =
-        new particle_src(tile_center.X, tile_center.Y, count, t->TexRow, t->TexCol);
-    game::PSources.emplace_back(psrc);
-}
-
-void on_player_lose_life()
-{
-    Player->lose_life();
-    // slow_motion_factor = .1; /// TODO
-    // is_slow_motion     = true;
-    printf("GameOVER - YOU LOSE\n");
-}
-
 void draw_frame()
 {
 
@@ -342,5 +318,68 @@ void draw_frame()
     SDL_RenderPresent(gfx::_renderer);
     // END DRAWING
 }
+
+
+/////// EVENTS ////////
+
+// do a bunch of stuff when a tile gets hit
+void on_tile_got_hit(tile* t)
+{
+    t->Hit++;       // mark it "Hit"
+    t->Hidden = 1;  // don't draw hit tiles
+    game::Score++;  // inc the score
+
+    // create a new particle_src at the center of the hit tile
+    const vec2 tile_center = t->center();
+    int count              = 8;
+    particle_src* psrc =
+        new particle_src(tile_center.X, tile_center.Y, count, t->TexRow, t->TexCol);
+    game::PSources.emplace_back(psrc);
+}
+
+void on_player_lose_life()
+{
+    Player->lose_life();
+    // slow_motion_factor = .1; /// TODO
+    // is_slow_motion     = true;
+    printf("GameOVER - YOU LOSE\n");
+}
+
+void on_game_over()
+{
+    // right now score == tilecount means WIN
+    bool due_to_all_tile_broken = game::Score == game::TileCount;
+
+    puts("*********************************");
+    puts("Game Over");
+
+    // print header
+    {
+        if (due_to_all_tile_broken) {
+            // win due to all tiles broken
+            puts("YOU WIN!");
+        } else {
+            // lose due to no player lives left
+            puts("No lives left, YOU LOSE!");
+        }
+    }
+
+    // print common footer
+    {
+        printf("Score: %d\n", game::Score);
+        const int in_secs = game::Time / 1000;
+        const int mins    = in_secs / 60;
+        const int secs    = in_secs % 60;
+        printf("Time: ");
+        if (mins) { printf("%d mins and ", mins); }
+        printf("%d secs!\n", secs);
+    }
+
+    puts("*********************************");
+
+    // ultimate objective
+    game::Running = false;
+}
+
 
 }  // namespace game
