@@ -11,6 +11,7 @@ namespace ui
 
 SDL_Color _score_color{255, 0, 0, 255};
 SDL_Color _fps_color{0, 0, 255, 255};
+SDL_Color _player_lose_life_color{255, 30, 30, 255};
 
 /** create a texture and its rect of the score string */
 void gen_score(int score, SDL_Texture** outTexture, SDL_Rect* outRect)
@@ -82,7 +83,7 @@ void gen_fps(float fps, SDL_Texture** outTexture, SDL_Rect* outRect)
 
         SDL_FreeSurface(surface);  // not needed now
 
-        // update score_rect
+        // update rect
         TTF_SizeText(gfx::UIFont, string, &rect.w, &rect.h);
         rect.x = SCR_WIDTH - rect.w - 10;  // 10 padding
         rect.y = 0;
@@ -92,6 +93,7 @@ void gen_fps(float fps, SDL_Texture** outTexture, SDL_Rect* outRect)
     *outTexture = texture;
     *outRect    = rect;
 }
+
 
 void gen_time(unsigned int time_ms, SDL_Texture** outTexture, SDL_Rect* outRect)
 {
@@ -126,11 +128,47 @@ void gen_time(unsigned int time_ms, SDL_Texture** outTexture, SDL_Rect* outRect)
 
         SDL_FreeSurface(surface);  // not needed now
 
-        // update score_rect
+        // update rect
         TTF_SizeText(gfx::UIFont, string, &rect.w, &rect.h);
         rect.x = (SCR_WIDTH / 2) - (rect.w / 2);
         rect.y = 0;
     }
+    assert(texture);
+
+    *outTexture = texture;
+    *outRect    = rect;
+}
+
+
+void gen_player_lose_life(SDL_Texture** outTexture, SDL_Rect* outRect)
+{
+    static SDL_Texture* texture = NULL;
+    static SDL_Rect rect;
+
+    // generate texture if not already
+    if (!texture) {
+        // construct the string to be displayed
+        const int max_len = 15;
+        char string[max_len];
+        snprintf(string, max_len, "OUCH!");
+
+        // make a texture of the string
+        SDL_Surface* surface =
+            TTF_RenderText_Solid(gfx::UIFont, string, _player_lose_life_color);
+        if (!surface) { printf("UIError: %s\n", TTF_GetError()); }
+
+        // set texture
+        texture = SDL_CreateTextureFromSurface(gfx::_renderer, surface);
+        if (!texture) { printf("UIError: %s\n", SDL_GetError()); }
+
+        SDL_FreeSurface(surface);  // not needed now
+
+        // update rect
+        TTF_SizeText(gfx::UIFont, string, &rect.w, &rect.h);
+        rect.x = (SCR_WIDTH / 2) - (rect.w / 2);
+        rect.y = SCR_HEIGHT / 2;
+    }
+
     assert(texture);
 
     *outTexture = texture;

@@ -51,6 +51,20 @@ void animation::tick(unsigned int _DT)
 
 void animation::player_lose_life(unsigned int dt)
 {
+    // done condition
+    {
+        const int y = game::Player->Y;
+        if (y >= SCR_HEIGHT + 500) {
+            Done = true;
+            game::on_game_over();
+            return;
+        } else if (Elapsed >= Time) {
+            Done = true;
+            game::on_game_over();
+            return;
+        }
+    }
+
     // blink every 300 ms
     if (Elapsed < 150) {
         game::Player->Hidden = true;
@@ -64,12 +78,6 @@ void animation::player_lose_life(unsigned int dt)
         game::Player->Hidden = true;
     }
 
-
     // slide off screen to the bottom
-    const int y = game::Player->Y;
-    if (y >= SCR_HEIGHT) {
-        Done = true;
-        game::on_game_over();
-    }
     game::Player->Y += 5;
 }

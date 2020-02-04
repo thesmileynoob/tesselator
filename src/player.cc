@@ -70,7 +70,9 @@ void player::draw()
 void player::lose_life()
 {
     // start animation
-    animation* anim = new animation(ANIM_PLAYER_LOSE_LIFE, 3000 /* ms */);
+    const unsigned int duration = 3000;  // ms
+
+    animation* anim = new animation(ANIM_PLAYER_LOSE_LIFE, duration);
     anim->ShouldRun = true;
     game::Animations.emplace_back(anim);
 }

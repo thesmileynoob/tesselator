@@ -91,7 +91,9 @@ int main(int argc, char const* argv[])
         game::draw_frame();
 
         // check win/lose condition
-        if (game::is_game_over()) { game::on_game_over(); }
+        if (game::is_game_over()) {
+            game::on_game_over();
+        }
 
         SDL_Delay(1000 / 60);  // fps
         game::Time += DT;

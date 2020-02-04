@@ -4,6 +4,8 @@
 #include "particles.h"
 #include "ui.h"
 
+static bool DRAW_OUCH = false;
+
 // game global variables
 namespace game
 {
@@ -285,10 +287,10 @@ void draw_frame()
         // score
         {
 
-            SDL_Texture* score_texture;
-            SDL_Rect score_texture_rect;
-            ui::gen_score(game::Score, &score_texture, &score_texture_rect);
-            gfx::draw_texture(score_texture, NULL, &score_texture_rect);
+            SDL_Texture* texture;
+            SDL_Rect rect;
+            ui::gen_score(game::Score, &texture, &rect);
+            gfx::draw_texture(texture, NULL, &rect);
         }
 
         // fps
@@ -299,18 +301,30 @@ void draw_frame()
             old_time                     = new_time;
             const int fps                = 1000 / delta;
 
-            SDL_Texture* fps_texture;
-            SDL_Rect fps_texture_rect;
-            ui::gen_fps(fps, &fps_texture, &fps_texture_rect);
-            gfx::draw_texture(fps_texture, NULL, &fps_texture_rect);
+            SDL_Texture* texture;
+            SDL_Rect rect;
+            ui::gen_fps(fps, &texture, &rect);
+            gfx::draw_texture(texture, NULL, &rect);
         }
 
         // time
         {
-            SDL_Texture* time_texture;
-            SDL_Rect time_texture_rect;
-            ui::gen_time(game::Time, &time_texture, &time_texture_rect);
-            gfx::draw_texture(time_texture, NULL, &time_texture_rect);
+            SDL_Texture* texture;
+            SDL_Rect rect;
+            ui::gen_time(game::Time, &texture, &rect);
+            gfx::draw_texture(texture, NULL, &rect);
+        }
+
+
+        // player_lose_life
+        {
+            if (DRAW_OUCH) {
+
+                SDL_Texture* texture;
+                SDL_Rect rect;
+                ui::gen_player_lose_life(&texture, &rect);
+                gfx::draw_texture(texture, NULL, &rect);
+            }
         }
     }
 
@@ -339,7 +353,11 @@ void on_tile_got_hit(tile* t)
 
 void on_player_lose_life()
 {
+    if (DRAW_OUCH)
+        return;  // do nothing for now // TODO: if(Player->life == 0) or something
+
     Player->lose_life();
+    DRAW_OUCH = true;
     // slow_motion_factor = .1; /// TODO
     // is_slow_motion     = true;
     printf("GameOVER - YOU LOSE\n");
