@@ -148,9 +148,9 @@ void gen_player_lose_life(SDL_Texture** outTexture, SDL_Rect* outRect)
     // generate texture if not already
     if (!texture) {
         // construct the string to be displayed
-        const int max_len = 15;
+        const int max_len = 20;
         char string[max_len];
-        snprintf(string, max_len, "OUCH!");
+        snprintf(string, max_len, "OUCH!  GAME OVER!");
 
         // make a texture of the string
         SDL_Surface* surface =

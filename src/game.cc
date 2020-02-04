@@ -319,10 +319,14 @@ void draw_frame()
         // player_lose_life
         {
             if (DRAW_OUCH) {
-
                 SDL_Texture* texture;
                 SDL_Rect rect;
+
                 ui::gen_player_lose_life(&texture, &rect);
+
+                // increase text size
+                rect = scale_sdl_rect(rect, 1.3f);
+
                 gfx::draw_texture(texture, NULL, &rect);
             }
         }
