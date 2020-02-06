@@ -360,8 +360,10 @@ void draw_frame()
 }  // namespace game
 
 /////// ANIMATIONS ////////
-void queue_animation(animation* anim)
+void queue_animation(animation_tag tag, unsigned int duration)
 {
+    animation* anim = new animation(tag, duration);
+    anim->ShouldRun = true;  // TODO: why does this even exist?
     printf("queuing animation: %s\n", anim->get_name());
     _Animations.emplace_back(anim);
 }
@@ -382,7 +384,7 @@ void update_animations(unsigned int DT)
         // animation done
         // remove it from the list
         printf("removing animation: %s\n", a->get_name());
-        _Animations.erase(start + i);
+        _Animations.erase(start + i);  /// TODO: does this call delete?????
     }
 }
 
@@ -407,10 +409,7 @@ void on_tile_got_hit(tile* t)
     }
 
     {  // flash bg
-        const unsigned int duration = 100;
-        animation* anim             = new animation(ANIM_BLINK_SCREEN, duration);
-        anim->ShouldRun             = true;
-        queue_animation(anim);
+        queue_animation(ANIM_BLINK_SCREEN, 100);
     }
 }
 
@@ -421,10 +420,7 @@ void on_player_lose_life()
     Player->lose_life();
 
     // start animation
-    const unsigned int duration = 3000;  // ms
-    animation* anim             = new animation(ANIM_PLAYER_LOSE_LIFE, duration);
-    anim->ShouldRun             = true;
-    queue_animation(anim);
+    queue_animation(ANIM_PLAYER_LOSE_LIFE, 3000);
     printf("PLAYER DEAD\n");
 }
 
@@ -465,10 +461,7 @@ void on_game_over(enum game_over_reason reason)
 
     puts("*********************************");
 
-    const unsigned int duration = 3000;
-    animation* anim             = new animation(ANIM_GAME_OVER_DELAY, duration);
-    anim->ShouldRun             = true;
-    queue_animation(anim);
+    queue_animation(ANIM_GAME_OVER_DELAY, 3000);
 }
 
 }  // namespace game

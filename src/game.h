@@ -67,7 +67,7 @@ bool is_game_over();
 void draw_frame();
 
 // animations
-void queue_animation(animation* anim);
+void queue_animation(animation_tag tag, unsigned int duration);
 void update_animations(unsigned int DT);
 
 // events
