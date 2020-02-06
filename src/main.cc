@@ -16,9 +16,14 @@
 #include "tile.h"
 #include "ui.h"
 
-//// TASKSKSKSKSKSKSKSKKSKKSKSKSKSKSK
-// flash background on_tile_hit
-
+void debug_break_all_tiles()
+{
+    for (int i = 0; i < game::TileCount; ++i) {
+        tile* t = &game::Tiles[i];
+        if (t->Hit) continue;
+        game::on_tile_got_hit(t);
+    }
+}
 
 /** here we go! */
 int main(int argc, char const* argv[])
@@ -30,9 +35,10 @@ int main(int argc, char const* argv[])
 
 
     // main game loop
-    game::Time    = 0;
+    game::Time  = 0;
+    game::Score = 0;
+    // game::Score   = game::TileCount - 5;  // TEMP: DEBUG: TESTING game end condition
     game::Running = 1;
-    game::Score   = game::TileCount - 5;  // TEMP: DEBUG: TESTING game end condition
     while (game::Running) {
         const unsigned int DT = get_dt();
 
@@ -53,9 +59,12 @@ int main(int argc, char const* argv[])
                 } else if (sym == SDLK_s) {
                     game::slow_motion_factor -= .1;
                 }
-                // reset slow_motion_factor
-                if (sym == SDLK_r) { game::slow_motion_factor -= .5; }
-                if (sym == SDLK_p) { game::Player->lose_life(); }
+
+                if (sym == SDLK_r) {
+                    // TODO: for debugging only
+                    debug_break_all_tiles();
+                }
+                if (sym == SDLK_p) { game::on_player_lose_life(); }
             }
         }
 
