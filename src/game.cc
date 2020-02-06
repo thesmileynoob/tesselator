@@ -392,7 +392,7 @@ void update_animations(unsigned int DT)
 /////// EVENTS ////////
 
 // do a bunch of stuff when a tile gets hit
-void on_tile_got_hit(tile* t)
+void event_tile_got_hit(tile* t)
 {
     t->Hit++;       // mark it "Hit"
     t->Hidden = 1;  // don't draw hit tiles
@@ -413,8 +413,17 @@ void on_tile_got_hit(tile* t)
     }
 }
 
+
+void event_player_got_hit()
+{
+    // start animation
+    queue_animation(ANIM_PLAYER_HIT, 200);
+    printf("PLAYER HIT\n");
+}
+
+
 // do a bunch of stuff when the player loses a life
-void on_player_lose_life()
+void event_player_lost_life()
 {
     if (Player->Dead) return;
     Player->lose_life();
@@ -424,14 +433,12 @@ void on_player_lose_life()
     printf("PLAYER DEAD\n");
 }
 
-static bool called_once = false;
-void on_game_over(enum game_over_reason reason)
+
+static bool _called_once = false;
+void event_game_over(enum game_over_reason reason)
 {
-    if (called_once) {
-        // puts("called once");
-        return;
-    }
-    called_once = true;
+    if (_called_once) { return; }
+    _called_once = true;
 
     puts("*********************************");
     puts("Game Over");

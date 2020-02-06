@@ -17,6 +17,9 @@ player::player()
     W = player_width;
     H = player_height;
 
+    TexRow = 1;
+    TexCol = 1;
+
     Vel = vec2(15, 0);
 
     Dead = false;
@@ -55,8 +58,8 @@ void player::draw()
     if (Hidden) return;
     object::draw();
 
-    SDL_Rect player_rect = abs_rect();               // absolute position
-    SDL_Rect tex_rect    = gfx::texture_rect(1, 1);  // TODO
+    SDL_Rect player_rect = abs_rect();  // absolute position
+    SDL_Rect tex_rect    = gfx::texture_rect(TexRow, TexCol);
     gfx::draw_texture(gfx::Texture, &tex_rect, &player_rect);
 
 

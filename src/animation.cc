@@ -5,10 +5,11 @@
 #include <cstdio>
 
 const char* _tag_str[] = {
-    "ANIM_NO_TAG",
-    "ANIM_PLAYER_LOSE_LIFE",
-    "ANIM_GAME_OVER_DELAY",
-    "ANIM_BLINK_SCREEN",
+    "ANIM_NO_TAG",            //
+    "ANIM_PLAYER_LOSE_LIFE",  //
+    "ANIM_GAME_OVER_DELAY",   //
+    "ANIM_BLINK_SCREEN",      //
+    "ANIM_PLAYER_HIT",        //
 };
 
 animation::animation()
@@ -57,6 +58,7 @@ void animation::call_the_right_method(unsigned int dt)
     case ANIM_PLAYER_LOSE_LIFE: player_lose_life(dt); break;
     case ANIM_GAME_OVER_DELAY: game_over_delay(dt); break;
     case ANIM_BLINK_SCREEN: blink_screen(dt); break;
+    case ANIM_PLAYER_HIT: player_hit(dt); break;
     default: assert(0); break;
     }
 }
@@ -70,11 +72,11 @@ void animation::player_lose_life(unsigned int dt)
         const int y = game::Player->Y;
         if (y >= SCR_HEIGHT + 500) {
             mark_done();
-            game::on_game_over(game::GAME_OVER_DEAD);
+            game::event_game_over(game::GAME_OVER_DEAD);
             return;
         } else if (Elapsed >= Time) {
             mark_done();
-            game::on_game_over(game::GAME_OVER_DEAD);
+            game::event_game_over(game::GAME_OVER_DEAD);
             return;
         }
     }
@@ -152,5 +154,40 @@ void animation::blink_screen(unsigned int dt)
         game::BgCol = {2, 33, 144, 255};
     } else {
         game::BgCol = {0, 0, 0, 255};
+    }
+}
+
+
+void animation::player_hit(unsigned int dt)
+{
+    // done condition
+    {
+        if (Elapsed >= Time) {
+            mark_done();
+            return;
+        }
+    }
+
+    // change color for 'Time' ms and back
+    const int blink_freq    = Time / 2;        // ms
+    const int blink_freq_x2 = 2 * blink_freq;  // ms
+
+    const int remainder = Elapsed % blink_freq_x2;  // [0, 2 * blink_freq]
+
+    const float rate_x = .8;  // px
+    const float rate_y = .5;  // px
+
+    if (remainder < blink_freq) {
+        game::Player->W += 2 * rate_x;
+        game::Player->X -= rate_x;
+
+        game::Player->H += 2 * rate_y;
+        game::Player->Y -= rate_y;
+    } else {
+        game::Player->W -= 2 * rate_x;
+        game::Player->X += rate_x;
+
+        game::Player->H -= 2 * rate_y;
+        game::Player->Y += rate_y;
     }
 }

@@ -21,7 +21,7 @@ void debug_break_all_tiles()
     for (int i = 0; i < game::TileCount; ++i) {
         tile* t = &game::Tiles[i];
         if (t->Hit) continue;
-        game::on_tile_got_hit(t);
+        game::event_tile_got_hit(t);
     }
 }
 
@@ -35,8 +35,9 @@ int main(int argc, char const* argv[])
 
 
     // main game loop
-    game::Time  = 0;
-    game::Score = 0;
+    game::Time       = 0;
+    game::Score      = 0;
+    game::debug_mode = 0;
     // game::Score   = game::TileCount - 5;  // TEMP: DEBUG: TESTING game end condition
     game::Running = 1;
     while (game::Running) {
@@ -64,7 +65,7 @@ int main(int argc, char const* argv[])
                     // TODO: for debugging only
                     debug_break_all_tiles();
                 }
-                if (sym == SDLK_p) { game::on_player_lose_life(); }
+                if (sym == SDLK_p) { game::event_player_lost_life(); }
             }
         }
 
@@ -86,7 +87,7 @@ int main(int argc, char const* argv[])
         game::draw_frame();
 
         // check win/lose condition
-        if (game::is_game_over()) { game::on_game_over(game::GAME_OVER_WIN); }
+        if (game::is_game_over()) { game::event_game_over(game::GAME_OVER_WIN); }
 
         SDL_Delay(1000 / 60);  // fps
         game::Time += DT;

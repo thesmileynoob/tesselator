@@ -106,7 +106,7 @@ void ball::update()
             Vel.Y = -Vel.Y;
 
             // finally some action
-            game::on_player_lose_life();
+            game::event_player_lost_life();
             return;
         }
     }
@@ -128,7 +128,7 @@ void ball::update()
                 handle_collision(t);
 
                 // notify that a tile got hit
-                game::on_tile_got_hit(t);
+                game::event_tile_got_hit(t);
                 break;
             }
         }
@@ -141,6 +141,9 @@ void ball::update()
 
         if (SDL_HasIntersection(&ball_rect, &player_rect) == SDL_TRUE) {
             handle_collision(game::Player);
+
+            // notify that player got hit
+            game::event_player_got_hit();
         }
     }
 }

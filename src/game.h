@@ -71,8 +71,9 @@ void queue_animation(animation_tag tag, unsigned int duration);
 void update_animations(unsigned int DT);
 
 // events
-void on_tile_got_hit(tile* t);
-void on_player_lose_life();
-void on_game_over(enum game_over_reason reason);
+void event_tile_got_hit(tile* t);
+void event_player_got_hit();
+void event_player_lost_life();
+void event_game_over(enum game_over_reason reason);
 
 }  // namespace game
