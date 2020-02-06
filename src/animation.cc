@@ -149,7 +149,7 @@ void animation::blink_screen(unsigned int dt)
     const int remainder = Elapsed % blink_freq_x2;  // [0, 2 * blink_freq]
 
     if (remainder < blink_freq) {
-        game::BgCol = {200, 200, 200, 255};
+        game::BgCol = {2, 33, 144, 255};
     } else {
         game::BgCol = {0, 0, 0, 255};
     }
