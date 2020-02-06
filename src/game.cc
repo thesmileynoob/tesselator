@@ -30,7 +30,7 @@ unsigned int Time;  // time taken to finish the level
 tile* Tiles    = nullptr;
 player* Player = nullptr;
 ball* Ball     = nullptr;
-Uint8 BgCol[3];  // r,g,b
+SDL_Color BgCol;
 
 // particles
 std::vector<particle_src*> PSources;
@@ -125,6 +125,9 @@ void load_level(int n)
     Tiles  = new tile[game::TileCount];
     assert(Player && Ball && Tiles);
 
+    // background bg
+    game::BgCol = {0, 0, 0, 255};
+
     // tiles
     {
         // layout
@@ -180,14 +183,13 @@ void draw_frame()
 {
 
     // START DRAWING
-    SDL_SetRenderDrawColor(gfx::_renderer, game::BgCol[0], game::BgCol[1], game::BgCol[2],
-                           255);
+    SDL_SetRenderDrawColor(gfx::_renderer, BgCol.r, BgCol.g, BgCol.b, BgCol.a);
     SDL_RenderClear(gfx::_renderer);
 
     // GRID
     {
-        SDL_SetRenderDrawColor(gfx::_renderer, game::BgCol[0] + 150, game::BgCol[1] + 120,
-                               game::BgCol[2] * 0, 255);
+        SDL_SetRenderDrawColor(gfx::_renderer, BgCol.r + 150, BgCol.g, BgCol.b + 50,
+                               BgCol.a);
 
         int x1, y1, x2, y2;
 
@@ -394,12 +396,22 @@ void on_tile_got_hit(tile* t)
     t->Hidden = 1;  // don't draw hit tiles
     game::Score++;  // inc the score
 
-    // create a new particle_src at the center of the hit tile
-    const vec2 tile_center = t->center();
-    int count              = 8;
-    particle_src* psrc =
-        new particle_src(tile_center.X, tile_center.Y, count, t->TexRow, t->TexCol);
-    game::PSources.emplace_back(psrc);
+    // Spawn particles
+    {
+        // create a new particle_src at the center of the hit tile
+        const vec2 tile_center = t->center();
+        int count              = 8;
+        particle_src* psrc =
+            new particle_src(tile_center.X, tile_center.Y, count, t->TexRow, t->TexCol);
+        game::PSources.emplace_back(psrc);
+    }
+
+    {  // flash bg
+        const unsigned int duration = 100;
+        animation* anim             = new animation(ANIM_BLINK_SCREEN, duration);
+        anim->ShouldRun             = true;
+        queue_animation(anim);
+    }
 }
 
 // do a bunch of stuff when the player loses a life

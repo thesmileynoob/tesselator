@@ -43,7 +43,7 @@ extern unsigned int Time;  // time taken to finish the level
 extern tile* Tiles;
 extern player* Player;
 extern ball* Ball;
-extern Uint8 BgCol[3];  // r,g,b
+extern SDL_Color BgCol;
 
 // particles
 extern std::vector<particle_src*> PSources;

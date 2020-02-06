@@ -8,6 +8,7 @@ const char* _tag_str[] = {
     "ANIM_NO_TAG",
     "ANIM_PLAYER_LOSE_LIFE",
     "ANIM_GAME_OVER_DELAY",
+    "ANIM_BLINK_SCREEN",
 };
 
 animation::animation()
@@ -55,6 +56,7 @@ void animation::call_the_right_method(unsigned int dt)
     case ANIM_NO_TAG: assert(0); break;  // should never happen
     case ANIM_PLAYER_LOSE_LIFE: player_lose_life(dt); break;
     case ANIM_GAME_OVER_DELAY: game_over_delay(dt); break;
+    case ANIM_BLINK_SCREEN: blink_screen(dt); break;
     default: assert(0); break;
     }
 }
@@ -127,4 +129,28 @@ void animation::game_over_delay(unsigned int dt)
     // GTA:V (tm)
     game::slow_motion_factor = .2;
     game::is_slow_motion     = true;
+}
+
+
+void animation::blink_screen(unsigned int dt)
+{
+    // done condition
+    {
+        if (Elapsed >= Time) {
+            mark_done();
+            return;
+        }
+    }
+
+    // change color for 'Time' ms and back
+    const int blink_freq    = Time / 2;        // ms
+    const int blink_freq_x2 = 2 * blink_freq;  // ms
+
+    const int remainder = Elapsed % blink_freq_x2;  // [0, 2 * blink_freq]
+
+    if (remainder < blink_freq) {
+        game::BgCol = {200, 200, 200, 255};
+    } else {
+        game::BgCol = {0, 0, 0, 255};
+    }
 }
