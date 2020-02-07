@@ -4,6 +4,8 @@
 particle_src::particle_src(int x, int y, int count, int texrow, int texcol)
     : X(x)
     , Y(y)
+    , Xradius(40)
+    , Yradius(150)
     , ParticleCount(count)
     , Particles(nullptr)
     , HiddenCount(0)
@@ -23,15 +25,15 @@ particle_src::particle_src(int x, int y, int count, int texrow, int texcol)
 
 bool particle_src::IsDone() const { return ParticleCount == HiddenCount; }
 
-void particle_src::Draw()
+
+void particle_src::Update()
 {
-    const int radius = 50;
+    // hide the particle if it goes out of these
+    const int xmin = X - Xradius;
+    const int xmax = X + Xradius;
 
-    const int xmin = X - radius;
-    const int xmax = X + radius;
-
-    const int ymin = Y - radius;
-    const int ymax = Y + radius;
+    const int ymin = Y - Yradius;
+    const int ymax = Y + Yradius;
 
     for (int i = 0; i < ParticleCount; ++i) {
         object* p = &Particles[i];
@@ -46,7 +48,14 @@ void particle_src::Draw()
             p->Hidden = 1;
             HiddenCount++;
         }
+    }
+}
 
+void particle_src::Draw()
+{
+    for (int i = 0; i < ParticleCount; ++i) {
+        object* p = &Particles[i];
+        if (p->Hidden) continue;
 
         SDL_Rect tex_rect      = gfx::texture_rect(p->TexRow, p->TexCol);
         SDL_Rect particle_rect = p->abs_rect();

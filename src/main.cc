@@ -76,11 +76,21 @@ int main(int argc, char const* argv[])
         }
 
         // animation
+        /// BUG: updating animations after Player or Ball causes an error
         game::update_animations(DT);
 
         // update state
-        game::Player->update();
-        game::Ball->update();
+        {
+
+            game::Player->update();
+            game::Ball->update();
+
+            for (std::size_t i = 0; i < game::PSources.size(); ++i) {
+                particle_src* psrc = game::PSources[i];
+                if (psrc->IsDone()) { continue; }
+                psrc->Update();
+            }
+        }
 
 
         // render

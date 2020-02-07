@@ -10,7 +10,8 @@
  */
 struct particle_src {
 public:
-    int X, Y;  // location
+    int X, Y;              // location
+    int Xradius, Yradius;  // bounds.
     int ParticleCount;
     object* Particles;
     int HiddenCount;
