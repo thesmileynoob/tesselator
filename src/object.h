@@ -1,6 +1,4 @@
 #pragma once
-#include "animation.h"
-#include "breakout.h"
 #include "gfx.h"
 #include "math.h"
 

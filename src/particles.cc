@@ -1,4 +1,5 @@
 #include "particles.h"
+#include "breakout.h"
 #include "game.h"
 
 particle_src::particle_src(int x, int y, int count, int texrow, int texcol)

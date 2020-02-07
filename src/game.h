@@ -6,6 +6,7 @@
 #include "particles.h"
 #include "player.h"
 #include "tile.h"
+#include "animation.h"
 
 // structs and enums
 namespace game

@@ -1,5 +1,6 @@
 #include "animation.h"
 #include "game.h"
+#include "breakout.h"
 
 #include <cmath>
 #include <cstdio>
