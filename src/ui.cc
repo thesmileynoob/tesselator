@@ -203,8 +203,7 @@ void gen_generic_text(const char* _text, SDL_Texture** outTexture, SDL_Rect* out
 
         // update rect
         TTF_SizeText(gfx::UIFont, _text, &rect.w, &rect.h);
-        rect.x = (SCR_WIDTH / 2) - (rect.w / 2);
-        rect.y = SCR_HEIGHT / 2;
+        rect.x = rect.y = 0;
     }
 
     assert(texture);

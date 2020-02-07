@@ -347,6 +347,8 @@ void draw_frame()
             SDL_Rect rect;
 
             ui::gen_generic_text("YOU WIN", &texture, &rect);
+            rect.x = (SCR_WIDTH / 2) - (rect.w / 2);
+            rect.y = SCR_HEIGHT / 2;
 
             // increase text size
             rect = scale_sdl_rect(rect, 1.3f);
