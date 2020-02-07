@@ -364,7 +364,7 @@ void queue_animation(animation_tag tag, unsigned int duration)
 {
     animation* anim = new animation(tag, duration);
     anim->ShouldRun = true;  // TODO: why does this even exist?
-    printf("queuing animation: %s\n", anim->get_name());
+    // printf("queuing animation: %s\n", anim->get_name());
     _Animations.emplace_back(anim);
 }
 
@@ -383,7 +383,7 @@ void update_animations(unsigned int DT)
         if (!a->is_done()) continue;
         // animation done
         // remove it from the list
-        printf("removing animation: %s\n", a->get_name());
+        // printf("removing animation: %s\n", a->get_name());
         _Animations.erase(start + i);  /// TODO: does this call delete?????
     }
 }
@@ -418,7 +418,6 @@ void event_player_got_hit()
 {
     // start animation
     queue_animation(ANIM_PLAYER_HIT, 200);
-    printf("PLAYER HIT\n");
 }
 
 

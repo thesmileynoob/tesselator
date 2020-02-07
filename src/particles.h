@@ -2,6 +2,12 @@
 
 #include "object.h"
 
+/** Particle system
+ * - Particles are "spawned" at X, Y
+ * - A particle is 'Hidden' when it goes out of bounds
+ * - Once all particles are hidden, ie HiddenCount == ParticleCount,
+ *   the particle_src is deleted from the vector in game::PSources
+ */
 struct particle_src {
 public:
     int X, Y;  // location

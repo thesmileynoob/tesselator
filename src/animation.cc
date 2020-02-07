@@ -32,7 +32,7 @@ bool animation::is_done() const { return Done || (Elapsed >= Time); }
 
 void animation::mark_done()
 {
-    printf("animation done: %s\n", get_name());
+    // printf("animation done: %s\n", get_name());
     Done = true;
     return;
 }
