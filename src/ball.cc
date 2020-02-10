@@ -25,9 +25,12 @@ void ball::draw()
 {
     object::draw();
 
+    // ball color
+    SDL_Color bc = {255, 255, 255, 255};
+
     // draw ball
     SDL_Rect ball_rect = abs_rect();
-    SDL_SetRenderDrawColor(gfx::_renderer, 25, 25, 255, 255);
+    SDL_SetRenderDrawColor(gfx::_renderer, bc.r, bc.g, bc.b, bc.a);
     SDL_RenderFillRect(gfx::_renderer, &ball_rect);
 
     // render a "trail" in slow motion. This is just a hack where the ball rect
@@ -44,18 +47,20 @@ void ball::draw()
         // draw first rect slightly behind ball
         ball_rect.x -= lag * Vel.X;
         ball_rect.y -= lag * Vel.Y;
-        SDL_SetRenderDrawColor(gfx::_renderer, 25, 25, 255, 100);
+        SDL_SetRenderDrawColor(gfx::_renderer, bc.r, bc.g, bc.b, bc.a - 100);
+        // SDL_SetRenderDrawColor(gfx::_renderer, 25, 25, 255, 100);
         SDL_RenderFillRect(gfx::_renderer, &ball_rect);
 
         // draw second rect slightly behind the first rect
         ball_rect.x -= lag * Vel.X;
         ball_rect.y -= lag * Vel.Y;
-        SDL_SetRenderDrawColor(gfx::_renderer, 25, 25, 255, 25);
+        SDL_SetRenderDrawColor(gfx::_renderer, bc.r, bc.g, bc.b, bc.a - 200);
+        // SDL_SetRenderDrawColor(gfx::_renderer, 25, 25, 255, 25);
         SDL_RenderFillRect(gfx::_renderer, &ball_rect);
 
         // draw ball again
         ball_rect = abs_rect();
-        SDL_SetRenderDrawColor(gfx::_renderer, 25, 25, 255, 255);
+        SDL_SetRenderDrawColor(gfx::_renderer, bc.r, bc.g, bc.b, bc.a);
         SDL_RenderFillRect(gfx::_renderer, &ball_rect);
 
         SDL_SetRenderDrawBlendMode(gfx::_renderer, SDL_BLENDMODE_NONE);

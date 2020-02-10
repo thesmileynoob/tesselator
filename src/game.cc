@@ -9,7 +9,7 @@ namespace game
 {
 bool debug_mode = true;
 
-/// level (aka playable area) dimensions
+/// level (aka playable area) dimensions in abs px
 int level_left   = FRAME_WIDTH;
 int level_right  = SCR_WIDTH - FRAME_WIDTH;
 int level_top    = FRAME_WIDTH;
@@ -185,6 +185,76 @@ void draw_frame()
     // START DRAWING
     SDL_SetRenderDrawColor(gfx::_renderer, BgCol.r, BgCol.g, BgCol.b, BgCol.a);
     SDL_RenderClear(gfx::_renderer);
+
+    // BACKGROUND
+    {
+        // fill the playable area with tiled background image
+
+/// TODO: Move these!
+#define BG_WIDTH 426
+#define BG_HEIGHT 492
+        const int bg_width  = BG_WIDTH;
+        const int bg_height = BG_HEIGHT;
+#undef BG_WIDTH
+#undef BG_HEIGHT
+
+        // draw inside these bounds
+        const int left_edge   = game::level_left;
+        const int right_edge  = game::level_right;
+        const int top_edge    = game::level_top;
+        const int bottom_edge = game::level_bottom;
+
+        SDL_Rect dst_rect, src_rect;
+        int x, y;
+        // start from the top left corner
+        x = left_edge;
+        y = top_edge;
+        while (1) {
+            if (x >= right_edge && y >= bottom_edge) {
+                // done painting
+                break;
+            }
+            if (x >= right_edge) {
+                // goto next beginning of next row
+                x = left_edge;
+                y += bg_height;
+            }
+
+            // full tile source texture
+            src_rect.x = 0;
+            src_rect.y = 0;
+            src_rect.w = bg_width;
+            src_rect.h = bg_height;
+
+            // where the texture will be drawn
+            dst_rect.x = x;
+            dst_rect.y = y;
+            dst_rect.w = bg_width;
+            dst_rect.h = bg_height;
+
+
+            const int bg_right  = x + bg_width;
+            const int bg_bottom = y + bg_height;
+
+            if (bg_right > right_edge) {
+                // clip to right edge
+                const int excess = bg_right - right_edge;
+                src_rect.w -= excess;
+                dst_rect.w -= excess;
+            }
+            if (bg_bottom > bottom_edge) {
+                // clip to bottom edge
+                const int excess = bg_bottom - bottom_edge;
+                src_rect.h -= excess;
+                dst_rect.h -= excess;
+            }
+
+            // draw background tile
+            SDL_RenderCopy(gfx::_renderer, gfx::BgTexture, &src_rect, &dst_rect);
+
+            x += bg_width;
+        }
+    }
 
     // GRID
     {
