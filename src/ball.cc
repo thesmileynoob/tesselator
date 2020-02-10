@@ -30,6 +30,9 @@ void ball::draw()
     SDL_SetRenderDrawColor(gfx::_renderer, 25, 25, 255, 255);
     SDL_RenderFillRect(gfx::_renderer, &ball_rect);
 
+    // render a "trail" in slow motion. This is just a hack where the ball rect
+    // is drawn behind the current position by extrapolating previous
+    // ball position and rendering increasingly transparent ball rectangles
     if (game::is_slow_motion) {
         if (SDL_SetRenderDrawBlendMode(gfx::_renderer, SDL_BLENDMODE_BLEND) == 1) {
             puts("blendmode ERROR");
@@ -38,11 +41,13 @@ void ball::draw()
         const int lag      = 1.3;  // px
         SDL_Rect ball_rect = abs_rect();
 
+        // draw first rect slightly behind ball
         ball_rect.x -= lag * Vel.X;
         ball_rect.y -= lag * Vel.Y;
         SDL_SetRenderDrawColor(gfx::_renderer, 25, 25, 255, 100);
         SDL_RenderFillRect(gfx::_renderer, &ball_rect);
 
+        // draw second rect slightly behind the first rect
         ball_rect.x -= lag * Vel.X;
         ball_rect.y -= lag * Vel.Y;
         SDL_SetRenderDrawColor(gfx::_renderer, 25, 25, 255, 25);
