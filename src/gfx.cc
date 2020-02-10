@@ -5,7 +5,7 @@ namespace gfx
 {
 SDL_Window* _window     = nullptr;
 SDL_Renderer* _renderer = nullptr;
-SDL_Texture* Texture    = nullptr;
+SDL_Texture* TileTexture    = nullptr;
 TTF_Font* UIFont        = nullptr;
 
 
@@ -20,8 +20,8 @@ void init(int width, int height)
     assert(_window && _renderer);
 
     // load textures
-    Texture = gfx::load_texture("../assets/tiles.png");
-    assert(Texture);
+    TileTexture = gfx::load_texture("../assets/tiles.png");
+    assert(TileTexture);
 
     // load fonts
     UIFont = TTF_OpenFont("../assets/font_04b.ttf", 25);

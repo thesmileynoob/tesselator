@@ -60,7 +60,7 @@ void particle_src::Draw()
 
         SDL_Rect tex_rect      = gfx::texture_rect(p->TexRow, p->TexCol);
         SDL_Rect particle_rect = p->abs_rect();
-        gfx::draw_texture(gfx::Texture, &tex_rect, &particle_rect);
+        gfx::draw_texture(gfx::TileTexture, &tex_rect, &particle_rect);
     }
 }
 

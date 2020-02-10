@@ -34,7 +34,7 @@ for (int row = 0; row < Rows; ++row) {
         const int x       = pad + col * TILE_WIDTH;
         const int y       = pad + row * TILE_HEIGHT;
         SDL_Rect TileRect = {x, y, TILE_WIDTH - 2 * pad, TILE_HEIGHT - 2 * pad};
-        SDL_RenderCopy(_renderer, Texture, &TexRect, &TileRect);
+        SDL_RenderCopy(_renderer, TileTexture, &TexRect, &TileRect);
     }
 }
 

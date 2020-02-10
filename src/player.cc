@@ -60,7 +60,7 @@ void player::draw()
 
     SDL_Rect player_rect = abs_rect();  // absolute position
     SDL_Rect tex_rect    = gfx::texture_rect(TexRow, TexCol);
-    gfx::draw_texture(gfx::Texture, &tex_rect, &player_rect);
+    gfx::draw_texture(gfx::TileTexture, &tex_rect, &player_rect);
 
 
     if (game::debug_mode) {

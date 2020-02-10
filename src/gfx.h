@@ -16,7 +16,7 @@ namespace gfx
 // env
 extern SDL_Window* _window;
 extern SDL_Renderer* _renderer;
-extern SDL_Texture* Texture;
+extern SDL_Texture* TileTexture;
 extern TTF_Font* UIFont;
 
 

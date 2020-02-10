@@ -27,5 +27,5 @@ void tile::draw()
 
     SDL_Rect tex_rect = gfx::texture_rect(TexRow, TexCol);
 
-    gfx::draw_texture(gfx::Texture, &tex_rect, &tile_rect);
+    gfx::draw_texture(gfx::TileTexture, &tex_rect, &tile_rect);
 }
