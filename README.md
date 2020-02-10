@@ -1,5 +1,10 @@
+# Asset Attributions
+    - Background tiles: http://background-tiles.com
+    - Font: https://www.dafont.com/04b-30.font
+    - Tile textures: https://opengameart.org/content/block-breaking-block-pack (John B. Marine)
+
+
 # TODO
-    - add asset attributions (opengameart.com)
     - background graphics (easy)
     - multiple-hit tiles (easy)
     - load and save gamestate (easy)
