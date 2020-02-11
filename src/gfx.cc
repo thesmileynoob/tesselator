@@ -25,6 +25,14 @@ static int _init_sdl(int Width, int Height, SDL_Window** outWin,
 static int _deinit_sdl();
 
 
+static int gen_random_num(int upto)
+{
+    // seed
+    srand(time(0));
+    int i = rand() % upto;
+    return i;
+}
+
 void init(int width, int height)
 {
     _init_sdl(width, height, &_window, &_renderer);
@@ -32,10 +40,27 @@ void init(int width, int height)
 
     // load textures
 
-    // main tileset
+    // choose a random tileset from "assets/tilesets/"
     {
-        TileTexture = gfx::load_texture("../assets/tiles.png");
+        int i = gen_random_num(TILESET_COUNT);
+        if (i == 0) i = 1;  // "Breakout-000-C.png" doesn't exist
+        assert(i > 0);
+        assert(i < TILESET_COUNT);
+
+        // create file name string
+        const int max_len = 256;
+        char ts_filename[max_len];  // eg: "Breakout-007-C.png"
+        snprintf(ts_filename, max_len, "Breakout-%03d-C.png", i);
+
+        // create path string
+        char ts_path[(2 * max_len)];
+        snprintf(ts_path, (2 * max_len), "../assets/tilesets/%s", ts_filename);
+
+        TileTexture = gfx::load_texture(ts_path);
         assert(TileTexture);
+
+        printf("loaded tileset texture: %s (%d x %d)...\n", ts_filename, TILE_WIDTH,
+               TILE_HEIGHT);
     }
 
     // choose a random background from "assets/bg/"
@@ -49,12 +74,12 @@ void init(int width, int height)
 
         // create file name string
         const int max_len = 256;
-        char bg_filename[max_len];
-        snprintf(bg_filename, max_len, "%d.png", i);  // eg: "12.png"
+        char bg_filename[max_len];  // eg: "12.png"
+        snprintf(bg_filename, max_len, "%d.png", i);
 
         // create path string
-        char bg_path[2 * max_len];
-        snprintf(bg_path, 2 * max_len, "../assets/bg/%s", bg_filename);
+        char bg_path[(2 * max_len)];
+        snprintf(bg_path, (2 * max_len), "../assets/bg/%s", bg_filename);
 
         // load background texture
         BgTexture = gfx::load_texture(bg_path);
@@ -117,8 +142,9 @@ SDL_Texture* load_texture(const char* path)
 // return SDL_Rect of sprite at (col, row)
 SDL_Rect texture_rect(unsigned int col, unsigned int row)
 {
-    const int texwidth   = 80;
-    const int texheight  = 40;
+    /// TODO: Move these to breakout.h
+    const int texwidth   = 320;
+    const int texheight  = 160;
     const int rowcount   = 5;
     const int colcount   = 5;
     const int rectwidth  = texwidth / colcount;

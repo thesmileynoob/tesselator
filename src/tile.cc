@@ -18,7 +18,7 @@ void tile::draw()
 
     if (Hit || Hidden) return;  // don't draw if Hit or Hidden
 
-    const int pad      = 12;
+    const int pad      = 6;
     SDL_Rect tile_rect = abs_rect();
     tile_rect.x += pad;
     tile_rect.y += pad;
