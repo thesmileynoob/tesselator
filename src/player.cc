@@ -17,8 +17,8 @@ player::player()
     W = player_width;
     H = player_height;
 
-    TexRow = 1;
-    TexCol = 1;
+    TexRow = 4;
+    TexCol = 4;
 
     Vel = vec2(15, 0);
 
