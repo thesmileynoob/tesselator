@@ -258,34 +258,36 @@ void draw_frame()
 
     // GRID
     {
-        SDL_SetRenderDrawColor(gfx::_renderer, BgCol.r + 150, BgCol.g, BgCol.b + 50,
-                               BgCol.a);
+        if (game::debug_mode == true) {
+            SDL_SetRenderDrawColor(gfx::_renderer, BgCol.r + 150, BgCol.g, BgCol.b + 50,
+                                   BgCol.a);
 
-        int x1, y1, x2, y2;
+            int x1, y1, x2, y2;
 
-        // vertical lines
-        for (int i = 0; i < game::Cols + 1; ++i) {
-            const int xoff = i * TILE_WIDTH;
+            // vertical lines
+            for (int i = 0; i < game::Cols + 1; ++i) {
+                const int xoff = i * TILE_WIDTH;
 
-            // x is constant
-            x1 = x2 = game::level_left + xoff;
+                // x is constant
+                x1 = x2 = game::level_left + xoff;
 
-            y1 = game::level_top;
-            y2 = y1 + SCR_HEIGHT;
+                y1 = game::level_top;
+                y2 = y1 + SCR_HEIGHT;
 
-            SDL_RenderDrawLine(gfx::_renderer, x1, y1, x2, y2);
-        }
-        // horizontal lines
-        for (int i = 0; i < game::Rows + 1; ++i) {
-            const int yoff = i * TILE_HEIGHT;
+                SDL_RenderDrawLine(gfx::_renderer, x1, y1, x2, y2);
+            }
+            // horizontal lines
+            for (int i = 0; i < game::Rows + 1; ++i) {
+                const int yoff = i * TILE_HEIGHT;
 
-            // y is constant
-            y1 = y2 = game::level_top + yoff;
+                // y is constant
+                y1 = y2 = game::level_top + yoff;
 
-            x1 = game::level_left;
-            x2 = game::level_right;
+                x1 = game::level_left;
+                x2 = game::level_right;
 
-            SDL_RenderDrawLine(gfx::_renderer, x1, y1, x2, y2);
+                SDL_RenderDrawLine(gfx::_renderer, x1, y1, x2, y2);
+            }
         }
     }
 
