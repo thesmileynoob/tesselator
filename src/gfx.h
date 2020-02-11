@@ -20,6 +20,8 @@ extern SDL_Renderer* _renderer;
 // textures
 extern SDL_Texture* TileTexture;
 extern SDL_Texture* BgTexture;
+extern int BgTexture_width;
+extern int BgTexture_height;
 
 // fonts
 extern TTF_Font* UIFont;

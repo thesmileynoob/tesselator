@@ -1,6 +1,8 @@
 #include "gfx.h"
 #include "breakout.h"
 
+#include <ctime>
+
 namespace gfx
 {
 // env
@@ -10,14 +12,17 @@ SDL_Renderer* _renderer;
 // textures
 SDL_Texture* TileTexture;
 SDL_Texture* BgTexture;
+int BgTexture_width;
+int BgTexture_height;
 
 // fonts
 TTF_Font* UIFont;
 
 
 // sdl
-int _init_sdl(int Width, int Height, SDL_Window** outWin, SDL_Renderer** outRenderer);
-int _deinit_sdl();
+static int _init_sdl(int Width, int Height, SDL_Window** outWin,
+                     SDL_Renderer** outRenderer);
+static int _deinit_sdl();
 
 
 void init(int width, int height)
@@ -26,9 +31,41 @@ void init(int width, int height)
     assert(_window && _renderer);
 
     // load textures
-    TileTexture = gfx::load_texture("../assets/tiles.png");
-    BgTexture = gfx::load_texture("../assets/background.png");
-    assert(TileTexture);
+
+    // main tileset
+    {
+        TileTexture = gfx::load_texture("../assets/tiles.png");
+        assert(TileTexture);
+    }
+
+    // choose a random background from "assets/bg/"
+    {
+        // i = [1, 16]
+        srand(time(0));
+        int i = rand() % BACKGROUND_TILE_COUNT;
+        if (i == 0) i = 1;  // "0.png" doesn't exist
+        assert(i > 0);
+        assert(i < BACKGROUND_TILE_COUNT);
+
+        // create file name string
+        const int max_len = 256;
+        char bg_filename[max_len];
+        snprintf(bg_filename, max_len, "%d.png", i);  // eg: "12.png"
+
+        // create path string
+        char bg_path[2 * max_len];
+        snprintf(bg_path, 2 * max_len, "../assets/bg/%s", bg_filename);
+
+        // load background texture
+        BgTexture = gfx::load_texture(bg_path);
+        assert(BgTexture);
+
+        // load its width and height
+        SDL_QueryTexture(BgTexture, NULL, NULL, &BgTexture_width, &BgTexture_height);
+
+        printf("loaded background texture: %s (%d x %d)...\n", bg_filename,
+               BgTexture_width, BgTexture_height);
+    }
 
     // load fonts
     UIFont = TTF_OpenFont("../assets/font_04b.ttf", 25);

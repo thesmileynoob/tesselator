@@ -12,6 +12,8 @@
 #define TILE_WIDTH (9 * _real_tile_width)
 #define TILE_HEIGHT (9 * _real_tile_height)
 
+#define BACKGROUND_TILE_COUNT 16  // "assets/bg/{1.png, 2.png,... 16.png}"
+
 // game
 unsigned int get_dt();
 void update_state(const Uint8* Keys);

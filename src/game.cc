@@ -190,13 +190,13 @@ void draw_frame()
     {
         // fill the playable area with tiled background image
 
-/// TODO: Move these!
-#define BG_WIDTH 426
-#define BG_HEIGHT 492
-        const int bg_width  = BG_WIDTH;
-        const int bg_height = BG_HEIGHT;
-#undef BG_WIDTH
-#undef BG_HEIGHT
+        /// TODO: Move these!
+        // #define BG_WIDTH 426
+        // #define BG_HEIGHT 492
+        const int bg_width  = gfx::BgTexture_width;
+        const int bg_height = gfx::BgTexture_height;
+        // #undef BG_WIDTH
+        // #undef BG_HEIGHT
 
         // draw inside these bounds
         const int left_edge   = game::level_left;
