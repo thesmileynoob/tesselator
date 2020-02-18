@@ -28,7 +28,7 @@ void object::draw()
 
 bool object::is_within_world()
 {
-    return is_inside(0, game::level_width, 0, game::level_height);
+    return is_inside(0, game::Level->Width, 0, game::Level->Height);
 }
 
 bool object::is_inside(float _left, float _right, float _top, float _bottom)
@@ -48,9 +48,9 @@ SDL_Rect object::rect() const { return {(int) left(), (int) top(), (int) W, (int
 vec2 object::center() const { return {left() + (W / 2), top() + (H / 2)}; }
 
 // absolute
-float object::abs_left() const { return game::level_left + X; }
+float object::abs_left() const { return game::Level->Left + X; }
 float object::abs_right() const { return left() + W; }
-float object::abs_top() const { return game::level_top + Y; }
+float object::abs_top() const { return game::Level->Top + Y; }
 float object::abs_bottom() const { return top() + H; }
 SDL_Rect object::abs_rect() const
 {

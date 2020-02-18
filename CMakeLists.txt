@@ -14,6 +14,7 @@ add_executable(debug
         src/player.cc
         src/ball.cc
         src/tile.cc
+        src/level.cc
         src/ui.cc
         src/gfx.cc
         src/math.cc

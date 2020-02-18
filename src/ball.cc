@@ -8,8 +8,8 @@
 ball::ball()
     : object()  // call parent constructor
 {
-    X = game::Player->X + 40;  // TODO: 40
-    Y = game::Player->Y - 50;
+    X = game::Level->Player->X + 40;  // TODO: 40
+    Y = game::Level->Player->Y - 50;
     W = 25;
     H = 25;
 
@@ -90,9 +90,9 @@ void ball::update()
     if (!is_within_world()) {
         // resolve horizontal collision
         const int left_lim   = 0;
-        const int right_lim  = game::level_width;
+        const int right_lim  = game::Level->Width;
         const int top_lim    = 0;
-        const int bottom_lim = game::level_height;
+        const int bottom_lim = game::Level->Height;
 
         if (left() <= left_lim) {
             X     = left_lim;
@@ -127,8 +127,8 @@ void ball::update()
         SDL_Rect ball_rect = rect();
 
         SDL_Rect tile_rect;
-        for (int i = 0; i < game::TileCount; ++i) {
-            tile* t = &game::Tiles[i];
+        for (int i = 0; i < game::Level->TileCount; ++i) {
+            tile* t = &game::Level->Tiles[i];
             if (t->Hit) continue;
 
             tile_rect = t->rect();
@@ -147,10 +147,10 @@ void ball::update()
     // ball-player collision
     {
         SDL_Rect ball_rect   = rect();
-        SDL_Rect player_rect = game::Player->rect();
+        SDL_Rect player_rect = game::Level->Player->rect();
 
         if (SDL_HasIntersection(&ball_rect, &player_rect) == SDL_TRUE) {
-            handle_collision(game::Player);
+            handle_collision(game::Level->Player);
 
             // notify that player got hit
             game::event_player_got_hit();

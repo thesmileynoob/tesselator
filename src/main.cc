@@ -28,8 +28,8 @@
 
 void debug_break_all_tiles()
 {
-    for (int i = 0; i < game::TileCount; ++i) {
-        tile* t = &game::Tiles[i];
+    for (int i = 0; i < game::Level->TileCount; ++i) {
+        tile* t = &game::Level->Tiles[i];
         if (t->Hit) continue;
         game::event_tile_got_hit(t);
     }
@@ -91,9 +91,7 @@ int main(int argc, char const* argv[])
 
         // update state
         {
-
-            game::Player->update();
-            game::Ball->update();
+            game::Level->update();
 
             for (std::size_t i = 0; i < game::PSources.size(); ++i) {
                 particle_src* psrc = game::PSources[i];

@@ -2,11 +2,12 @@
 
 #include <vector>
 
+#include "animation.h"
 #include "ball.h"
+#include "level.h"
 #include "particles.h"
 #include "player.h"
 #include "tile.h"
-#include "animation.h"
 
 // structs and enums
 namespace game
@@ -23,28 +24,11 @@ namespace game
 {
 extern bool debug_mode;
 
-/// level (aka playable area) dimensions
-extern int level_left;
-extern int level_right;
-extern int level_top;
-extern int level_bottom;
-extern int level_width;
-extern int level_height;
-
-extern int Cols;
-extern int Rows;
-extern int TileCount;
-
 // meta
 extern int Running;        // game running flag
 extern int Score;          // current level score. you win when Score == TileCount
 extern unsigned int Time;  // time taken to finish the level
-
-// objects
-extern tile* Tiles;
-extern player* Player;
-extern ball* Ball;
-extern SDL_Color BgCol;
+extern level* Level;
 
 // particles
 extern std::vector<particle_src*> PSources;

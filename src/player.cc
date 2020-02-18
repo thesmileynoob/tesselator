@@ -8,12 +8,12 @@
 player::player()
     : object()  // call parent constructor
 {
-    const int lvl_center    = game::level_width / 2;
+    const int lvl_center    = game::Level->Width / 2;
     const int player_width  = 155;
     const int player_height = 35;
 
     X = lvl_center - (player_width / 2);
-    Y = 4.2 / 5.0 * game::level_height;
+    Y = 4.2 / 5.0 * game::Level->Height;
     W = player_width;
     H = player_height;
 
@@ -46,7 +46,7 @@ void player::update()
 
     // resolve player-level collision
     const int left_lim  = 0;
-    const int right_lim = game::level_width;
+    const int right_lim = game::Level->Width;
 
     if (left() <= left_lim) { X = left_lim; }
     if (right() >= right_lim) { X = right_lim - W; }

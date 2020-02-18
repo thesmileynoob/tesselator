@@ -1,6 +1,6 @@
 #include "animation.h"
-#include "game.h"
 #include "breakout.h"
+#include "game.h"
 
 #include <cmath>
 #include <cstdio>
@@ -70,7 +70,7 @@ void animation::player_lose_life(unsigned int dt)
     // done conditions
     {
         // if any of the following conditions is true, stop!
-        const int y = game::Player->Y;
+        const int y = game::Level->Player->Y;
         if (y >= gfx::SCR_HEIGHT + 500) {
             mark_done();
             game::event_game_over(game::GAME_OVER_DEAD);
@@ -92,9 +92,9 @@ void animation::player_lose_life(unsigned int dt)
     /// NOTE: I don't know how I came up with this. Human brain > worm hole?
     const int remainder = Elapsed % blink_freq_x2;  // [0, 2 * blink_freq]
     if (remainder < blink_freq) {
-        game::Player->Hidden = true;
+        game::Level->Player->Hidden = true;
     } else {
-        game::Player->Hidden = false;
+        game::Level->Player->Hidden = false;
     }
 
     /** previous version of blink for historical reasons. here freq is 150 ms */
@@ -111,7 +111,7 @@ void animation::player_lose_life(unsigned int dt)
     // }
 
     // slide off the bottom edge of the screen
-    game::Player->Y += 3;
+    game::Level->Player->Y += 3;
 
     game::slow_motion_factor = .5;
     game::is_slow_motion     = true;
@@ -152,9 +152,9 @@ void animation::blink_screen(unsigned int dt)
     const int remainder = Elapsed % blink_freq_x2;  // [0, 2 * blink_freq]
 
     if (remainder < blink_freq) {
-        game::BgCol = {2, 23, 90, 255};
+        game::Level->BgCol = {2, 23, 90, 255};
     } else {
-        game::BgCol = {0, 0, 0, 255};
+        game::Level->BgCol = {0, 0, 0, 255};
     }
 }
 
@@ -179,16 +179,16 @@ void animation::player_hit(unsigned int dt)
     const float rate_y = .5;  // px
 
     if (remainder < blink_freq) {
-        game::Player->W += 2 * rate_x;
-        game::Player->X -= rate_x;
+        game::Level->Player->W += 2 * rate_x;
+        game::Level->Player->X -= rate_x;
 
-        game::Player->H += 2 * rate_y;
-        game::Player->Y -= rate_y;
+        game::Level->Player->H += 2 * rate_y;
+        game::Level->Player->Y -= rate_y;
     } else {
-        game::Player->W -= 2 * rate_x;
-        game::Player->X += rate_x;
+        game::Level->Player->W -= 2 * rate_x;
+        game::Level->Player->X += rate_x;
 
-        game::Player->H -= 2 * rate_y;
-        game::Player->Y += rate_y;
+        game::Level->Player->H -= 2 * rate_y;
+        game::Level->Player->Y += rate_y;
     }
 }

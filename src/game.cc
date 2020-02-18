@@ -9,28 +9,13 @@ namespace game
 {
 bool debug_mode = true;
 
-/// level (aka playable area) dimensions in abs px
-int level_left;
-int level_right;
-int level_top;
-int level_bottom;
-int level_width;
-int level_height;
-
-int Cols;
-int Rows;
-int TileCount;
-
 // meta
 int Running;        // game running flag
 int Score;          // current level score. you win when Score == TileCount
 unsigned int Time;  // time taken to finish the level
 
 // objects
-tile* Tiles    = nullptr;
-player* Player = nullptr;
-ball* Ball     = nullptr;
-SDL_Color BgCol;
+level* Level;
 
 // particles
 std::vector<particle_src*> PSources;
@@ -55,15 +40,15 @@ static int effect_hl_nearest_tile();
 
 tile* get_nearest_tile()
 {
-    const vec2 ball_center = Ball->center();
+    const vec2 ball_center = Level->Ball->center();
     const int ballx        = ball_center.X;
     const int bally        = ball_center.Y;
 
     tile* nearest_tile    = NULL;
     int nearest_tile_id   = -1;
     int nearest_tile_dist = 10000;
-    for (int i = 0; i < game::TileCount; ++i) {
-        tile* t = &game::Tiles[i];
+    for (int i = 0; i < game::Level->TileCount; ++i) {
+        tile* t = &game::Level->Tiles[i];
         if (t->Hit) continue;  // skip hit tiles
 
         const vec2 tile_center = t->center();
@@ -119,42 +104,45 @@ int effect_hl_nearest_tile()
 
 void load_level(int n)
 {
+    Level = new level;
+    assert(Level);
+
     // Set level params
     {
-        level_left   = FRAME_WIDTH;
-        level_right  = gfx::SCR_WIDTH - FRAME_WIDTH;
-        level_top    = FRAME_WIDTH;
-        level_bottom = gfx::SCR_HEIGHT - FRAME_WIDTH;
-        level_width  = level_right - level_left;
-        level_height = level_bottom - level_top;
+        Level->Left   = FRAME_WIDTH;
+        Level->Right  = gfx::SCR_WIDTH - FRAME_WIDTH;
+        Level->Top    = FRAME_WIDTH;
+        Level->Bottom = gfx::SCR_HEIGHT - FRAME_WIDTH;
+        Level->Width  = Level->Right - Level->Left;
+        Level->Height = Level->Bottom - Level->Top;
 
-        Cols      = 5;
-        Rows      = 3;
-        TileCount = Cols * Rows;
+        Level->Cols      = 5;
+        Level->Rows      = 3;
+        Level->TileCount = Level->Cols * Level->Rows;
     }
 
 
     // alloc
-    Player = new player();
-    Ball   = new ball();
-    Tiles  = new tile[game::TileCount];
-    assert(Player && Ball && Tiles);
+    Level->Player = new player();
+    Level->Ball   = new ball();
+    Level->Tiles  = new tile[Level->TileCount];
+    assert(Level->Player && Level->Ball && Level->Tiles);
 
     // background bg
-    game::BgCol = {0, 0, 0, 255};
+    Level->BgCol = {0, 0, 0, 255};
 
     // tiles
     {
         // layout
         int xoff, yoff;   // keep track of row and column
         xoff = yoff = 0;  // start at top-left corner
-        for (int i = 0; i < game::TileCount; ++i, xoff += TILE_WIDTH) {
+        for (int i = 0; i < Level->TileCount; ++i, xoff += TILE_WIDTH) {
 
             // let potential value of tile
             int potential_right = xoff + TILE_WIDTH;
 
             // see if the tile goes off the right edge of the level
-            if (potential_right > game::level_width) {
+            if (potential_right > Level->Width) {
                 /// go to beginning of next row
                 xoff = 0;             // beginning
                 yoff += TILE_HEIGHT;  // next row
@@ -168,18 +156,18 @@ void load_level(int n)
 
             // validate potential values
             assert(final_left >= 0);
-            assert(final_right <= game::level_width);
+            assert(final_right <= Level->Width);
             assert(final_top >= 0);
-            assert(final_bottom <= game::level_height);
+            assert(final_bottom <= Level->Height);
 
-            tile* t = &game::Tiles[i];
+            tile* t = &Level->Tiles[i];
             t->X    = final_left;
             t->Y    = final_top;
         }
 
         // everything else
-        for (int i = 0; i < game::TileCount; ++i) {
-            tile* t   = &game::Tiles[i];
+        for (int i = 0; i < Level->TileCount; ++i) {
+            tile* t   = &Level->Tiles[i];
             t->TexRow = i % 5;
             t->TexCol = (i + 2) % 5;
         }
@@ -188,7 +176,7 @@ void load_level(int n)
 
 bool is_game_over()
 {
-    if (game::Score < game::TileCount)
+    if (game::Score < Level->TileCount)
         return false;  // not won
     else
         return true;
@@ -198,7 +186,8 @@ void draw_frame()
 {
 
     // START DRAWING
-    SDL_SetRenderDrawColor(gfx::_renderer, BgCol.r, BgCol.g, BgCol.b, BgCol.a);
+    SDL_SetRenderDrawColor(gfx::_renderer, Level->BgCol.r, Level->BgCol.g, Level->BgCol.b,
+                           Level->BgCol.a);
     SDL_RenderClear(gfx::_renderer);
 
     // BACKGROUND
@@ -214,10 +203,10 @@ void draw_frame()
         // #undef BG_HEIGHT
 
         // draw inside these bounds
-        const int left_edge   = game::level_left;
-        const int right_edge  = game::level_right;
-        const int top_edge    = game::level_top;
-        const int bottom_edge = game::level_bottom;
+        const int left_edge   = Level->Left;
+        const int right_edge  = Level->Right;
+        const int top_edge    = Level->Top;
+        const int bottom_edge = Level->Bottom;
 
         SDL_Rect dst_rect, src_rect;
         int x, y;
@@ -274,32 +263,32 @@ void draw_frame()
     // GRID
     {
         if (game::debug_mode == true) {
-            SDL_SetRenderDrawColor(gfx::_renderer, BgCol.r + 150, BgCol.g, BgCol.b + 50,
-                                   BgCol.a);
+            SDL_SetRenderDrawColor(gfx::_renderer, Level->BgCol.r + 150, Level->BgCol.g,
+                                   Level->BgCol.b + 50, Level->BgCol.a);
 
             int x1, y1, x2, y2;
 
             // vertical lines
-            for (int i = 0; i < game::Cols + 1; ++i) {
+            for (int i = 0; i < Level->Cols + 1; ++i) {
                 const int xoff = i * TILE_WIDTH;
 
                 // x is constant
-                x1 = x2 = game::level_left + xoff;
+                x1 = x2 = Level->Left + xoff;
 
-                y1 = game::level_top;
+                y1 = Level->Top;
                 y2 = y1 + gfx::SCR_HEIGHT;
 
                 SDL_RenderDrawLine(gfx::_renderer, x1, y1, x2, y2);
             }
             // horizontal lines
-            for (int i = 0; i < game::Rows + 1; ++i) {
+            for (int i = 0; i < Level->Rows + 1; ++i) {
                 const int yoff = i * TILE_HEIGHT;
 
                 // y is constant
-                y1 = y2 = game::level_top + yoff;
+                y1 = y2 = Level->Top + yoff;
 
-                x1 = game::level_left;
-                x2 = game::level_right;
+                x1 = Level->Left;
+                x2 = Level->Right;
 
                 SDL_RenderDrawLine(gfx::_renderer, x1, y1, x2, y2);
             }
@@ -308,23 +297,7 @@ void draw_frame()
 
     // LEVEL
     {
-        // TILES
-        SDL_SetRenderDrawColor(gfx::_renderer, 255, 0, 0, 255);
-        for (int i = 0; i < game::TileCount; ++i) {
-            tile* t = &game::Tiles[i];
-            t->draw();
-        }
-    }
-
-
-    // PLAYER
-    {
-        game::Player->draw();
-    }
-
-    // BALL
-    {
-        game::Ball->draw();
+        Level->draw();
     }
 
     // "EFFECTS"
@@ -413,7 +386,7 @@ void draw_frame()
 
     // player_lose_life
     {
-        if (Player->Dead) {
+        if (Level->Player->Dead) {
             SDL_Texture* texture;
             SDL_Rect rect;
 
@@ -513,8 +486,8 @@ void event_player_got_hit()
 // do a bunch of stuff when the player loses a life
 void event_player_lost_life()
 {
-    if (Player->Dead) return;
-    Player->lose_life();
+    if (Level->Player->Dead) return;
+    Level->Player->lose_life();
 
     // start animation
     queue_animation(ANIM_PLAYER_LOSE_LIFE, 3000);
