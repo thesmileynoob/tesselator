@@ -41,7 +41,7 @@ int main(int argc, char const* argv[])
     // INIT
     gfx::init();
     // game must be init after gfx::init()
-    game::load_level(0);
+    game::load_level(0, gfx::_SCR_WIDTH, gfx::_SCR_HEIGHT);
 
 
     // main game loop

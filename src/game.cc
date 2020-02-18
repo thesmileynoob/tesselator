@@ -102,7 +102,7 @@ int effect_hl_nearest_tile()
     return 1;
 }
 
-void load_level(int n)
+void load_level(int n, int scrWidth, int scrHeight)
 {
     Level = new level;
     assert(Level);
@@ -110,9 +110,9 @@ void load_level(int n)
     // Set level params
     {
         Level->Left   = FRAME_WIDTH;
-        Level->Right  = gfx::SCR_WIDTH - FRAME_WIDTH;
+        Level->Right  = scrWidth - FRAME_WIDTH;
         Level->Top    = FRAME_WIDTH;
-        Level->Bottom = gfx::SCR_HEIGHT - FRAME_WIDTH;
+        Level->Bottom = scrHeight - FRAME_WIDTH;
         Level->Width  = Level->Right - Level->Left;
         Level->Height = Level->Bottom - Level->Top;
 
@@ -276,7 +276,7 @@ void draw_frame()
                 x1 = x2 = Level->Left + xoff;
 
                 y1 = Level->Top;
-                y2 = y1 + gfx::SCR_HEIGHT;
+                y2 = y1 + gfx::_SCR_HEIGHT;
 
                 SDL_RenderDrawLine(gfx::_renderer, x1, y1, x2, y2);
             }
@@ -321,8 +321,8 @@ void draw_frame()
     {
         // draw 4 thick filled rects. one for each side of the frame.
         const int fw      = FRAME_WIDTH;
-        const int swidth  = (int) gfx::SCR_WIDTH;
-        const int sheight = (int) gfx::SCR_HEIGHT;
+        const int swidth  = (int) gfx::_SCR_WIDTH;
+        const int sheight = (int) gfx::_SCR_HEIGHT;
 
 
         // upper wall
@@ -407,8 +407,8 @@ void draw_frame()
             SDL_Rect rect;
 
             ui::gen_generic_text("YOU WIN", &texture, &rect);
-            rect.x = (gfx::SCR_WIDTH / 2) - (rect.w / 2);
-            rect.y = gfx::SCR_HEIGHT / 2;
+            rect.x = (gfx::_SCR_WIDTH / 2) - (rect.w / 2);
+            rect.y = gfx::_SCR_HEIGHT / 2;
 
             // increase text size
             rect = scale_sdl_rect(rect, 1.3f);

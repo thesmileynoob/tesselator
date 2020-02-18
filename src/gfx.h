@@ -18,8 +18,8 @@ extern SDL_Window* _window;
 extern SDL_Renderer* _renderer;
 
 // window
-extern int SCR_WIDTH;   // TODO: rename
-extern int SCR_HEIGHT;  // TODO: rename
+extern int _SCR_WIDTH;
+extern int _SCR_HEIGHT;
 
 // textures
 extern SDL_Texture* TileTexture;

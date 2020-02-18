@@ -45,7 +45,7 @@ namespace game
 {
 
 // load level and init resources
-void load_level(int n);
+void load_level(int n, int scrWidth, int scrHeight);
 void reset_level();
 
 bool is_game_over();

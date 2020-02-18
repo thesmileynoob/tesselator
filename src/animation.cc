@@ -71,7 +71,7 @@ void animation::player_lose_life(unsigned int dt)
     {
         // if any of the following conditions is true, stop!
         const int y = game::Level->Player->Y;
-        if (y >= gfx::SCR_HEIGHT + 500) {
+        if (y >= gfx::_SCR_HEIGHT + 500) {
             mark_done();
             game::event_game_over(game::GAME_OVER_DEAD);
             return;

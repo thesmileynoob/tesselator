@@ -85,7 +85,7 @@ void gen_fps(float fps, SDL_Texture** outTexture, SDL_Rect* outRect)
 
         // update rect
         TTF_SizeText(gfx::UIFont, string, &rect.w, &rect.h);
-        rect.x = gfx::SCR_WIDTH - rect.w - 10;  // 10 padding
+        rect.x = gfx::_SCR_WIDTH - rect.w - 10;  // 10 padding
         rect.y = 0;
     }
     assert(texture);
@@ -130,7 +130,7 @@ void gen_time(unsigned int time_ms, SDL_Texture** outTexture, SDL_Rect* outRect)
 
         // update rect
         TTF_SizeText(gfx::UIFont, string, &rect.w, &rect.h);
-        rect.x = (gfx::SCR_WIDTH / 2) - (rect.w / 2);
+        rect.x = (gfx::_SCR_WIDTH / 2) - (rect.w / 2);
         rect.y = 0;
     }
     assert(texture);
@@ -165,8 +165,8 @@ void gen_player_lose_life(SDL_Texture** outTexture, SDL_Rect* outRect)
 
         // update rect
         TTF_SizeText(gfx::UIFont, string, &rect.w, &rect.h);
-        rect.x = (gfx::SCR_WIDTH / 2) - (rect.w / 2);
-        rect.y = gfx::SCR_HEIGHT / 2;
+        rect.x = (gfx::_SCR_WIDTH / 2) - (rect.w / 2);
+        rect.y = gfx::_SCR_HEIGHT / 2;
     }
 
     assert(texture);

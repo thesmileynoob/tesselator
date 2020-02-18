@@ -10,8 +10,8 @@ SDL_Window* _window;
 SDL_Renderer* _renderer;
 
 // window
-int SCR_WIDTH;   // TODO: rename
-int SCR_HEIGHT;  // TODO: rename
+int _SCR_WIDTH;
+int _SCR_HEIGHT;
 
 // textures
 SDL_Texture* TileTexture;
@@ -182,7 +182,7 @@ int _init_sdl()
     assert(_renderer);
 
     // set SCR_WIDTH and SCR_HEIGHT
-    SDL_GetWindowSize(_window, &SCR_WIDTH, &SCR_HEIGHT);
+    SDL_GetWindowSize(_window, &_SCR_WIDTH, &_SCR_HEIGHT);
 
 
     // sdl image
