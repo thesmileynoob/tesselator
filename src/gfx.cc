@@ -9,6 +9,10 @@ namespace gfx
 SDL_Window* _window;
 SDL_Renderer* _renderer;
 
+// window
+int SCR_WIDTH;   // TODO: rename
+int SCR_HEIGHT;  // TODO: rename
+
 // textures
 SDL_Texture* TileTexture;
 SDL_Texture* BgTexture;
@@ -20,8 +24,7 @@ TTF_Font* UIFont;
 
 
 // sdl
-static int _init_sdl(int Width, int Height, SDL_Window** outWin,
-                     SDL_Renderer** outRenderer);
+static int _init_sdl();
 static int _deinit_sdl();
 
 
@@ -33,9 +36,9 @@ static int gen_random_num(int upto)
     return i;
 }
 
-void init(int width, int height)
+void init()
 {
-    _init_sdl(width, height, &_window, &_renderer);
+    _init_sdl();
     assert(_window && _renderer);
 
     // load textures
@@ -161,7 +164,7 @@ SDL_Rect texture_rect(unsigned int col, unsigned int row)
 }
 
 // create SDL_Window and SDL_Renderer
-int _init_sdl(int Width, int Height, SDL_Window** outWin, SDL_Renderer** outRenderer)
+int _init_sdl()
 {
     // SDL proper
     int err = 0;
@@ -170,11 +173,17 @@ int _init_sdl(int Width, int Height, SDL_Window** outWin, SDL_Renderer** outRend
         printf("SDL2 Error\n");
         exit(1);
     }
-    err = SDL_CreateWindowAndRenderer(Width, Height, 0, outWin, outRenderer);
-    if (err) {
-        printf("SDL2 Window Error\n");
-        _deinit_sdl();
-    }
+    _window =
+        SDL_CreateWindow("Breakout Clone", SDL_WINDOWPOS_UNDEFINED,
+                         SDL_WINDOWPOS_UNDEFINED, 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP);
+    assert(_window);
+
+    _renderer = SDL_CreateRenderer(_window, -1, 0);
+    assert(_renderer);
+
+    // set SCR_WIDTH and SCR_HEIGHT
+    SDL_GetWindowSize(_window, &SCR_WIDTH, &SCR_HEIGHT);
+
 
     // sdl image
     const int flags   = IMG_INIT_JPG | IMG_INIT_PNG;
@@ -202,6 +211,8 @@ int _deinit_sdl()
 {
     TTF_Quit();
     IMG_Quit();
+    SDL_DestroyRenderer(_renderer);
+    SDL_DestroyWindow(_window);
     SDL_Quit();
     return 0;
 }

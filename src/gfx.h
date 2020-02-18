@@ -17,6 +17,10 @@ namespace gfx
 extern SDL_Window* _window;
 extern SDL_Renderer* _renderer;
 
+// window
+extern int SCR_WIDTH;   // TODO: rename
+extern int SCR_HEIGHT;  // TODO: rename
+
 // textures
 extern SDL_Texture* TileTexture;
 extern SDL_Texture* BgTexture;
@@ -27,7 +31,7 @@ extern int BgTexture_height;
 extern TTF_Font* UIFont;
 
 
-void init(int width, int height);
+void init();
 void deinit();
 
 void draw_texture(SDL_Texture* t, SDL_Rect* src, SDL_Rect* dst);

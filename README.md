@@ -5,7 +5,6 @@
 
 
 # TODO
-    - background graphics (easy)
     - multiple-hit tiles (easy)
     - load and save gamestate (easy)
 

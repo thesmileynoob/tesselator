@@ -16,6 +16,16 @@
 #include "tile.h"
 #include "ui.h"
 
+
+/* TASK:
+    - make fullscreen
+    - define max grid
+    - center game area
+
+    - define level format
+*/
+
+
 void debug_break_all_tiles()
 {
     for (int i = 0; i < game::TileCount; ++i) {
@@ -29,7 +39,7 @@ void debug_break_all_tiles()
 int main(int argc, char const* argv[])
 {
     // INIT
-    gfx::init(SCR_WIDTH, SCR_HEIGHT);
+    gfx::init();
     // game must be init after gfx::init()
     game::load_level(0);
 
@@ -103,7 +113,7 @@ int main(int argc, char const* argv[])
         game::Time += DT;
     }
 
-
+    gfx::deinit();
     return 0;
 }
 

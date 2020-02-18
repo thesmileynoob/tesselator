@@ -10,16 +10,16 @@ namespace game
 bool debug_mode = true;
 
 /// level (aka playable area) dimensions in abs px
-int level_left   = FRAME_WIDTH;
-int level_right  = SCR_WIDTH - FRAME_WIDTH;
-int level_top    = FRAME_WIDTH;
-int level_bottom = SCR_HEIGHT - FRAME_WIDTH;
-int level_width  = level_right - level_left;
-int level_height = level_bottom - level_top;
+int level_left;
+int level_right;
+int level_top;
+int level_bottom;
+int level_width;
+int level_height;
 
-int Cols      = 5;
-int Rows      = 3;
-int TileCount = 5 * 3;
+int Cols;
+int Rows;
+int TileCount;
 
 // meta
 int Running;        // game running flag
@@ -119,6 +119,21 @@ int effect_hl_nearest_tile()
 
 void load_level(int n)
 {
+    // Set level params
+    {
+        level_left   = FRAME_WIDTH;
+        level_right  = gfx::SCR_WIDTH - FRAME_WIDTH;
+        level_top    = FRAME_WIDTH;
+        level_bottom = gfx::SCR_HEIGHT - FRAME_WIDTH;
+        level_width  = level_right - level_left;
+        level_height = level_bottom - level_top;
+
+        Cols      = 5;
+        Rows      = 3;
+        TileCount = Cols * Rows;
+    }
+
+
     // alloc
     Player = new player();
     Ball   = new ball();
@@ -272,7 +287,7 @@ void draw_frame()
                 x1 = x2 = game::level_left + xoff;
 
                 y1 = game::level_top;
-                y2 = y1 + SCR_HEIGHT;
+                y2 = y1 + gfx::SCR_HEIGHT;
 
                 SDL_RenderDrawLine(gfx::_renderer, x1, y1, x2, y2);
             }
@@ -333,8 +348,8 @@ void draw_frame()
     {
         // draw 4 thick filled rects. one for each side of the frame.
         const int fw      = FRAME_WIDTH;
-        const int swidth  = (int) SCR_WIDTH;
-        const int sheight = (int) SCR_HEIGHT;
+        const int swidth  = (int) gfx::SCR_WIDTH;
+        const int sheight = (int) gfx::SCR_HEIGHT;
 
 
         // upper wall
@@ -419,8 +434,8 @@ void draw_frame()
             SDL_Rect rect;
 
             ui::gen_generic_text("YOU WIN", &texture, &rect);
-            rect.x = (SCR_WIDTH / 2) - (rect.w / 2);
-            rect.y = SCR_HEIGHT / 2;
+            rect.x = (gfx::SCR_WIDTH / 2) - (rect.w / 2);
+            rect.y = gfx::SCR_HEIGHT / 2;
 
             // increase text size
             rect = scale_sdl_rect(rect, 1.3f);
